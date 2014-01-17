@@ -6,7 +6,10 @@ import play.api.mvc._
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok("Team8Paper Project")
   }
 
+  def paperView(id: String) = play.mvc.Results.TODO
+  
+  def paperSubmit(id: String) = play.mvc.Results.TODO
 }
