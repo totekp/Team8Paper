@@ -1,11 +1,14 @@
-@(list: List[Int])
+@(list: List[Int], id: String)
 
 <html>
   <head></head>
   <body>
     Team8Paper Project
-    <ul>@list.map { element =>
+    <a href="/paper/@{id}">Create paper</a>
+    <ul>
+    @list.map { element =>
       <li>@element</li>
-    }</ul>
+    }
+    </ul>
   </body>
 </html>
