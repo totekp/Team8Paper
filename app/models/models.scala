@@ -7,40 +7,50 @@ import util.Implicits._
 trait Jsonable[T] {
   def model2json(m: T): JsObject
 
-  def json2model(j: JsValue): Either[String, T]
+  def json2model(j: JsValue): T
 }
 
 case class Paper(
                   id: String,
                   title: String,
-                  tags: List[String]
+                  tags: Vector[String],
+                  lastupdated: Long
                   ) {
 }
 
 object Paper extends Jsonable[Paper] {
+
+  def createBlank(id: String): Paper = {
+    val now = System.currentTimeMillis
+    Paper(id, "New Paper", Vector.empty, now)
+  }
+
   val id = "_id"
   val title = "title"
   val tags = "tags"
+  val lastupdated = "lastupdated"
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
     b += Paper.id -> m.id
     b += Paper.title -> m.title
     b += Paper.tags -> m.tags
+    b += Paper.lastupdated -> m.lastupdated
     Json.obj(b.result(): _*)
   }
 
-  def json2model(j: JsValue): Either[String, Paper] = {
+  def json2model(j: JsValue): Paper = {
     try {
       val p = Paper.apply(
         id = j asString Paper.id,
         title = j asString Paper.title,
-        tags = j.as[List[String]]
+        tags = (j \ Paper.tags).as[Vector[String]],
+        lastupdated = j asLong Paper.lastupdated
       )
-      Right(p)
+      p
     } catch {
       case e: Exception =>
-        Left(e.getMessage)
+        throw e
     }
   }
 }
@@ -81,7 +91,7 @@ object Element extends Jsonable[Element] {
     Json.obj(b.result(): _*)
   }
 
-  def json2model(j: JsValue): Either[String, Element] = {
+  def json2model(j: JsValue): Element = {
     try {
       val e = Element.apply(
         id = j asString Element.id,
@@ -92,10 +102,10 @@ object Element extends Jsonable[Element] {
         y = j asInt Element.y,
         z = j asInt Element.z
       )
-      Right(e)
+      e
     } catch {
       case e: Exception =>
-        Left(e.getMessage)
+        throw e
     }
   }
 }
