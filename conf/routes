@@ -3,6 +3,7 @@
 # ~~~~
 
 # Home page
+<<<<<<< Updated upstream
 GET         /                    controllers.Papers.index
 
 GET         /paper/:id           controllers.Papers.paperView(id)
@@ -12,6 +13,15 @@ POST        /paper/:id           controllers.Papers.paperSubmit(id)
 GET         /paper               controllers.Papers.paperNew
 
 GET         /api1/recentPaperids   controllers.Papers.recentPaperids
+=======
+GET         /                    controllers.PapersController.home
+
+GET         /paper/:id           controllers.PapersController.paperView(id)
+POST        /paper/:id           controllers.PapersController.paperSubmit(id)
+
+# default screen
+GET         /paper               controllers.PapersController.paperNew
+>>>>>>> Stashed changes
 
 
 # Map static resources from the /public folder to the /assets URL path
