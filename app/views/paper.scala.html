@@ -1,94 +1,17 @@
 <!DOCTYPE html>
 <html>
+
+<title>Team 8 Paper</title>
 <head>
-    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
-    <script src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui-1.10.4.custom.min.css")">
-    <title>Team 8 Paper</title>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"></link>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
+
+
 </head>
 <body>
-<div id="paper_canvas">
-</div>
-<script>
-
-    var paper = (function() {
-        var boxID = 0;
-        var textBoxID = "textBoxID_";
-        var textBox = (function() {
-            var content;
-            var pageX;
-            var pageY;
-            var width;
-            var height;
-
-            function createTextBox(event, boxID) {
-                $("body").append("<div id='" + boxID + "'></div>");
-                console.log(event);
-                $('#'+boxID).css({top: event.pageY, left: event.pageX});
-
-                $('#'+boxID).addClass("textBox");
-                $('#'+boxID).css("position", "absolute");
-                $('#'+boxID).append("<textarea class='textBoxTextArea'></textarea>");
-
-                setTextAreaMax(boxID);
-
-                $('#'+boxID).draggable();
-                $('#'+boxID).resizable();
-                (function(boxID) {
-                    $('#'+boxID).on("resize",
-                        function(event, ui) {
-                            setTextAreaMax(boxID);
-                        }
-                    );
-                })(boxID);
-
-                pageX = event.pageX;
-                pageY = event.pageY;
-                width = $('#'+textBoxID+boxID).width();
-                height = $('#'+textBoxID+boxID).height();
-                boxID++;
-                //TODO return attributes
-            }
-
-            function setTextAreaMax(boxID) {
-                $('#'+boxID).children('.textBoxTextArea').css({'max-height' : $('#'+boxID).height()-10 , 'max-width' : $('#'+boxID).width()-10});
-            }
-
-           return {createTextBox : createTextBox};
-        })();
-
-        function addTextBox(event) {
-            textBox.createTextBox(event, textBoxID + boxID);
-            boxID++;
-        }
-        return {addTextBox : addTextBox};
-    })();
-
-
-    var currentSelection;
-
-    function resizeCanvas() {
-        $('#paper_canvas').width($(window).width()*.99);
-        $('#paper_canvas').height($(window).height()*.99);
-    }
-
-    function bindCanvasClick() {
-        $('#paper_canvas').click(function(event) {
-            paper.addTextBox(event);
-        });
-    }
-    function initCanvas() {
-        resizeCanvas();
-        bindCanvasClick();
-    }
-
-    initCanvas();
-
-    $(window).resize(function() {
-        resizeCanvas();
-    });
-</script>
-
+<div id="paper_canvas"></div>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/scripts.js")"></script>
 </body>
 </html>
