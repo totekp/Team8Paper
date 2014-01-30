@@ -1,0 +1,17 @@
+body {
+    overflow:hidden;
+}
+
+.textBox {
+    width: 200px;
+    height: 100px;
+    border:1px solid #000000;
+    z-index: 1;
+}
+
+.textBoxTextArea {
+    background: none;
+}
+#paper_canvas {
+    border:1px solid #000000;
+}

@@ -1,14 +1,9 @@
-@(list: List[Int], id: String)
+@(id: String)
 
 <html>
   <head></head>
   <body>
     Team 8 Paper Project
     <a href="/paper/@{id}">Create paper</a>
-    <ul>
-    @list.map { element =>
-      <li>@element</li>
-    }
-    </ul>
   </body>
 </html>

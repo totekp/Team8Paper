@@ -11,8 +11,7 @@ import play.api.libs.json.Json
 object Papers extends Controller {
 
   def index = Action {
-    val list = (0 to 100).toList
-    Ok(views.html.index2(list, "sadfasdf"))
+    Ok(views.html.paper())
   }
 
   /**
