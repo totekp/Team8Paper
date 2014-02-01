@@ -11,7 +11,9 @@ import play.api.libs.json.Json
 object Papers extends Controller {
 
   def index = Action {
-    Ok(views.html.paper())
+
+    Ok(views.html.index2())
+    //Ok(views.html.paper())
   }
 
   /**
@@ -26,13 +28,12 @@ object Papers extends Controller {
       } yield {
         p match {
           case Some(p) =>
-            JsonResult.success(p)
+            Ok(views.html.paper(JsonResult.paperSuccess(p)))
           case None =>
             JsonResult.error("Paper not found")
         }
       }
   }
-
   /**
    * Save paper
    * @param id
@@ -47,6 +48,7 @@ object Papers extends Controller {
           case None =>
             JsonResult.error("Old paper not found")
           case Some(oldpaper) =>
+            println(req.body.asJson);
             req.body.asJson match {
               case None =>
                 JsonResult.error("Input is not a valid json")

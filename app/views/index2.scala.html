@@ -1,9 +1,42 @@
-@(id: String)
-
 <html>
-  <head></head>
+<head>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"></link>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
+</head>
+
   <body>
-    Team 8 Paper Project
-    <a href="/paper/@{id}">Create paper</a>
+    <div id = paper_project_title>Team 8 Paper Project</div>
+    <ul id="paper_menu">
+        <li><a href="/paper">Create Paper</a></li>
+        <li>-</li>
+        <li>
+            <a href="#">Recent Papers</a>
+            <ul id="recent_papers">
+            </ul>
+        </li>
+    </ul>
+
+    <script>
+    $(function() {
+        $( "#paper_menu" ).menu();
+    });
+    $.get("/api1/recentPaperids").done(function(data)
+        {
+            console.log(data);
+            var i = 0;
+            while (i < 10) {
+                if(data.status == "success") {
+                    $("#recent_papers").append("<li><a href='/paper/" + data.data[i]._id + "'>" + data.data[i].title + "</a></li>");
+                }
+                i++;
+            }
+            $( "#paper_menu" ).menu("refresh");
+        }
+    );
+    </script>
+
+
   </body>
 </html>

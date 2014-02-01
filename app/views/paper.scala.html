@@ -1,16 +1,20 @@
+@(json : Any)
 <!DOCTYPE html>
 <html>
 
-<title>Team 8 Paper</title>
 <head>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"></link>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
-
-
 </head>
+
 <body>
+<script>
+    var convertedJSON = $("<div />").html("@json").text();
+    var data = $.parseJSON(convertedJSON);
+</script>
+<div contenteditable data-name="title" id="paper_title"></div>
 <div id="paper_canvas"></div>
 <script type="text/javascript" src="@routes.Assets.at("javascripts/scripts.js")"></script>
 </body>

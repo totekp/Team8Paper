@@ -96,7 +96,6 @@ var textBox = (function() {
                 paper.removeNoteFromPaper($(this).closest('.textBox').attr("id"));
         });
 
-
         textBoxVars.pageX = event.pageX;
         textBoxVars.pageY = event.pageY;
         textBoxVars.width = $('#'+boxID).width();
@@ -113,12 +112,48 @@ var textBox = (function() {
    return {createTextBox : createTextBox};
 })();
 
+
+$("#paper_title").text(data.data.title);
+document.title = data.data.title;
+
+document.addEventListener('keydown', function (event) {
+  var esc = event.which == 27,
+      nl = event.which == 13,
+      el = event.target,
+      input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
+
+
+  if (input) {
+    if (esc) {
+      // restore state
+      document.execCommand('undo');
+      el.blur();
+    } else if (nl) {
+      // save
+      console.log(data);
+      console.log(window.location.toString());
+      data.data[el.getAttribute('data-name')] = el.innerHTML;
+
+      $.ajax({
+        url: window.location.toString(),
+        data: JSON.stringify(data.data),
+        contentType: 'application/json',
+        type: 'post'
+      });
+
+
+      el.blur();
+      event.preventDefault();
+      document.title = data.data.title;
+    }
+  }
+}, true);
+
 var currentSelection;
 
 function resizeCanvas() {
     var RESIZE_FACTOR = 18;
-    $('#paper_canvas').width($(window).width()-RESIZE_FACTOR);
-    $('#paper_canvas').height($(window).height()-RESIZE_FACTOR);
+    $('#paper_canvas').height($(window).height()-$("#paper_title").height() - RESIZE_FACTOR);
 }
 
 function bindCanvasClick() {
@@ -128,6 +163,7 @@ function bindCanvasClick() {
 }
 function initCanvas() {
     resizeCanvas();
+    console.log("Hello");
     bindCanvasClick();
 }
 
