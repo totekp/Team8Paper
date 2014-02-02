@@ -22,7 +22,7 @@ object JsonResult {
     }
   }
 
-  def paperSuccess(data: JsValueWrapper) = {
+  def jsonSuccess(data: JsValueWrapper) = {
       Json.obj(
         "status" -> "success",
         "data" -> data

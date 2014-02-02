@@ -28,7 +28,7 @@ object Papers extends Controller {
       } yield {
         p match {
           case Some(p) =>
-            Ok(views.html.paper(JsonResult.paperSuccess(p)))
+            Ok(views.html.paper(JsonResult.jsonSuccess(p)))
           case None =>
             JsonResult.error("Paper not found")
         }
