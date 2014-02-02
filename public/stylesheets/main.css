@@ -29,6 +29,11 @@
 
 #paper_project_title {
     font: 40px arial, sans-serif;
-    color: 00C6D4
+    color: 00C6D4;
 }
 
+#paper_title {
+    font: 40px arial, sans-serif;
+    color: 00C6D4;
+    width: 600px;
+}
