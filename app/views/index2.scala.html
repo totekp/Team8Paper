@@ -22,7 +22,7 @@
     $(function() {
         $( "#paper_menu" ).menu();
     });
-    $.get("/api1/recentPaperids").done(function(data)
+    $.get("@routes.Papers.recentPaperids()").done(function(data)
         {
             console.log(data);
             var i = 0;

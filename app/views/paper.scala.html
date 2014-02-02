@@ -11,8 +11,7 @@
 
 <body>
 <script>
-    var convertedJSON = $("<div />").html("@json").text();
-    var data = $.parseJSON(convertedJSON);
+    var data = @Html(play.api.libs.json.Json.stringify(json));
 </script>
 <div contenteditable data-name="title" id="paper_title"></div>
 <div id="paper_canvas"></div>

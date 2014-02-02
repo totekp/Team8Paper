@@ -48,7 +48,6 @@ object Papers extends Controller {
           case None =>
             JsonResult.error("Old paper not found")
           case Some(oldpaper) =>
-            println(req.body.asJson);
             req.body.asJson match {
               case None =>
                 JsonResult.error("Input is not a valid json")
@@ -56,6 +55,8 @@ object Papers extends Controller {
                 val paper = Paper.json2model(json)
                     if (oldpaper.id != paper.id) {
                       JsonResult.error("Oldpaper and newpaper ids are not equal")
+                    } else if (oldpaper == paper) {
+                      JsonResult.error("Paper not changed")
                     } else {
                       PaperDAO.save(paper, ow = true)
                       JsonResult.success("Paper saved")
