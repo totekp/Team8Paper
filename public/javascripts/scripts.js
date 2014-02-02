@@ -1,7 +1,7 @@
 //This is the paper itself, it contains the all the textboxes that are to be displayed on screen at any given time
 var paper = (function() {
     if(data.data.notes === undefined) {
-        data.data.notes = new Array();
+        data.data.notes = [];
     }
     var boxID = 0;
     var textBoxID = "textBoxID_";

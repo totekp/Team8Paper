@@ -1,5 +1,10 @@
 [![Build Status](https://travis-ci.org/nanop/Team8Paper.png?branch=master)](https://travis-ci.org/nanop/Team8Paper)
 
+# TODO
+- embed element in paper
+- finish group
+- modify lastUpdated
+
 # Installation 
 
 TODO

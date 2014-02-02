@@ -78,11 +78,11 @@ object Papers extends Controller {
 
   def recentPaperids = Action.async {
     implicit req =>
-      val papers = PaperDAO.findModel(Json.obj(), 25)
+      val papers = PaperDAO.findModel(Json.obj(), Json.obj(Paper.lastUpdated -> -1),  25)
       for {
         papers <- papers
       } yield {
-        JsonResult.success(papers.sortBy(_.lastupdated).reverse.map(Paper.model2json))
+        JsonResult.success(papers.map(Paper.model2json))
       }
   }
 
