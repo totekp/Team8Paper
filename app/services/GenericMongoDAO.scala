@@ -43,8 +43,17 @@ object PaperDAO extends MongoDAOTrait[Paper] {
   def findById(id: String): Future[Option[JsObject]] =
     coll.find(Json.obj("_id" -> id)).one[JsObject]
 
-  def findModel(q: JsObject, s: JsObject, limit: Int): Future[Vector[Paper]] = {
-    coll.find(q).sort(s).cursor[JsObject].collect[Vector](25).map(_.map(jsonable.json2model))
+  def findByIdModel(id: String): Future[Option[Paper]] =
+    findById(id).map(_.map(jsonable.json2model))
+
+  def find(q: JsObject, s: JsObject, limit: Int = 0): Future[Vector[JsObject]] = {
+    coll.find(q).sort(s).cursor[JsObject].collect[Vector](limit)
+  }
+
+  def findModel(q: JsObject, s: JsObject, limit: Int = 0): Future[Vector[Paper]] = {
+    find(q, s, limit).map(_.collect{
+      case j: JsObject => jsonable.json2model(j)
+    })
   }
 
 

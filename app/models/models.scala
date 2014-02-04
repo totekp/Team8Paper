@@ -81,6 +81,7 @@ case class Paper(
                   elements: Vector[Element],
                   groups: Vector[Group]
                   ) {
+  def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
 }
 
 object Paper extends Jsonable[Paper] {
@@ -106,11 +107,11 @@ object Paper extends Jsonable[Paper] {
     b += Paper.title -> m.title
     b += Paper.tags -> m.tags
     b += Paper.elements -> m.elements.map(Element.model2json)
+    b += Paper.groups -> m.groups.map(Group.model2json)
     b += Paper.created -> m.created
     b += Paper.lastUpdated -> m.lastUpdated
 
     val r = b.result()
-    assert(r.length == Paper.n)
     Json.obj(r: _*)
   }
 

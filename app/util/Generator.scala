@@ -6,5 +6,5 @@ import reactivemongo.bson.BSONObjectID
 
 object Generator {
   def uuid() = UUID.randomUUID().toString.replaceAll("-", "")
-  def oid(): String =  BSONObjectID.generate.toString
+  def oid(): String =  BSONObjectID.generate.stringify
 }

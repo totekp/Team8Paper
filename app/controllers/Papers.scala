@@ -7,6 +7,8 @@ import services.PaperDAO
 import models.{Paper, JsonResult}
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
+import util.Generator
+import scala.concurrent.Future
 
 object Papers extends Controller {
 
@@ -24,16 +26,18 @@ object Papers extends Controller {
   def paperView(id: String) = Action.async {
     implicit req =>
       for {
-        p <- PaperDAO.findById(id)
+        p <- PaperDAO.findByIdModel(id)
       } yield {
         p match {
           case Some(p) =>
-            Ok(views.html.paper(JsonResult.jsonSuccess(p)))
+            val paperJson = Paper.model2json(p)
+            Ok(views.html.paper(JsonResult.jsonSuccess(paperJson)))
           case None =>
             JsonResult.error("Paper not found")
         }
       }
   }
+
   /**
    * Save paper
    * @param id
@@ -41,35 +45,46 @@ object Papers extends Controller {
    */
   def paperSubmit(id: String) = Action.async {
     implicit req =>
-      for {
-        p <- PaperDAO.findById(id).map(_.map(Paper.json2model))
-      } yield {
+      def readPaper(p: Option[Paper]) = {
         p match {
           case None =>
-            JsonResult.error("Old paper not found")
+            Future.successful(JsonResult.error("Old paper not found"))
           case Some(oldpaper) =>
             req.body.asJson match {
               case None =>
-                JsonResult.error("Input is not a valid json")
+                Future.successful(JsonResult.error("Input is not a valid json"))
               case Some(json) =>
-                val paper = Paper.json2model(json)
-                    if (oldpaper.id != paper.id) {
-                      JsonResult.error("Oldpaper and newpaper ids are not equal")
-                    } else if (oldpaper == paper) {
-                      JsonResult.error("Paper not changed")
-                    } else {
-                      PaperDAO.save(paper, ow = true)
+                val newPaper = Paper.json2model(json)
+                if (oldpaper.id != newPaper.id) {
+
+                  Future.successful(JsonResult.error("Oldpaper and newpaper ids are not equal"))
+                } else if (oldpaper == newPaper) {
+
+                  Future.successful(JsonResult.error("Paper not changed"))
+                } else {
+
+                  val newPaperUpdatedTime = newPaper.updatedTime()
+                  PaperDAO.save(newPaperUpdatedTime, ow = true).map {
+                    le =>
                       JsonResult.success("Paper saved")
-                    }
+                  }
+                }
             }
         }
+      }
+      for {
+        p <- PaperDAO.findByIdModel(id)
+        r <- readPaper(p)
+      } yield {
+        r
       }
   }
 
   def paperNew = Action.async {
     implicit req =>
-      val id = UUID.randomUUID().toString
+      val id = Generator.oid()
       val newPaper = Paper.createBlank(id)
+      Future(Ok("" + Paper.model2json(newPaper)))
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper.id))
@@ -78,11 +93,11 @@ object Papers extends Controller {
 
   def recentPaperids = Action.async {
     implicit req =>
-      val papers = PaperDAO.findModel(Json.obj(), Json.obj(Paper.lastUpdated -> -1),  25)
+      val papers = PaperDAO.find(Json.obj(), Json.obj(Paper.lastUpdated -> -1), 25)
       for {
-        papers <- papers
+        papersJson <- papers
       } yield {
-        JsonResult.success(papers.map(Paper.model2json))
+        JsonResult.success(papersJson)
       }
   }
 
