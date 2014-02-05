@@ -59,10 +59,10 @@ object Group extends Jsonable[Group] {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
     b += Group.id -> m.id
     b += Group.title -> m.title
-    b += Group.x -> m.x
-    b += Group.y -> m.y
-    b += Group.width -> m.width
-    b += Group.height -> m.height
+    m.x.map(b += Group.x -> _)
+    m.y.map(b += Group.y -> _)
+    m.width.map(b += Group.width -> _)
+    m.height.map(b += Group.height -> _)
     b += Group.elementIds -> m.elementIds
     b += Group.created -> m.created
     b += Group.lastUpdated -> m.lastUpdated
