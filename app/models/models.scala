@@ -11,7 +11,7 @@ trait Jsonable[T] {
 }
 
 case class Group(
-        id: String,
+        _id: String,
         title: Option[String],
         x: Option[Int],
         y: Option[Int],
@@ -24,7 +24,7 @@ case class Group(
 
 }
 object Group extends Jsonable[Group] {
-  val id = "_id"
+  val _id = "_id"
   val title = "title"
   val x = "x"
   val y = "y"
@@ -38,7 +38,7 @@ object Group extends Jsonable[Group] {
   def json2model(j: JsValue): Group = {
     try {
       val p = Group.apply(
-        id = j asString Group.id,
+        _id = j asString Group._id,
         title = j getAsString Group.title,
         x = j getAsInt Group.x,
         y = j getAsInt Group.y,
@@ -57,7 +57,7 @@ object Group extends Jsonable[Group] {
 
   def model2json(m: Group): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
-    b += Group.id -> m.id
+    b += Group._id -> m._id
     b += Group.title -> m.title
     m.x.map(b += Group.x -> _)
     m.y.map(b += Group.y -> _)
@@ -73,7 +73,7 @@ object Group extends Jsonable[Group] {
 }
 
 case class Paper(
-                  id: String,
+                  _id: String,
                   title: String,
                   tags: Vector[String],
                   created: Long,
@@ -93,7 +93,7 @@ object Paper extends Jsonable[Paper] {
     Paper(id, "New Paper", Vector.empty, now, now, Vector.empty, Vector.empty)
   }
 
-  val id = "_id"
+  val _id = "_id"
   val title = "title"
   val tags = "tags"
   val lastUpdated = "lastUpdated"
@@ -103,7 +103,7 @@ object Paper extends Jsonable[Paper] {
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
-    b += Paper.id -> m.id
+    b += Paper._id -> m._id
     b += Paper.title -> m.title
     b += Paper.tags -> m.tags
     b += Paper.elements -> m.elements.map(Element.model2json)
@@ -118,7 +118,7 @@ object Paper extends Jsonable[Paper] {
   def json2model(j: JsValue): Paper = {
     try {
       val p = Paper.apply(
-        id = j asString Paper.id,
+        _id = j asString Paper._id,
         title = j asString Paper.title,
         tags = (j \ Paper.tags).as[Vector[String]],
         created = j asLong Paper.created,
@@ -138,7 +138,7 @@ object Paper extends Jsonable[Paper] {
 kind -> video, image, text,
   */
 case class Element(
-                    id: String,
+                    _id: String,
                     kind: String,
                     data: String,
                     x: Int,
@@ -154,7 +154,7 @@ object Element extends Jsonable[Element] {
 
   val n = 8
 
-  val id = "_id"
+  val _id = "_id"
   val kind = "kind"
   val data = "data"
   val x = "x"
@@ -165,7 +165,7 @@ object Element extends Jsonable[Element] {
 
   def model2json(m: Element): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
-    b += Element.id -> m.id
+    b += Element._id -> m._id
     b += Element.kind -> m.kind
     b += Element.data -> m.data
     b += Element.x -> m.x
@@ -174,14 +174,13 @@ object Element extends Jsonable[Element] {
     b += Element.created -> m.created
     b += Element.lastUpdated -> m.lastUpdated
     val r = b.result()
-    assert(r.length == Element.n)
     Json.obj(r: _*)
   }
 
   def json2model(j: JsValue): Element = {
     try {
       val e = Element.apply(
-        id = j asString Element.id,
+        _id = j asString Element._id,
         kind = j asString Element.kind,
         data = j asString Element.data,
         x = j asInt Element.x,

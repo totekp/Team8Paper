@@ -55,7 +55,7 @@ object Papers extends Controller {
                 Future.successful(JsonResult.error("Input is not a valid json"))
               case Some(json) =>
                 val newPaper = Paper.json2model(json)
-                if (oldpaper.id != newPaper.id) {
+                if (oldpaper._id != newPaper._id) {
 
                   Future.successful(JsonResult.error("Oldpaper and newpaper ids are not equal"))
                 } else if (oldpaper == newPaper) {
@@ -87,7 +87,7 @@ object Papers extends Controller {
       Future(Ok("" + Paper.model2json(newPaper)))
       PaperDAO.save(newPaper).map {
         le =>
-          Redirect(routes.Papers.paperView(newPaper.id))
+          Redirect(routes.Papers.paperView(newPaper._id))
       }
   }
 
