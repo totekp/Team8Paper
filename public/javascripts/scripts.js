@@ -1,61 +1,121 @@
 //This is the paper itself, it contains the all the textboxes that are to be displayed on screen at any given time
-var paper = (function() {
-    if(data.data.notes === undefined) {
-        data.data.notes = [];
+var paperData = (function() {
+    function getElements() {
+        return data.data.elements;
     }
-    var boxID = 0;
-    var textBoxID = "textBoxID_";
+
+    function getElement(i) {
+        return data.data.elements[i];
+    }
+
+    function getElementsLength() {
+        return data.data.elements.length
+    }
+
+    function getElementByID(id) {
+        for(var i = 0; i < getElementsLength(); i++)
+        {
+            var currElement = getElement(i);
+            if(currElement._id == id) {
+                return currElement;
+            }
+        }
+    }
+
+    function addElement(textBox) {
+        data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(textBox));
+    }
+
+    function removeElement(id) {
+        for(var i = 0; i < getElementsLength(); i++)
+        {
+            var currElement = getElement(i);
+            if(currElement._id == id) {
+                data.data.notes.elements(i, 1);
+            }
+        }
+
+    }
+
+    function getGroups() {
+            return data.data.groups;
+        }
+
+    function getGroup(i) {
+        return data.data.groups[i];
+    }
+
+    function getGroupsLength() {
+        return data.data.groups.length
+    }
+
+    function getGroupByID(id) {
+        for(var i = 0; i < getGroupsLength(); i++)
+        {
+            var currGroup = getGroup(i);
+            if(currGroup._id == id) {
+                return currGroup;
+            }
+        }
+    }
+
+    function addGroup(textBox) {
+        data.data.groups[getGroupsLength()] = JSON.parse(JSON.stringify(textBox));
+    }
+
+    function removeGroup(id) {
+        for(var i = 0; i < getGroupsLength(); i++)
+        {
+            var currGroup = getGroup(i);
+            if(currGroup._id == id) {
+                data.data.notes.group(i, 1);
+            }
+        }
+
+    }
+
+    return {getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
+    getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
+    getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
+    getGroupByID : getGroupByID, addGroup : addGroup, removeGroup : removeGroup};
+})();
+var paper = (function() {
+    var boxID = paperData.getGroupsLength();
+    var groupID = "groupID_";
 
     function addNote(event) {
-        var textBoxCreated = textBox.createNewTextBox(event, textBoxID + boxID);
+        var textBoxCreated = textBox.createNewTextBox(event, groupID + boxID);
         //An easy way to do a clone of an object.
-        data.data.notes[data.data.notes.length] = JSON.parse(JSON.stringify(textBoxCreated));
-        console.log(JSON.stringify(data.data.notes));
+        paperData.addGroup(textBoxCreated);
         boxID++;
-        $.ajax({
-            url: window.location.toString(),
-            data: JSON.stringify(data.data),
-            contentType: 'application/json',
-            type: 'post'
-        });
-        console.log(data.data);
+        updateJSON();
     }
 
     function updateNotePosition(ui, boxID) {
-        for(var i = 0; i< data.data.notes.length; i++)
-        {
-            if(data.data.notes[i].id == boxID) {
-                data.data.notes[i].pageX = ui.position.left;
-                data.data.notes[i].pageY = ui.position.top;
-            }
-        }
+        var currentGroup = paperData.getGroupByID(boxID);
+        currentGroup.x = ui.position.left;
+        currentGroup.y = ui.position.top;
+        updateJSON();
     }
 
     function updateNoteSize(ui, boxID) {
-        for(var i = 0; i< data.data.notes.length; i++)
-        {
-            if(data.data.notes[i].id == boxID) {
-                data.data.notes[i].width = ui.size.width;
-                data.data.notes[i].height = ui.size.height;
-            }
-        }
+        var currentGroup = paperData.getGroupByID(boxID);
+        currentGroup.width = ui.size.width;
+        currentGroup.height = ui.size.height;
+        updateJSON();
     }
 
     function removeNoteFromPaper(boxID) {
-        for(var i = 0; i< data.data.notes.length; i++)
-        {
-            if(data.data.notes[i].id == boxID) {
-                data.data.notes.splice(i, 1);
-            }
-        }
+        paperData.removeGroup(boxID);
     }
 
     function initExistingNotes() {
-        for(var i = 0; i< data.data.notes.length; i++)
+        for(var i = 0; i< paperData.getGroupsLength(); i++)
         {
-            textBox.loadTextBox(data.data.notes[i]);
+            textBox.loadTextBox(paperData.getGroup(i));
         }
     }
+
     return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize, removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes};
 })();
 
@@ -66,16 +126,18 @@ var textBox = (function() {
 
     function createTextBox(boxID) {
         $("body").append("<div id='" + boxID + "'></div>");
+        $("#"+boxID).append("<div contenteditable class = 'text_element' id= 'element'></div>");
 
         $('#'+boxID).addClass("textBox");
         $('#'+boxID).css("position", "absolute");
 
-        $('#'+boxID).append("<textarea class='textBoxTextArea'></textarea>");
+        //$('#'+boxID).append("<textarea class='textBoxTextArea'></textarea>");
         $('#'+boxID).append("<div class='closeButton'></div>");
+        $('#'+boxID).append("<div class='dragButton'></div>");
         setTextAreaMax(boxID);
 
-        (function(boxID) {
-        $('#'+boxID).draggable({ cursor: "crosshair", containment: "#paper_canvas", stop:
+         (function(boxID) {
+         $('#'+boxID).draggable({handle: ".dragButton", cursor: "crosshair", containment: "#paper_canvas", stop:
             function(event, ui) {
                     paper.updateNotePosition(ui, boxID);
                 }
@@ -98,10 +160,16 @@ var textBox = (function() {
                 {
                     $('#'+boxID).find('.closeButton').button({ icons: { primary: "ui-icon-closethick"}, text: false });
                 }
+                if($('#'+boxID).find('.dragButton').children().size() == 0)
+                {
+                    $('#'+boxID).find('.dragButton').button({ icons: { primary: "ui-icon-closethick"}, text: false });
+                }
                 $(this).find('.closeButton').delay(1000).fadeIn(500);
+                $(this).find('.dragButton').delay(1000).fadeIn(500);
             },
             function() {
                 $(this).find('.closeButton').delay(1000).fadeOut(500);
+                $(this).find('.dragButton').delay(1000).fadeOut(500);
         });
 
         $('.closeButton').click(
@@ -114,18 +182,22 @@ var textBox = (function() {
     function createNewTextBox(event, boxID) {
         createTextBox(boxID);
         $('#'+boxID).css({top: event.pageY, left: event.pageX});
-        textBoxVars.pageX = event.pageX;
-        textBoxVars.pageY = event.pageY;
-        textBoxVars.width = $('#'+boxID).width();
-        textBoxVars.height = $('#'+boxID).height();
-        textBoxVars.id = boxID;
+        textBoxVars._id = boxID;
+        textBoxVars.title = "";
+        textBoxVars.x = event.pageX;
+        textBoxVars.y = event.pageY;
+        textBoxVars.width = $("#"+boxID).width();
+        textBoxVars.height = $("#"+boxID).height();
+        textBoxVars.elementIds = [];
+        textBoxVars.created =  event.timeStamp;
+        textBoxVars.lastUpdated = event.timeStamp;
 
         return textBoxVars;
     }
 
     function loadTextBox(data) {
-        createTextBox(data.id)
-        $('#'+boxID).css({top: data.pageY, left: data.pageX, width: data.width, height: data.height});
+        createTextBox(data._id)
+        $('#'+data._id).css({top: data.y, left: data.x, width: data.width, height: data.height});
     }
 
     function setTextAreaMax(boxID) {
@@ -158,12 +230,7 @@ document.addEventListener('keydown', function (event) {
       console.log(window.location.toString());
       data.data[el.getAttribute('data-name')] = el.innerHTML;
 
-      $.ajax({
-        url: window.location.toString(),
-        data: JSON.stringify(data.data),
-        contentType: 'application/json',
-        type: 'post'
-      });
+      updateJSON();
 
 
       el.blur();
@@ -185,6 +252,16 @@ function bindCanvasClick() {
         paper.addNote(event);
     });
 }
+
+function updateJSON() {
+    $.ajax({
+        url: window.location.toString(),
+        data: JSON.stringify(data.data),
+        contentType: 'application/json',
+        type: 'post'
+    });
+}
+
 function initCanvas() {
     console.log(data);
     resizeCanvas();

@@ -129,6 +129,7 @@ object Paper extends Jsonable[Paper] {
       p
     } catch {
       case e: Exception =>
+        println(e)
         throw e
     }
   }
@@ -144,6 +145,8 @@ case class Element(
                     x: Int,
                     y: Int,
                     z: Int,
+                    width: Int,
+                    height: Int,
                     created: Long,
                     lastUpdated: Long
                     ) {
@@ -152,7 +155,7 @@ case class Element(
 
 object Element extends Jsonable[Element] {
 
-  val n = 8
+  val n = 10
 
   val id = "_id"
   val kind = "kind"
@@ -160,6 +163,8 @@ object Element extends Jsonable[Element] {
   val x = "x"
   val y = "y"
   val z = "z"
+  val width = "width"
+  val height = "height"
   val created = "created"
   val lastUpdated = "lastUpdated"
 
@@ -171,6 +176,8 @@ object Element extends Jsonable[Element] {
     b += Element.x -> m.x
     b += Element.y -> m.y
     b += Element.z -> m.z
+    b += Element.width -> m.width
+    b += Element.height -> m.height
     b += Element.created -> m.created
     b += Element.lastUpdated -> m.lastUpdated
     val r = b.result()
@@ -187,6 +194,8 @@ object Element extends Jsonable[Element] {
         x = j asInt Element.x,
         y = j asInt Element.y,
         z = j asInt Element.z,
+        width = j asInt Element.width,
+        height = j asInt Element.height,
         created = j asLong Element.created,
         lastUpdated = j asLong Element.lastUpdated
       )

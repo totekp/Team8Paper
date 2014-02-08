@@ -25,6 +25,13 @@
     display: none;
 }
 
+.dragButton {
+    bottom:0px;
+    left:0px;
+    position: fixed;
+    display: none;
+}
+
 .ui-menu { width: 200px; }
 
 #paper_project_title {
@@ -36,4 +43,9 @@
     font: 40px arial, sans-serif;
     color: 00C6D4;
     width: 600px;
+}
+
+.text_element {
+    max-height: inherit;
+    z-index: 1;
 }
