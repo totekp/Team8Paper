@@ -1,13 +1,16 @@
 [![Build Status](https://travis-ci.org/nanop/Team8Paper.png?branch=master)](https://travis-ci.org/nanop/Team8Paper)
 
-# TODO
-- embed element in paper
-- finish group
-- modify lastUpdated
+live server -> http://team8paper.herokuapp.com
 
-# Installation 
+# Installation and Running from source
 
-TODO
+1. Clone project repo
+2. Install sbt
+3. Install Mongodb
+4. Run Mongo, preferably as a daemon (default)
+5. Cd to project root, run command 'sbt' and you should get a console
+6. In console, run command 'run' and web app will start on localhost:9000
+7. Visit localhost:9000 in a browser to view the applications. Changes to source code will show on reload.
 
 # Product Vision
 
