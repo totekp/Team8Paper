@@ -68,17 +68,72 @@ var paperData = (function() {
         {
             var currGroup = getGroup(i);
             if(currGroup._id == id) {
-                data.data.notes.group(i, 1);
+                data.data.groups.splice(i, 1);
+                return true;
             }
         }
+        return false;
+    }
 
+    function getElement(i) {
+        return data.data.elements[i];
+    }
+
+    function getUniqueElementId() {
+        return "elementID_" +  getElementsLength();
+    }
+
+    function getElementsLength() {
+        return data.data.elements.length;
+    }
+
+    function addElement(element) {
+        data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(element));
+    }
+
+    function getElementByID(id) {
+        for(var i = 0; i < getElementsLength(); i++)
+        {
+            var currElement = getElement(i);
+            if(currElement._id == id) {
+                return currElement;
+            }
+        }
+    }
+
+    function removeElement(id) {
+        for(var i = 0; i < getElementsLength(); i++)
+        {
+            var currElement = getElement(i);
+            if(currElement._id == id) {
+                data.data.elements.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getElementsInGroup(id) {
+        var currGroup = getGroupByID(id);
+        return currGroup.elementIds;
+    }
+
+    function addElementToGroup(elementID, groupID) {
+        console.log(groupID);
+        var currGroup = getGroupByID(groupID);
+        currGroup.elementIds[currGroup.elementIds.length] = elementID;
     }
 
     return {getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
-    getGroupByID : getGroupByID, addGroup : addGroup, removeGroup : removeGroup};
+    getGroupByID : getGroupByID, addGroup : addGroup, removeGroup : removeGroup,
+    getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement,
+    getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
+    addElementToGroup : addElementToGroup};
 })();
+
+
 var paper = (function() {
     var boxID = paperData.getGroupsLength();
     var groupID = "groupID_";
@@ -106,7 +161,10 @@ var paper = (function() {
     }
 
     function removeNoteFromPaper(boxID) {
-        paperData.removeGroup(boxID);
+        var removed = paperData.removeGroup(boxID);
+        if (removed) {
+            updateJSON();
+        }
     }
 
     function initExistingNotes() {
@@ -124,9 +182,24 @@ var textBox = (function() {
     var textBoxVars = new Object();
     //textBoxVars = pageX, pageY, width, height, content
 
-    function createTextBox(boxID) {
+    function createTextBox(event, boxID, isNewBox) {
         $("body").append("<div id='" + boxID + "'></div>");
-        $("#"+boxID).append("<div contenteditable class = 'text_element' id= 'element'></div>");
+
+        var addedElement;
+        if(isNewBox) {
+            addedElement = addNewElement(event, "text");
+        }
+        else {
+            addedElement = paperData.getElementsInGroup(boxID);
+            addedElement = paperData.getElementByID(addedElement);
+            console.log(addedElement);
+        }
+
+        $("#"+boxID).append("<div contenteditable class = 'text_element' data-name='" + addedElement._id + "' id= '" + addedElement._id + "'></div>");
+
+        if(!isNewBox) {
+            $("#"+addedElement._id).text(addedElement.data);
+        }
 
         $('#'+boxID).addClass("textBox");
         $('#'+boxID).css("position", "absolute");
@@ -177,10 +250,12 @@ var textBox = (function() {
                 $(this).closest('.textBox').fadeOut(1000);
                 paper.removeNoteFromPaper($(this).closest('.textBox').attr("id"));
         });
+
+        return addedElement;
     }
 
     function createNewTextBox(event, boxID) {
-        createTextBox(boxID);
+        var addedElement = createTextBox(event, boxID, true);
         $('#'+boxID).css({top: event.pageY, left: event.pageX});
         textBoxVars._id = boxID;
         textBoxVars.title = "";
@@ -188,15 +263,34 @@ var textBox = (function() {
         textBoxVars.y = event.pageY;
         textBoxVars.width = $("#"+boxID).width();
         textBoxVars.height = $("#"+boxID).height();
-        textBoxVars.elementIds = [];
+        textBoxVars.elementIds = new Array();
+        textBoxVars.elementIds[0] = addedElement._id;
         textBoxVars.created =  event.timeStamp;
         textBoxVars.lastUpdated = event.timeStamp;
 
         return textBoxVars;
     }
 
+    function addNewElement(event, elementKind) {
+        var newElement = new Object();
+        newElement._id = paperData.getUniqueElementId();
+        newElement.kind = elementKind;
+        newElement.data = "";
+        newElement.x = 0;
+        newElement.y = 0;
+        newElement.z = 0;
+        newElement.width = 0;
+        newElement.height = 0;
+        newElement.created = event.timeStamp;
+        newElement.lastUpdated = event.timeStamp;
+
+        paperData.addElement(newElement);
+        console.log(data.data);
+        return newElement;
+    }
+
     function loadTextBox(data) {
-        createTextBox(data._id)
+        createTextBox(event, data._id, false)
         $('#'+data._id).css({top: data.y, left: data.x, width: data.width, height: data.height});
     }
 
@@ -219,25 +313,29 @@ document.addEventListener('keydown', function (event) {
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
 
 
-  if (input) {
+if (input) {
     if (esc) {
-      // restore state
-      document.execCommand('undo');
-      el.blur();
-    } else if (nl) {
-      // save
-      console.log(data);
-      console.log(window.location.toString());
-      data.data[el.getAttribute('data-name')] = el.innerHTML;
-
-      updateJSON();
-
-
-      el.blur();
-      event.preventDefault();
-      document.title = data.data.title;
+        // restore state
+        document.execCommand('undo');
+        el.blur();
     }
-  }
+    else if (nl) {
+        // save
+        if(el.getAttribute('data-name') == 'title') {
+            data.data.title = el.innerHTML;
+        }
+        else {
+            var elementID = el.getAttribute('data-name');
+            paperData.getElementByID(elementID).data = el.innerHTML;
+            console.log(data);
+        }
+        updateJSON();
+
+        el.blur();
+        event.preventDefault();
+        document.title = data.data.title;
+        }
+    }
 }, true);
 
 var currentSelection;
