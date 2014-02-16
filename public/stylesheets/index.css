@@ -23,6 +23,11 @@ body {
     position:fixed;
 }
 
+.inner {
+    width:600px;
+    display:inline-table;
+}
+
 #content_wrapper {
     min-width:768px;
     padding-left:50px;
@@ -33,7 +38,7 @@ body {
 }
 
 .cover {
-    padding:100px 100px 200px 100px;
+    padding:100px 100px 180px 100px;
     text-align:center;
     background-image:url('images/get_started_paper.png');
 }
