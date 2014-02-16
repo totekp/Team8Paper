@@ -1,41 +1,74 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"></link>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/index.css")"></link>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/index.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
+    <script src="//oss.maxcdn.com/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
 </head>
 
-  <body>
-    <div id = paper_project_title>Team 8 Paper Project</div>
-    <ul id="paper_menu">
-        <li><a href="/paper">Create Paper</a></li>
-        <li>-</li>
-        <li>
-            <a href="#">Recent Papers</a>
-            <ul id="recent_papers">
-            </ul>
-        </li>
-    </ul>
+<body>
 
-    <script>
-    $(function() {
-        $( "#paper_menu" ).menu();
-    });
-    $.get("@routes.Papers.recentPaperids()").done(function(data) {
-            console.log(data);
-            var i = 0;
-            while (i < 10) {
-                if(data.status == "success") {
-                    $("#recent_papers").append("<li><a href='/paper/" + data.data[i]._id + "'>" + data.data[i].title + "</a></li>");
-                }
-                i++;
-            }
-            $( "#paper_menu" ).menu("refresh");
-        }
-    );
-    </script>
+    <div id="page" class="pushobj">
+        <div id="main_nav">
+            <nav class="navbar navbar-default" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li><a id="off_canvas_toggle" data-toggle="tooltip"><i class="fa fa-file-o"></i></a></li>
+
+                </ul>
+            </nav>
+            <nav class="navbar navbar-inverse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li><a id="nav_home" href="" data-toggle="tooltip"><i class="fa fa-home"></i></a></li>
+                    <li><a id="nav_search" href="#search"><i class="fa fa-search"></i></a></li>
+                    <li><a id="nav_dashboard" href="#dashboard"><i class="fa fa-th-large"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div id="content_wrapper">
+            <div id="main_cover" class="cover">
+                <h1 class="cover-heading">Welcome to Paper</h1>
+                <p class="lead">Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
+                <p class="lead">
+                    <a href="/paper" id="btn_start" class="btn btn-lg btn-default">Get Started!</a>
+                </p>
+            </div>
+
+            <div id="search">
+                <h2 class="cover-heading">Search Papers</h2>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Papers by tags">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></button>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a href="#">Search My Papers</a></li>
+                            <li><a href="#">Search Public Papers</a></li>
+                            <li class="divider"></li>
+                            <li><a href="http://www.bit.ly/1g9PM6p">Do You Dare?</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboard">
+
+            </div>
+            <div id="footer">
+                <p>2014 CS4911 Team8 Paper. Georgia Institute of Technology.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="off_canvas_nav"></div>
 
 
-  </body>
+</body>
 </html>
