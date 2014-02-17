@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.contextMenu.css")"></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/index.css")"></link>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/index.js")"></script>
@@ -11,23 +12,24 @@
     <script src="//oss.maxcdn.com/libs/modernizr/2.6.2/modernizr.min.js"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.contextMenu.js")"></script>
 </head>
 
 <body>
 
     <div id="page" class="pushobj">
         <div id="main_nav">
-            <nav class="navbar navbar-default" role="navigation">
+            <nav id="off_canvas_btn" class="navbar navbar-default" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a id="off_canvas_toggle" data-toggle="tooltip"><i class="fa fa-file-o"></i></a></li>
-
+                    <li><a id="off_canvas_toggle" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
                 </ul>
             </nav>
             <nav class="navbar navbar-inverse" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a id="nav_home" href="" data-toggle="tooltip"><i class="fa fa-home"></i></a></li>
-                    <li><a id="nav_search" href="#search"><i class="fa fa-search"></i></a></li>
-                    <li><a id="nav_dashboard" href="#dashboard"><i class="fa fa-th-large"></i></a></li>
+                    <li><a id="nav_home" class="smoothScroll" href="#main_cover" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
+                    <li><a id="nav_search" class="smoothScroll" href="#search"><i class="fa fa-search fa-lg"></i></a></li>
+                    <li><a id="nav_dashboard" class="smoothScroll" href="#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
                 </ul>
             </nav>
         </div>
@@ -39,14 +41,14 @@
                     <h1 class="cover-heading">Welcome to Paper</h1>
                     <p class="lead">Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
                     <p class="lead">
-                        <a href="/paper" id="btn_start" class="btn btn-lg btn-default">Get Started!</a>
+                        <a href="#dashboard" id="btn_start" class="btn btn-lg btn-default smoothScroll">Get Started!</a>
                     </p>
                 </div>
             </div>
 
             <div id="search">
                 <div class="inner">
-                    <h2 class="cover-heading">Search Papers</h2>
+                    <h2>Search Papers</h2>
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search Papers by tags">
                         <div class="input-group-btn">
@@ -63,7 +65,9 @@
             </div>
 
             <div id="dashboard">
-
+                <h2>Your Paper Dashboard</h2>
+                <p>Right-click each paper for options</p>
+                <div id="paper_container"></div>
             </div>
             <div id="footer">
                 <p>2014 CS4911 Team 8 Paper. Georgia Institute of Technology.</p>

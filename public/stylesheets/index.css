@@ -2,7 +2,7 @@ body {
    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
    font-weight: lighter;
    background-color: #333;
-   color:white;
+   color:black;
 }
 
 #page {
@@ -11,26 +11,36 @@ body {
     position:absolute;
 }
 
+/*Nav + off canvas related CSS*/
 #main_nav {
     height:100%;
     width:50px;
-    font-size:20px;
     background:#151515;
     position:fixed;
+}
+
+#off_canvas_btn {
+    background-color:#336BA3;
+}
+
+#off_canvas_toggle i {
+    color:white;
 }
 
 #off_canvas_nav{
     position:fixed;
 }
-
-.inner {
-    width:600px;
-    display:inline-table;
-}
+/*END Nav + off canvas*/
 
 #content_wrapper {
     min-width:768px;
     padding-left:50px;
+    color:white;
+}
+
+.inner {
+    width:600px;
+    display:inline-table;
 }
 
 #btn_start {
@@ -51,7 +61,18 @@ body {
 }
 
 #dashboard {
+    padding:50px 100px 100px 100px;
+    background-color:#fff;
+    color:black;
+}
 
+#dashboard i {
+    padding:15px;
+    color:#999;
+}
+
+#paper_container {
+    color:black;
 }
 
 #footer {

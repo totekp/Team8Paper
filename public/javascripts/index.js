@@ -163,28 +163,67 @@ $(document).ready(function(){
         }
     });
 
+
+    //populate recent papers off canvas nav element and dashboard-----------------------------------
+    var itemsArray = [];
+    var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
+    $.get("/api1/recentPaperids").done(function(data) {
+        var i = 0;
+        while (i < data.data.length) {
+            if(data.status == "success") {
+                if(i<10){
+                    itemsArray.push({
+                        name: data.data[i].title,
+                        icon: 'fa fa-pencil-square-o',
+                        link: '/paper/' + data.data[i]._id + ''
+                    });
+                }
+                $('#paper_container').append(
+                    '<i id='+
+                    data.data[i]._id+
+                    ' class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i><span>'+
+                    data.data[i].title+'</span>'
+                );
+            }
+            i++;
+        }
+
+        if(data.status == "success"){
+            $('#off_canvas_nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
+        }
+    });
+
+
+    //Context menu binds-----------------------------------
+    $.contextMenu({
+        selector: '.context-menu-one',
+        callback: function(key, options) {
+            var m = "clicked: " + key;
+        },
+        items: {
+            "edit": {name: "Edit", icon: "edit"},
+            "cut": {name: "Cut", icon: "cut"},
+            "copy": {name: "Copy", icon: "copy"},
+            "paste": {name: "Paste", icon: "paste"},
+            "delete": {name: "Delete", icon: "delete"},
+            "sep1": "---------",
+            "quit": {name: "Quit", icon: "quit"}
+        }
+    });
+
+    //Button click binds-----------------------------------
+    $('#btn_start').click(function(){
+        $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
+        offCanvasNavVisible = true;
+    });
+
     $(window).resize(function () {
         $( '#off_canvas_nav' ).multilevelpushmenu( 'redraw' );
     });
 
-    var itemsArray = [];
-    var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
-    //populate recent papers off canvas nav element
-    $.get("/api1/recentPaperids").done(function(data) {
-        var i = 0;
-        while (i < data.data.length && i<10) {
-            if(data.status == "success") {
-                itemsArray.push({
-                    name: data.data[i].title,
-                    icon: 'fa fa-pencil-square-o',
-                    link: '/paper/' + data.data[i]._id + ''
-                });
-            }
-            i++;
-        }
-        $('#off_canvas_nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
-    });
 
+
+    //Tooltip binds-----------------------------------
     $('#off_canvas_toggle').tooltip({
         placement:'right',
         title:'Paper quick options',
