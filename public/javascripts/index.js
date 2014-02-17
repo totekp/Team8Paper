@@ -1,5 +1,11 @@
 var offCanvasNavVisible = false;
-
+var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
+                               "<div id='paper_image'></div>"+
+                               "<div class='caption'>"+
+                                 "<p id='paper_label'></p>"+
+                                 "<p><a href='#' style='width:100%' class='btn btn-primary' role='button'>Open</a></p>"+
+                               "</div>"+
+                             "</div>";
 var arrMenu = [
   {
     title: 'Paper',
@@ -178,12 +184,16 @@ $(document).ready(function(){
                         link: '/paper/' + data.data[i]._id + ''
                     });
                 }
-                $('#paper_container').append(
+                $('#paper_container').append(dashPaperTemplate);
+                $('#paper_template').attr('id',data.data[i]._id);
+                $('#paper_image').append(
                     '<i id='+
                     data.data[i]._id+
-                    ' class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i><span>'+
-                    data.data[i].title+'</span>'
+                    ' class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
                 );
+                $('#paper_label').append(data.data[i].title);
+                $('#paper_image').attr('id','image'+data.data[i]._id);
+                $('#paper_label').attr('id','label'+data.data[i]._id);
             }
             i++;
         }
