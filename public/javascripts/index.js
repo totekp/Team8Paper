@@ -3,7 +3,8 @@ var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;te
                                "<div id='paper_image'></div>"+
                                "<div class='caption'>"+
                                  "<p id='paper_label'></p>"+
-                                 "<p><a href='#' style='width:100%' class='btn btn-primary' role='button'>Open</a></p>"+
+                                 "<p style='font-size:11px;' id='paper_date'></p>"+
+                                 "<p><a href='#' style='width:100%' id='paper_open_btn' class='btn btn-primary' role='button'>Open</a></p>"+
                                "</div>"+
                              "</div>";
 var arrMenu = [
@@ -27,107 +28,6 @@ var arrMenu = [
             title: 'Recent Papers',
             icon: 'fa fa-files-o',
             items: []
-          }
-        ]
-      },
-
-      {
-        name: 'Store',
-        icon: 'fa fa-shopping-cart',
-        link: '#',
-        items: [
-          {
-            title: 'Store',
-            icon: 'fa fa-shopping-cart',
-            items: [
-              {
-                name: 'Clothes',
-                icon: 'fa fa-tags',
-                link: '#',
-                items: [
-                  {
-                    title: 'Clothes',
-                    icon: 'fa fa-tags',
-                    items: [
-                      {
-                        name: 'Women\'s Clothing',
-                        icon: 'fa fa-female',
-                        link: '#',
-                        items: [
-                          {
-                            title: 'Women\'s Clothing',
-                            icon: 'fa fa-female',
-                            items: [
-                              {
-                                name: 'Tops',
-                                link: '#'
-                              },
-                              {
-                                name: 'Dresses',
-                                link: '#'
-                              },
-                              {
-                                name: 'Trousers',
-                                link: '#'
-                              },
-                              {
-                                name: 'Shoes',
-                                link: '#'
-                              },
-                              {
-                                name: 'Sale',
-                                link: '#'
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        name: 'Men\'s Clothing',
-                        icon: 'fa fa-male',
-                        link: '#',
-                        items: [
-                          {
-                            title: 'Men\'s Clothing',
-                            icon: 'fa fa-male',
-                            items: [
-                              {
-                                name: 'Shirts',
-                                link: '#'
-                              },
-                              {
-                                name: 'Trousers',
-                                link: '#'
-                              },
-                              {
-                                name: 'Shoes',
-                                link: '#'
-                              },
-                              {
-                                name: 'Sale',
-                                link: '#'
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                name: 'Jewelry',
-                link: '#'
-              },
-              {
-                name: 'Music',
-                link: '#'
-              },
-              {
-                name: 'Grocery',
-                link: '#'
-              }
-            ]
           }
         ]
       },
@@ -184,20 +84,26 @@ $(document).ready(function(){
                         link: '/paper/' + data.data[i]._id + ''
                     });
                 }
-                $('#paper_container').append(dashPaperTemplate);
-                $('#paper_template').attr('id',data.data[i]._id);
+                $('#paper_templates').append(dashPaperTemplate);
+                $('#paper_template').attr('id','thumbnail_'+data.data[i]._id);
                 $('#paper_image').append(
                     '<i id='+
                     data.data[i]._id+
                     ' class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
                 );
                 $('#paper_label').append(data.data[i].title);
-                $('#paper_image').attr('id','image'+data.data[i]._id);
-                $('#paper_label').attr('id','label'+data.data[i]._id);
+                var date = new Date(data.data[i].created);
+                $('#paper_date').append(date.toLocaleDateString());
+                $('#paper_open_btn').attr('href','/paper/'+data.data[i]._id);
+
+                //Set the id of the current paper template to something else to avoid conflicts in the code above
+                $('#paper_open_btn').attr('id','open_btn_'+data.data[i]._id);
+                $('#paper_image').attr('id','image_'+data.data[i]._id);
+                $('#paper_label').attr('id','label_'+data.data[i]._id);
+                $('#paper_date').attr('id','date_'+data.data[i]._id);
             }
             i++;
         }
-
         if(data.status == "success"){
             $('#off_canvas_nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
         }
