@@ -3,15 +3,21 @@
 # ~~~~
 
 # Home page
-GET         /                    controllers.Papers.index
+GET         /                           controllers.Papers.index
 
-GET         /paper/:id           controllers.Papers.paperView(id)
-POST        /paper/:id           controllers.Papers.paperSubmit(id)
+GET         /paper/:id                  controllers.Papers.paperView(id)
+POST        /paper/:id                  controllers.Papers.paperSubmit(id)
 
 # default screen
-GET         /paper               controllers.Papers.paperNew
+GET         /paper                      controllers.Papers.paperNew
 
-GET         /api1/recentPaperids   controllers.Papers.recentPaperids
+# api1 calls
+GET         /api1/recentPaperids        controllers.Papers.recentPaperids
+POST        /api1/getPaper              controllers.Papers.getPaper
+POST        /api1/savePaper             controllers.Papers.savePaper
+POST        /api1/duplicatePaper        controllers.Papers.duplicatePaper
+POST        /api1/searchTags            controllers.Papers.searchTags
+
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file        controllers.Assets.at(path="/public", file)
+GET         /assets/*file               controllers.Assets.at(path="/public", file)

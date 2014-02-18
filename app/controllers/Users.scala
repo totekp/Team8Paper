@@ -10,7 +10,7 @@ import play.api.libs.json.Json
 import util.Generator
 import scala.concurrent.Future
 
-object Papers extends Controller {
+object Users extends Controller {
 
   def index = Action {
 
@@ -101,69 +101,4 @@ object Papers extends Controller {
       }
   }
 
-  import util.Implicits._
-  def getPaper = Action.async {
-    implicit req =>
-      req.body.asJson match {
-        case Some(j) =>
-          val id = j asString "_id"
-          for {
-            p <- PaperDAO.findByIdModel(id)
-          } yield {
-            p match {
-              case Some(p) =>
-                val paperJson = Paper.model2json(p)
-                JsonResult.success(paperJson)
-              case None =>
-                JsonResult.error("Paper not found")
-            }
-          }
-        case None =>
-          Future.successful(
-            JsonResult.error("Invalid input")
-          )
-      }
-  }
-
-  def savePaper = Action.async {
-    implicit req =>
-      req.body.asJson match {
-        case Some(j) =>
-          val paper = j \ "paper"
-          PaperDAO.save(Paper.json2model(paper), true).map {
-            le =>
-              JsonResult.success("")
-          }
-        case None =>
-          Future.successful(JsonResult.error("Invalid json input"))
-      }
-  }
-
-  def duplicatePaper = Action.async {
-    implicit req =>
-      req.body.asJson match {
-        case Some(j) =>
-          val oldId = j asString "_id"
-          val paper = PaperDAO.findByIdModel(oldId)
-          for {
-            paper <- paper
-          } yield {
-            paper match {
-              case Some(paper) =>
-                val newId = Generator.oid()
-                PaperDAO.save(paper.copy(_id = newId), false)
-                JsonResult.success(newId)
-              case None =>
-                JsonResult.error("Paper not found")
-            }
-          }
-        case None =>
-          Future.successful(JsonResult.error("Invalid json input"))
-      }
-  }
-
-  def searchTags = Action.async {
-    implicit req =>
-      ???
-  }
 }
