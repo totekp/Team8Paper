@@ -48,19 +48,23 @@ object Papers extends Controller {
       def readPaper(p: Option[Paper]) = {
         p match {
           case None =>
-            Future.successful(JsonResult.error("Old paper not found"))
+            Future.successful(
+              JsonResult.error("Old paper not found"))
           case Some(oldpaper) =>
             req.body.asJson match {
               case None =>
-                Future.successful(JsonResult.error("Input is not a valid json"))
+                Future.successful(
+                  JsonResult.error("Input is not a valid json"))
               case Some(json) =>
                 val newPaper = Paper.json2model(json)
                 if (oldpaper._id != newPaper._id) {
 
-                  Future.successful(JsonResult.error("Oldpaper and newpaper ids are not equal"))
+                  Future.successful(
+                    JsonResult.error("Oldpaper and newpaper ids are not equal"))
                 } else if (oldpaper == newPaper) {
 
-                  Future.successful(JsonResult.error("Paper not changed"))
+                  Future.successful(
+                    JsonResult.error("Paper not changed"))
                 } else {
 
                   val newPaperUpdatedTime = newPaper.updatedTime()
@@ -102,21 +106,23 @@ object Papers extends Controller {
   }
 
   import util.Implicits._
+
   def getPaper = Action.async {
     implicit req =>
       req.body.asJson match {
         case Some(j) =>
-          val id = j asString "_id"
-          for {
-            p <- PaperDAO.findByIdModel(id)
-          } yield {
-            p match {
-              case Some(p) =>
-                val paperJson = Paper.model2json(p)
-                JsonResult.success(paperJson)
-              case None =>
-                JsonResult.error("Paper not found")
+          try {
+            val id = j asString "_id"
+            for {
+              p <- PaperDAO.findByIdModel(id)
+            } yield {
+              val paperJson = Paper.model2json(
+                p.getOrElse(throw new Exception("Paper not found")))
+              JsonResult.success(paperJson)
             }
+          } catch {
+            case e: Exception =>
+              Future(JsonResult.error(e.getMessage))
           }
         case None =>
           Future.successful(
@@ -129,10 +135,15 @@ object Papers extends Controller {
     implicit req =>
       req.body.asJson match {
         case Some(j) =>
-          val paper = j \ "paper"
-          PaperDAO.save(Paper.json2model(paper), true).map {
-            le =>
-              JsonResult.success("")
+          try {
+            val paper = j \ "paper"
+            PaperDAO.save(Paper.json2model(paper), ow = true).map {
+              le =>
+                JsonResult.success("")
+            }
+          } catch {
+            case e: Exception =>
+              Future(JsonResult.error(e.getMessage))
           }
         case None =>
           Future.successful(JsonResult.error("Invalid json input"))
@@ -143,19 +154,29 @@ object Papers extends Controller {
     implicit req =>
       req.body.asJson match {
         case Some(j) =>
-          val oldId = j asString "_id"
-          val paper = PaperDAO.findByIdModel(oldId)
-          for {
-            paper <- paper
-          } yield {
-            paper match {
-              case Some(paper) =>
-                val newId = Generator.oid()
-                PaperDAO.save(paper.copy(_id = newId), false)
-                JsonResult.success(newId)
-              case None =>
-                JsonResult.error("Paper not found")
+          try {
+            val oldId = j asString "_id"
+            for {
+              paper <- PaperDAO.findByIdModel(oldId)
+              newid <- {
+                paper match {
+                  case Some(paper) =>
+                    val newId = Generator.oid()
+                    PaperDAO.save(paper.copy(_id = newId), ow = false).map {
+                      le =>
+                        newId
+                    }
+                  case None =>
+                   throw new Exception("Paper not found")
+                }
+              }
+            } yield {
+              JsonResult.success(newid)
             }
+
+          } catch {
+            case e: Exception =>
+              Future(JsonResult.error(e.getMessage))
           }
         case None =>
           Future.successful(JsonResult.error("Invalid json input"))
@@ -164,6 +185,9 @@ object Papers extends Controller {
 
   def searchTags = Action.async {
     implicit req =>
+      val tagQ = Json.obj() // tag query
+
+    // return list of matching papers
       ???
   }
 }
