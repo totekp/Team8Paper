@@ -179,15 +179,29 @@ object Papers extends Controller {
               Future(JsonResult.error(e.getMessage))
           }
         case None =>
-          Future.successful(JsonResult.error("Invalid json input"))
+          Future.successful(JsonResult.error("Invalid input"))
       }
   }
 
   def searchTags = Action.async {
     implicit req =>
-      val tagQ = Json.obj() // tag query
+      req.body.asJson match {
+        case Some(j) =>
+          try {
+            val searchTags = (j \ "tags").as[Vector[String]]
+            val tagQ = Json.obj(Paper.tags -> Json.obj("$in" -> searchTags))
+            for {
+              r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
+            } yield {
+              JsonResult.success(r)
+            }
+          } catch {
+            case e: Exception =>
+              Future(JsonResult.error(e.getMessage))
+          }
 
-    // return list of matching papers
-      ???
+        case None =>
+          Future.successful(JsonResult.error("Invalid input"))
+      }
   }
 }
