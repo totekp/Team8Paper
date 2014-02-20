@@ -68,11 +68,26 @@
                 <h2>Your Paper Dashboard</h2>
                 <p>Right-click each paper for options</p>
                 <div id="paper_container">
-                    <div id="paper_settings">
-                        <h2>Title: New Paper</h2>
-                        <p>Date created: February 14, 2014</p>
-                        <p>Last updated: February 15, 2014</p>
-                        <p></p>
+                    <div id="paper_settings" class="thumbnail">
+                        <div id="paper_settings_inner" class="thumbnail">
+                            <table>
+                                <tr>
+                                    <th colspan="2"><h2 id="paper_settings_title">Select Paper</h2></th>
+                                </tr>
+                                <tr>
+                                    <td>Date created: </td>
+                                    <td><span id="paper_settings_created">----------------</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Last updated: </td>
+                                    <td><span id="paper_settings_updated">----------------</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Tags: </td>
+                                    <td><span id="paper_settings_tags">----------------</span></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                     <div id="paper_templates"></div>
                 </div>

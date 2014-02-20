@@ -32,14 +32,9 @@ var arrMenu = [
         ]
       },
       {
-        name: 'Logout',
-        icon: 'fa fa-sign-out',
-        link: '#'
-      },
-      {
         name: 'Credit',
         icon: 'fa fa-lightbulb-o',
-        link: '#'
+        link: ''
       }
     ]
   }
@@ -73,6 +68,7 @@ $(document).ready(function(){
     //populate recent papers off canvas nav element and dashboard-----------------------------------
     var itemsArray = [];
     var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
+
     $.get("/api1/recentPaperids").done(function(data) {
         var i = 0;
         while (i < data.data.length) {
@@ -84,16 +80,25 @@ $(document).ready(function(){
                         link: '/paper/' + data.data[i]._id + ''
                     });
                 }
+                var created = new Date(data.data[i].created);
+                var updated = new Date(data.data[i].lastUpdated);
                 $('#paper_templates').append(dashPaperTemplate);
                 $('#paper_template').attr('id','thumbnail_'+data.data[i]._id);
                 $('#paper_image').append(
                     '<i id='+
                     data.data[i]._id+
-                    ' class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
+                    ' data-title="'+
+                    data.data[i].title+
+                    '" data-created="'+
+                    created.toLocaleDateString()+
+                    '" data-updated="'+
+                    updated.toLocaleDateString()+
+                    '" data-tags="'+
+                    data.data[i].tags+
+                    '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
                 );
                 $('#paper_label').append(data.data[i].title);
-                var date = new Date(data.data[i].created);
-                $('#paper_date').append(date.toLocaleDateString());
+                $('#paper_date').append(created.toLocaleDateString());
                 $('#paper_open_btn').attr('href','/paper/'+data.data[i]._id);
 
                 //Set the id of the current paper template to something else to avoid conflicts in the code above
@@ -114,16 +119,37 @@ $(document).ready(function(){
     $.contextMenu({
         selector: '.context-menu-one',
         callback: function(key, options) {
-            var m = "clicked: " + key;
+            var paper = {
+                id: options.$trigger[0].id,
+                title: $('#'+options.$trigger[0].id).attr('data-title'),
+                created: $('#'+options.$trigger[0].id).attr('data-created'),
+                lastUpdated: $('#'+options.$trigger[0].id).attr('data-updated'),
+                tags: $('#'+options.$trigger[0].id).attr('data-tags')
+            };
+            if(key=='edit'){
+                $('#paper_settings_title').html(paper.title);
+                $('#paper_settings_created').html(paper.created);
+                $('#paper_settings_updated').html(paper.lastUpdated);
+                $('#paper_settings_tags').html(paper.tags);
+            }else if(key=='duplicate'){
+                $.ajax({
+                  type: 'POST',
+                  url: '/api1/duplicatePaper',
+                  data: {_id: paper.id+""},
+                  dataType: 'json'
+                })
+                  .done(function(result){
+                       console.log(result);
+                  });
+            }else if(key=='delete'){
+
+            }
         },
         items: {
             "edit": {name: "Edit", icon: "edit"},
-            "cut": {name: "Cut", icon: "cut"},
-            "copy": {name: "Copy", icon: "copy"},
-            "paste": {name: "Paste", icon: "paste"},
-            "delete": {name: "Delete", icon: "delete"},
             "sep1": "---------",
-            "quit": {name: "Quit", icon: "quit"}
+            "duplicate": {name: "Duplicate", icon: "copy"},
+            "delete": {name: "Delete", icon: "delete"}
         }
     });
 
