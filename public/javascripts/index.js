@@ -1,13 +1,14 @@
 var papers;
 var offCanvasNavVisible = false;
+var alphaNumRegx = /^[A-Za-z0-9 _.-]+$/;
 var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
-                               "<div id='paper_image'></div>"+
-                               "<div class='caption'>"+
-                                 "<p id='paper_label'></p>"+
-                                 "<p style='font-size:11px;' id='paper_date'></p>"+
-                                 "<p><a href='#' style='width:100%' id='paper_open_btn' class='btn btn-primary' role='button'>Open</a></p>"+
-                               "</div>"+
-                             "</div>";
+                           "<div id='paper_image'></div>"+
+                           "<div class='caption'>"+
+                             "<p id='paper_label'></p>"+
+                             "<p style='font-size:11px;' id='paper_date'></p>"+
+                             "<p><a href='#' style='width:100%' id='paper_open_btn' class='btn btn-primary' role='button'>Open</a></p>"+
+                           "</div>"+
+                        "</div>";
 var arrMenu = [
   {
     title: 'Paper',
@@ -43,7 +44,7 @@ var arrMenu = [
 
 //Initialization
 $(document).ready(function(){
-    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous get
+    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
     if(response.status!="success"){
         console.log("Failed to retrieve papers in non-async request");
     }
@@ -60,10 +61,40 @@ $(document).ready(function(){
 //Utility functions
 
 function initBinds(){
-    //Button click binds-----------------------------------
     $('#btn_start').click(function(){
         $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
         offCanvasNavVisible = true;
+    });
+
+    $('#paper_settings_submit').click(function(){
+        var newTitle = $('#paper_settings_title_input').prop('value');
+        var newTags = $('#paper_settings_tag_input').prop('value');
+        var id = $('#paper_settings_id').attr('data-id');
+        if(id == ''){
+            alert('Please select a paper to edit.')
+            return;
+        }else if(newTitle.length < 3){
+            alert('Please input at least 4 characters long.');
+            return;
+        }else if(!alphaNumRegx.test(newTags) && newTags.length>0){
+            alert('Please only enter alpha-numeric symbols for tags.');
+            return;
+        }
+        newTags = newTags.split(' ');
+        var paper = getPaper(id);
+        paper.title = newTitle;
+        $.merge(paper.tags,newTags);
+        $.ajax({
+            url: '/paper/'+paper._id,
+            data: JSON.stringify(paper),
+            contentType: 'application/json',
+            type: 'post'
+        })
+          .done(function(result){
+            if(result.status=="success"){
+                location.reload(); //very crude way of refreshing the view..
+            }
+          });
     });
 
     $(window).resize(function () {
@@ -79,12 +110,12 @@ function initBinds(){
 
     $('#nav_home').tooltip({
         placement:'right',
-        title:'To the top!',
+        title:'Home',
     });
 
     $('#nav_search').tooltip({
         placement:'right',
-        title:'Get dat Paper',
+        title:'Search papers',
     });
 
     $('#nav_dashboard').tooltip({
@@ -94,7 +125,6 @@ function initBinds(){
 }
 
 function initCanvasMenu(){
-    //off canvas navigation init-----------------------------------
     $('#off_canvas_nav').multilevelpushmenu({
         menu: arrMenu,
         containersToPush: [$('.pushobj')],
@@ -115,9 +145,9 @@ function initCanvasMenu(){
         }
     });
 
+    //Push items to off canvas menu
     var itemsArray = [];
     var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
-
     for(var i=0;i<papers.length;i++){
         if(i<10){
             itemsArray.push({
@@ -132,51 +162,25 @@ function initCanvasMenu(){
 
 
 function initDashboard(){
-
     for(var i=0;i<papers.length;i++){
-        var created = new Date(papers[i].created);
-        var updated = new Date(papers[i].lastUpdated);
-        $('#paper_templates').append(dashPaperTemplate);
-        $('#paper_template').attr('id','thumbnail_'+papers[i]._id);
-        $('#paper_image').append(
-            '<i id='+
-            papers[i]._id+
-            ' data-title="'+
-            papers[i].title+
-            '" data-created="'+
-            created.toLocaleDateString()+
-            '" data-updated="'+
-            updated.toLocaleDateString()+
-            '" data-tags="'+
-            papers[i].tags+
-            '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
-        );
-        $('#paper_label').append(papers[i].title);
-        $('#paper_date').append(created.toLocaleDateString());
-        $('#paper_open_btn').attr('href','/paper/'+papers[i]._id);
-
-        //Set the id of the current paper template to something else to avoid conflicts in the code above
-        $('#paper_open_btn').attr('id','open_btn_'+papers[i]._id);
-        $('#paper_image').attr('id','image_'+papers[i]._id);
-        $('#paper_label').attr('id','label_'+papers[i]._id);
-        $('#paper_date').attr('id','date_'+papers[i]._id);
+        addPaperToDash(papers[i]);
     }
 }
 
 function initDashContextMenu(){
-    //Context menu binds-----------------------------------
     $.contextMenu({
         selector: '.context-menu-one',
         callback: function(key, options) {
             var paper = {
-                id: options.$trigger[0].id,
+                _id: options.$trigger[0].id,
                 title: $('#'+options.$trigger[0].id).attr('data-title'),
                 created: $('#'+options.$trigger[0].id).attr('data-created'),
                 lastUpdated: $('#'+options.$trigger[0].id).attr('data-updated'),
                 tags: $('#'+options.$trigger[0].id).attr('data-tags')
             };
             if(key=='edit'){
-                $('#paper_settings_title').html(paper.title);
+                $('#paper_settings_id').attr('data-id',paper._id);
+                $('#paper_settings_title_input').attr('value',paper.title);
                 $('#paper_settings_created').html(paper.created);
                 $('#paper_settings_updated').html(paper.lastUpdated);
                 $('#paper_settings_tags').html(paper.tags);
@@ -184,7 +188,7 @@ function initDashContextMenu(){
                 $.ajax({
                   type: 'POST',
                   url: '/api1/duplicatePaper',
-                  data: JSON.stringify({_id:paper.id}),
+                  data: JSON.stringify({_id:paper._id}),
                   contentType: 'application/json; charset=utf-8'
                 })
                   .done(function(result){
@@ -196,7 +200,7 @@ function initDashContextMenu(){
                 $.ajax({
                   type: 'POST',
                   url: '/api1/deletePaper',
-                  data: JSON.stringify({_id:paper.id}),
+                  data: JSON.stringify({_id:paper._id}),
                   contentType: 'application/json; charset=utf-8'
                 })
                   .done(function(result){
@@ -216,6 +220,58 @@ function initDashContextMenu(){
 }
 
 
+
+//Helper functions
+
+function addPaperToDash(paper){
+    var created = new Date(paper.created);
+    var updated = new Date(paper.lastUpdated);
+    $('#paper_templates').append(dashPaperTemplate);
+    $('#paper_template').attr('id','thumbnail_'+paper._id);
+    $('#paper_image').append(
+        '<i id='+
+        paper._id+
+        ' data-title="'+
+        paper.title+
+        '" data-created="'+
+        created.toLocaleDateString()+
+        '" data-updated="'+
+        updated.toLocaleDateString()+
+        '" data-tags="'+
+        paper.tags.join(', ')+
+        '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
+    );
+    $('#paper_label').append(paper.title);
+    $('#paper_date').append(created.toLocaleDateString());
+    $('#paper_open_btn').attr('href','/paper/'+paper._id);
+
+    //Set the id of the current paper template to something else to avoid conflicts in the code above
+    $('#paper_open_btn').attr('id','open_btn_'+paper._id);
+    $('#paper_image').attr('id','image_'+paper._id);
+    $('#paper_label').attr('id','label_'+paper._id);
+    $('#paper_date').attr('id','date_'+paper._id);
+}
+
+function getPaper(id){
+    var i = 0;
+    while (i<papers.length){
+        if(papers[i]._id == id){
+            return papers[i];
+        }
+        i++;
+    }
+}
+
+function removePaper(id){
+    var i = 0;
+    while (i<papers.length){
+        if(papers[i]._id == id){
+            i = papers.length;
+            papers.remove(i);
+        }
+        i++;
+    }
+}
 
 //jQuery extensions
 

@@ -70,16 +70,19 @@
                 <div id="paper_container">
                     <div id="paper_settings" class="thumbnail">
                         <div id="paper_settings_inner" class="thumbnail">
-                            <table>
+                            <span id="paper_settings_id" data-id='' hidden></span>
+                            <table id="paper_settings_table">
                                 <tr>
-                                    <th colspan="2"><h3 id="paper_settings_title">Select Paper</h3></th>
+                                    <th colspan="2">
+                                        <input type="text" id="paper_settings_title_input" class="form-control" placeholder="Title">
+                                    </th>
                                 </tr>
                                 <tr>
-                                    <td>Date created: </td>
+                                    <td>Created: </td>
                                     <td><span id="paper_settings_created" class="paper_settings_meta">---------------------</span></td>
                                 </tr>
                                 <tr>
-                                    <td>Last updated: </td>
+                                    <td>Updated: </td>
                                     <td><span id="paper_settings_updated" class="paper_settings_meta">---------------------</span></td>
                                 </tr>
                                 <tr>
@@ -87,10 +90,14 @@
                                     <td><span id="paper_settings_tags" class="paper_settings_meta">---------------------</span></td>
                                 </tr>
                             </table>
-                            <a href='' style='width:100%' id='paper_settings_save_btn' class='btn btn-primary' role='button'>Submit Changes</a>
+                            <p>Add tags</p>
+                            <input type="text" id="paper_settings_tag_input" class="form-control" placeholder="add tags separated by spaces">
+                            <a style='width:100%' id='paper_settings_submit' class='btn btn-primary' role='button'>Submit Changes</a>
                         </div>
                     </div>
-                    <div id="paper_templates"></div>
+                    <div id="paper_templates_container">
+                        <div id="paper_templates"></div>
+                    </div>
                 </div>
             </div>
             <div id="footer">

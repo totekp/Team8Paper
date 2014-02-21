@@ -74,20 +74,38 @@ body {
     color:#999;
 }
 
-#paper_templates {
+#paper_templates_container {
     color:black;
     display:table-cell;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #DAE8F9;
+}
+
+#paper_templates {
+    max-height:560px;
+    overflow-y:auto;
 }
 
 #paper_settings {
     background:#DAE8F9;
     display:table-cell;
     min-width:250px;
+    max-width:250px;
+}
 
+#paper_settings_title_input {
+    text-align:center;
+    font-size:20px;
+    font-weight:lighter;
 }
 
 .paper_settings_meta {
     font-size:12px;
+}
+
+#paper_settings_submit {
+    margin: 20px 0px 0px 0px;
 }
 
 #footer {
@@ -99,15 +117,15 @@ body {
 
 
 /*Miscellaneous*/
-table {
+#paper_settings_table {
     min-width:100%;
 }
 
-table th {
+#paper_settings_table th {
     text-align:center;
 }
 
-table td {
-    text-align:left;
+#paper_settings_table td {
+    text-align:center;
     padding:10px 5px 10px 5px;
 }
