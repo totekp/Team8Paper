@@ -33,6 +33,10 @@ trait MongoDAOTrait[Model] {
         throw e
     }
   }
+
+  def removeById(id: String): Future[LastError] = {
+    coll.remove(Json.obj("_id" -> id))
+  }
 }
 
 object PaperDAO extends MongoDAOTrait[Paper] {

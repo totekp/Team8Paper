@@ -17,6 +17,7 @@ POST        /api1/getPaper              controllers.Papers.getPaper
 POST        /api1/savePaper             controllers.Papers.savePaper
 POST        /api1/duplicatePaper        controllers.Papers.duplicatePaper
 POST        /api1/searchTags            controllers.Papers.searchTags
+POST        /api1/deletePaper           controllers.Papers.deletePaper
 
 
 # Map static resources from the /public folder to the /assets URL path

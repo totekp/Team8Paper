@@ -204,4 +204,24 @@ object Papers extends Controller {
           Future.successful(JsonResult.error("Invalid input"))
       }
   }
+
+  def deletePaper = Action.async {
+    implicit req =>
+      req.body.asJson match {
+        case Some(j) =>
+          try {
+            val paperId = j asString "_id"
+            for {
+              le <- PaperDAO.removeById(paperId)
+            } yield {
+              JsonResult.success("")
+            }
+          } catch {
+            case e: Exception =>
+              Future(JsonResult.error(e.getMessage))
+          }
+        case None =>
+          Future.successful(JsonResult.error("Invalid input"))
+      }
+  }
 }
