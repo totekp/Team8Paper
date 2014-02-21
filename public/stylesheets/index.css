@@ -86,6 +86,10 @@ body {
 
 }
 
+.paper_settings_meta {
+    font-size:12px;
+}
+
 #footer {
     text-align:center;
     padding:20px 20px 20px 20px;
@@ -95,6 +99,9 @@ body {
 
 
 /*Miscellaneous*/
+table {
+    min-width:100%;
+}
 
 table th {
     text-align:center;
@@ -102,4 +109,5 @@ table th {
 
 table td {
     text-align:left;
+    padding:10px 5px 10px 5px;
 }
