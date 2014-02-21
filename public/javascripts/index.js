@@ -41,46 +41,23 @@ var arrMenu = [
   }
 ];
 
-
+//Initialization
 $(document).ready(function(){
-    initOffCanvasMenu();
-    initBinds();
-
     var response = $.getValues('/api1/recentPaperids'); //Non asynchronous get
     if(response.status!="success"){
         console.log("Failed to retrieve papers in non-async request");
     }
     papers = response.data;
-    populateCanvasMenu();
+
+    initBinds();
+    initCanvasMenu();
     initDashboard();
     initDashContextMenu();
 });
 
 
+
 //Utility functions
-
-function initOffCanvasMenu(){
-    //off canvas navigation init-----------------------------------
-    $('#off_canvas_nav').multilevelpushmenu({
-        menu: arrMenu,
-        containersToPush: [$('.pushobj')],
-        menuWidth: '25%',
-        menuHeight: '100%',
-        collapsed:true,
-        fullCollapse:true,
-        preventItemClick:false
-    });
-
-    $( '#off_canvas_toggle' ).click(function(){
-        if(offCanvasNavVisible){
-            $( '#off_canvas_nav' ).multilevelpushmenu( 'collapse' );
-            offCanvasNavVisible = false;
-        }else{
-            $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
-            offCanvasNavVisible = true;
-        }
-    });
-}
 
 function initBinds(){
     //Button click binds-----------------------------------
@@ -116,12 +93,32 @@ function initBinds(){
     });
 }
 
-function populateCanvasMenu(){
+function initCanvasMenu(){
+    //off canvas navigation init-----------------------------------
+    $('#off_canvas_nav').multilevelpushmenu({
+        menu: arrMenu,
+        containersToPush: [$('.pushobj')],
+        menuWidth: '25%',
+        menuHeight: '100%',
+        collapsed:true,
+        fullCollapse:true,
+        preventItemClick:false
+    });
+
+    $( '#off_canvas_toggle' ).click(function(){
+        if(offCanvasNavVisible){
+            $( '#off_canvas_nav' ).multilevelpushmenu( 'collapse' );
+            offCanvasNavVisible = false;
+        }else{
+            $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
+            offCanvasNavVisible = true;
+        }
+    });
+
     var itemsArray = [];
     var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
-    var i = 0;
 
-    while (i < papers.length) {
+    for(var i=0;i<papers.length;i++){
         if(i<10){
             itemsArray.push({
                 name: papers[i].title,
@@ -129,7 +126,6 @@ function populateCanvasMenu(){
                 link: '/paper/' + papers[i]._id + ''
             });
         }
-        i++;
     }
     $('#off_canvas_nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
 }
@@ -137,7 +133,7 @@ function populateCanvasMenu(){
 
 function initDashboard(){
 
-    for(i=0;i<papers.length;i++){
+    for(var i=0;i<papers.length;i++){
         var created = new Date(papers[i].created);
         var updated = new Date(papers[i].lastUpdated);
         $('#paper_templates').append(dashPaperTemplate);
@@ -193,11 +189,21 @@ function initDashContextMenu(){
                 })
                   .done(function(result){
                         if(result.status=="success"){
-
+                            location.reload(); //very crude way of refreshing the view..
                         }
                   });
             }else if(key=='delete'){
-
+                $.ajax({
+                  type: 'POST',
+                  url: '/api1/deletePaper',
+                  data: JSON.stringify({_id:paper.id}),
+                  contentType: 'application/json; charset=utf-8'
+                })
+                  .done(function(result){
+                        if(result.status=="success"){
+                            location.reload(); //very crude way of refreshing the view..
+                        }
+                  });
             }
         },
         items: {
@@ -208,6 +214,8 @@ function initDashContextMenu(){
         }
     });
 }
+
+
 
 //jQuery extensions
 
