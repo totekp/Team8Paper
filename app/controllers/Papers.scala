@@ -162,7 +162,12 @@ object Papers extends Controller {
                 paper match {
                   case Some(paper) =>
                     val newId = Generator.oid()
-                    PaperDAO.save(paper.copy(_id = newId), ow = false).map {
+                    val nowms = System.currentTimeMillis()
+                    val newPaper = paper.copy(
+                        _id = newId,
+                        created = nowms,
+                        lastUpdated = nowms)
+                    PaperDAO.save(newPaper, ow = false).map {
                       le =>
                         newId
                     }
@@ -189,7 +194,7 @@ object Papers extends Controller {
         case Some(j) =>
           try {
             val searchTags = (j \ "tags").as[Vector[String]]
-            val tagQ = Json.obj(Paper.tags -> Json.obj("$in" -> searchTags))
+            val tagQ = Json.obj(Paper.tags -> Json.obj("$all" -> searchTags))
             for {
               r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
             } yield {
