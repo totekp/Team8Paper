@@ -68,7 +68,6 @@ function initBinds(){
 
     $('#paper_settings_submit').click(function(){
         var newTitle = $('#paper_settings_title_input').prop('value');
-        var newTags = $('#paper_settings_tag_input').prop('value');
         var id = $('#paper_settings_id').attr('data-id');
         if(id == ''){
             alert('Please select a paper to edit.')
@@ -76,14 +75,10 @@ function initBinds(){
         }else if(newTitle.length < 3){
             alert('Please input at least 4 characters long.');
             return;
-        }else if(!alphaNumRegx.test(newTags) && newTags.length>0){
-            alert('Please only enter alpha-numeric symbols for tags.');
-            return;
         }
-        newTags = newTags.split(' ');
         var paper = getPaper(id);
         paper.title = newTitle;
-        $.merge(paper.tags,newTags);
+        //Tags are automatically updated when added and removed. Nothing to change.
         $.ajax({
             url: '/paper/'+paper._id,
             data: JSON.stringify(paper),
@@ -121,6 +116,29 @@ function initBinds(){
     $('#nav_dashboard').tooltip({
         placement:'right',
         title:'Dashboard',
+    });
+
+    $('#search_tag_input').tagsInput({
+        'width':'600px',
+        'height': '100%',
+        'defaultText': 'Search papers by tags',
+        'minChars' : 3,
+        'maxChars' : 20
+    });
+
+    $('#paper_settings_tag_input').tagsInput({
+        'width':'100%',
+        'height': '200px',
+        'minChars' : 3,
+        'maxChars' : 20,
+        'onAddTag':function(value){
+            var paper = getPaper($('#paper_settings_id').attr('data-id'));
+            paper.tags.push(value);
+        },
+        'onRemoveTag':function(value){
+            var paper = getPaper($('#paper_settings_id').attr('data-id'));
+            paper.tags.splice( $.inArray(value, paper.tags), 1 );
+        },
     });
 }
 
@@ -183,7 +201,7 @@ function initDashContextMenu(){
                 $('#paper_settings_title_input').attr('value',paper.title);
                 $('#paper_settings_created').html(paper.created);
                 $('#paper_settings_updated').html(paper.lastUpdated);
-                $('#paper_settings_tags').html(paper.tags);
+                $('#paper_settings_tag_input').importTags(paper.tags);
             }else if(key=='duplicate'){
                 $.ajax({
                   type: 'POST',
@@ -238,10 +256,16 @@ function addPaperToDash(paper){
         '" data-updated="'+
         updated.toLocaleDateString()+
         '" data-tags="'+
-        paper.tags.join(', ')+
+        paper.tags.join(',')+
         '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
     );
-    $('#paper_label').append(paper.title);
+    //Account for long titles to prevent screwing up each paper templates
+    if(paper.title.length > 15) {
+        $('#paper_label').append(paper.title.slice(0,12)+'...');
+    }else{
+        $('#paper_label').append(paper.title);
+    }
+
     $('#paper_date').append(created.toLocaleDateString());
     $('#paper_open_btn').attr('href','/paper/'+paper._id);
 

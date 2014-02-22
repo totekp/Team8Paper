@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.contextMenu.css")"></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/index.css")"></link>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/index.js")"></script>
@@ -14,6 +15,7 @@
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.contextMenu.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tagsinput.min.js")"></script>
 </head>
 
 <body>
@@ -50,16 +52,7 @@
                 <div class="inner">
                     <h2>Search Papers</h2>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search Papers by tags">
-                        <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></button>
-                            <ul class="dropdown-menu pull-right">
-                                <li><a href="#">Search My Papers</a></li>
-                                <li><a href="#">Search Public Papers</a></li>
-                                <li class="divider"></li>
-                                <li><a href="http://www.bit.ly/1g9PM6p">Do You Dare?</a></li>
-                            </ul>
-                        </div>
+                        <input type="text" id="search_tag_input">
                     </div>
                 </div>
             </div>
@@ -85,12 +78,8 @@
                                     <td>Updated: </td>
                                     <td><span id="paper_settings_updated" class="paper_settings_meta">---------------------</span></td>
                                 </tr>
-                                <tr>
-                                    <td>Tags: </td>
-                                    <td><span id="paper_settings_tags" class="paper_settings_meta">---------------------</span></td>
-                                </tr>
                             </table>
-                            <p>Add tags</p>
+                            <p>Tags</p>
                             <input type="text" id="paper_settings_tag_input" class="form-control" placeholder="add tags separated by spaces">
                             <a style='width:100%' id='paper_settings_submit' class='btn btn-primary' role='button'>Submit Changes</a>
                         </div>
