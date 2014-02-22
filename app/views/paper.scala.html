@@ -5,16 +5,49 @@
 <head>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"></link>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"></link>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"></link>
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.contextMenu.css")"></link>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"></link>
+
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
+    <script src="//oss.maxcdn.com/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.contextMenu.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tagsinput.min.js")"></script>
 </head>
 
 <body>
 <script>
     var data = @Html(play.api.libs.json.Json.stringify(json));
 </script>
-<div contenteditable data-name="title" id="paper_title"></div>
-<div id="paper_canvas"></div>
-<script type="text/javascript" src="@routes.Assets.at("javascripts/scripts.js")"></script>
+<div id ="paper_page" class="pushobj">
+    <div id="main_nav">
+        <nav class="navbar navbar-inverse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li><a id="nav_home" class="smoothScroll" href="/" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
+                <li><a id="nav_search" class="smoothScroll" href="/#search"><i class="fa fa-search fa-lg"></i></a></li>
+                <li><a id="nav_dashboard" class="smoothScroll" href="/#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
+            </ul>
+        </nav>
+
+        <nav id = "paper_toolbar" class="navbar navbar-inverse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li><a id="paper_remove_group" title="Click to remove selected group" data-toggle="tooltip"><i class="fa fa-times fa-lg"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+    <div id="content_wrapper">
+        <div contenteditable data-name="title" id="paper_title"></div>
+        <input type="text" id="paper_tags_input_display" class="form-control" placeholder="add tags separated by spaces">
+        <div id="paper_canvas"></div>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/scripts.js")"></script>
+    </div>
+</div>
+
 </body>
 </html>

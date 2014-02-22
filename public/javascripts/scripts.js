@@ -1,5 +1,9 @@
 //This is the paper itself, it contains the all the textboxes that are to be displayed on screen at any given time
 var paperData = (function() {
+    function getTags() {
+        return data.data.tags;
+    }
+
     function getElements() {
         return data.data.elements;
     }
@@ -124,7 +128,7 @@ var paperData = (function() {
         currGroup.elementIds[currGroup.elementIds.length] = elementID;
     }
 
-    return {getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
+    return {getTags : getTags, getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
     getGroupByID : getGroupByID, addGroup : addGroup, removeGroup : removeGroup,
@@ -137,6 +141,7 @@ var paperData = (function() {
 var paper = (function() {
     var boxID = paperData.getGroupsLength();
     var groupID = "groupID_";
+    var selectedGroup = "";
 
     function addNote(event) {
         var textBoxCreated = textBox.createNewTextBox(event, groupID + boxID);
@@ -162,6 +167,7 @@ var paper = (function() {
 
     function removeNoteFromPaper(boxID) {
         var removed = paperData.removeGroup(boxID);
+        $("#" + selectedGroup).remove();
         if (removed) {
             updateJSON();
         }
@@ -174,7 +180,21 @@ var paper = (function() {
         }
     }
 
-    return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize, removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes};
+    function setSelectedGroup(group) {
+        selectedGroup = group;
+        $("#paper_toolbar").fadeIn(400);
+    }
+
+    $("#paper_remove_group").click(
+        function(){
+            if(selectedGroup != "") {
+                removeNoteFromPaper(selectedGroup);
+                selectedGroup = "";
+                $("#paper_toolbar").fadeOut(400);
+            }
+     });
+
+    return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize, removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup};
 })();
 
 
@@ -210,7 +230,7 @@ var textBox = (function() {
         setTextAreaMax(boxID);
 
          (function(boxID) {
-         $('#'+boxID).draggable({handle: ".dragButton", cursor: "crosshair", containment: "#paper_canvas", stop:
+         $('#'+boxID).draggable({cursor: "crosshair", containment: "#paper_canvas", stop:
             function(event, ui) {
                     paper.updateNotePosition(ui, boxID);
                 }
@@ -227,28 +247,10 @@ var textBox = (function() {
             );
         })(boxID);
 
-        $('.textBox').hover(
-            function() {
-                if($('#'+boxID).find('.closeButton').children().size() == 0)
-                {
-                    $('#'+boxID).find('.closeButton').button({ icons: { primary: "ui-icon-closethick"}, text: false });
-                }
-                if($('#'+boxID).find('.dragButton').children().size() == 0)
-                {
-                    $('#'+boxID).find('.dragButton').button({ icons: { primary: "ui-icon-closethick"}, text: false });
-                }
-                $(this).find('.closeButton').delay(1000).fadeIn(500);
-                $(this).find('.dragButton').delay(1000).fadeIn(500);
-            },
-            function() {
-                $(this).find('.closeButton').delay(1000).fadeOut(500);
-                $(this).find('.dragButton').delay(1000).fadeOut(500);
-        });
-
-        $('.closeButton').click(
-            function(){
-                $(this).closest('.textBox').fadeOut(1000);
-                paper.removeNoteFromPaper($(this).closest('.textBox').attr("id"));
+        $('.textBox').mousedown(
+            function(event) {
+                console.log(this.id);
+                paper.setSelectedGroup(this.id);
         });
 
         return addedElement;
@@ -341,7 +343,7 @@ if (input) {
 var currentSelection;
 
 function resizeCanvas() {
-    var RESIZE_FACTOR = 18;
+    var RESIZE_FACTOR = 65;
     $('#paper_canvas').height($(window).height()-$("#paper_title").height() - RESIZE_FACTOR);
 }
 
@@ -361,10 +363,32 @@ function updateJSON() {
 }
 
 function initCanvas() {
+    //var btn = $.fn.button.noConflict() // reverts $.fn.button to jqueryui btn
+    //$.fn.btn = btn // assigns bootstrap button functionality to $.fn.btn
     console.log(data);
     resizeCanvas();
     bindCanvasClick();
+    initTags();
     paper.initExistingNotes();
+}
+
+function initTags() {
+    var tags = paperData.getTags().join(',');
+    $('#paper_tags_input_display').importTags(tags);
+    $('#paper_tags_input_display').tagsInput({
+        'width':'100%',
+        'height': '47px',
+        'minChars' : 3,
+        'maxChars' : 20,
+        'onAddTag':function(value){
+            paperData.getTags().push(value);
+            updateJSON();
+        },
+        'onRemoveTag':function(value){
+            paperData.getTags().splice( $.inArray(value, paper.tags), 1 );
+            updateJSON();
+        },
+    });
 }
 
 initCanvas();
