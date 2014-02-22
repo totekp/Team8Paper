@@ -50,13 +50,19 @@ $(document).ready(function(){
     }
     papers = response.data;
 
+    initTransitions();
     initBinds();
     initCanvasMenu();
     initDashboard();
     initDashContextMenu();
 });
 
+//Transition functions
 
+function initTransitions(){
+    $("#cover_inner").hide().fadeIn(2100);
+
+}
 
 //Utility functions
 
