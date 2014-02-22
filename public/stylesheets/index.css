@@ -80,12 +80,16 @@ body {
 
 #search{
     background-color:#336BA3;
-    padding:30px 50px 50px 50px;
+    padding:30px 50px 20px 50px;
     text-align:center;
 }
 
 #search_tag_input_tag {
     width:100%;
+}
+
+#search_tag_submit {
+    margin: 20px 0px 0px 0px;
 }
 
 #dashboard {
