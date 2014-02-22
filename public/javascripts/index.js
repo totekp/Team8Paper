@@ -60,7 +60,7 @@ $(document).ready(function(){
 //Transition functions
 
 function initTransitions(){
-    $("#cover_inner").hide().fadeIn(2100);
+    $("#cover_contents").hide().fadeIn(2100);
 
 }
 
