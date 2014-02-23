@@ -84,6 +84,10 @@ body {
     text-align:center;
 }
 
+#search_slide_up {
+    font-size:35px;
+}
+
 #search_tag_input_tag {
     width:100%;
 }
@@ -94,13 +98,13 @@ body {
 
 #search_result_container {
     padding: 10px;
-    background-color:white;
+    background-color:#336BA3;
     color:#888;
     text-align:center;
 }
 
 #search_results {
-    text-align:left;
+    vertical-align:middle;
 }
 
 #dashboard {

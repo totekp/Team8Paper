@@ -140,7 +140,6 @@ function initBinds(){
     });
 
     $('#search_tag_submit').click(function(){
-        console.log(searchTagCache);
         if(searchTagCache.length>0){
             $.ajax({
               type: 'POST',
@@ -151,17 +150,20 @@ function initBinds(){
               .done(function(result){
                     if(result.status=="success"){
                         $('#search_results').empty();
-                        for(var i=0;i<result.data.length;i++){
-                            $('#search_results').append('<p>'+result.data[i].title+'</p>');
+                        if(result.data.length){
+                            for(var i=0;i<result.data.length;i++){
+                                $('#search_results').append('<a href="/paper/'+result.data[i]._id+'" '+'class="btn btn-default" style="width:700px;text-align:left;">'+result.data[i].title+'</a>');
+                            }
+                        }else{
+                            $('#search_results').append('<p style="color:red">No matching papers found</p>');
                         }
+
                         $('#search_result_container').slideDown();
                         //location.reload(); //very crude way of refreshing the view..
                     }else {
                         console.log("Paper search by tags request has failed.")
                     }
               });
-            searchTagCache.clear();
-            $('#search_tag_input').importTags('');
         }
     });
 
@@ -358,9 +360,3 @@ jQuery.extend({
        return result;
     }
 });
-
-Array.prototype.clear = function() {
-  while (this.length > 0) {
-    this.pop();
-  }
-};
