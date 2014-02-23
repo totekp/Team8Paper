@@ -198,7 +198,7 @@ object Papers extends Controller {
             for {
               r <- PaperDAO.findModel(tagQ, Json.obj(Paper.lastUpdated -> -1))
             } yield {
-              JsonResult.success(r.map(_._id))
+              JsonResult.success(r)
             }
           } catch {
             case e: Exception =>
