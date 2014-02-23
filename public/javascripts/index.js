@@ -140,8 +140,8 @@ function initBinds(){
     });
 
     $('#search_tag_submit').click(function(){
+        console.log(searchTagCache);
         if(searchTagCache.length>0){
-            console.log(searchTagCache);
             $.ajax({
               type: 'POST',
               url: '/api1/searchTags',
@@ -150,12 +150,18 @@ function initBinds(){
             })
               .done(function(result){
                     if(result.status=="success"){
-                        console.log(result);
+                        $('#search_results').empty();
+                        for(var i=0;i<result.data.length;i++){
+                            $('#search_results').append('<p>'+result.data[i].title+'</p>');
+                        }
+                        $('#search_result_container').slideDown();
                         //location.reload(); //very crude way of refreshing the view..
                     }else {
                         console.log("Paper search by tags request has failed.")
                     }
               });
+            searchTagCache.clear();
+            $('#search_tag_input').importTags('');
         }
     });
 
@@ -172,6 +178,12 @@ function initBinds(){
             var paper = getPaper($('#paper_settings_id').attr('data-id'));
             paper.tags.splice( $.inArray(value, paper.tags), 1 );
         },
+    });
+
+    $('#search_result_container').hide();
+
+    $('#search_slide_up').click(function(){
+        $('#search_result_container').slideUp();
     });
 }
 

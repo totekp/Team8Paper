@@ -89,7 +89,18 @@ body {
 }
 
 #search_tag_submit {
-    margin: 20px 0px 0px 0px;
+    margin: 20px 0px 20px 0px;
+}
+
+#search_result_container {
+    padding: 10px;
+    background-color:white;
+    color:#888;
+    text-align:center;
+}
+
+#search_results {
+    text-align:left;
 }
 
 #dashboard {
