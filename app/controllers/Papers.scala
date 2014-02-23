@@ -196,7 +196,7 @@ object Papers extends Controller {
             val searchTags = (j \ "tags").as[Vector[String]]
             val tagQ = Json.obj(Paper.tags -> Json.obj("$all" -> searchTags))
             for {
-              r <- PaperDAO.findModel(tagQ, Json.obj(Paper.lastUpdated -> -1))
+              r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
             } yield {
               JsonResult.success(r)
             }
