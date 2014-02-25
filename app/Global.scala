@@ -24,9 +24,11 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   }
 
   override def onStart(app: Application) {
-    val f1 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.title -> IndexType.Descending)))
-    val f2 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.tags -> IndexType.Descending)))
-    val r = List(f1, f2)
+    val f1 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.title -> IndexType.Descending), unique = false))
+    val f2 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.tags -> IndexType.Descending), unique = false))
+    val f3 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.created -> IndexType.Descending), unique = false))
+    val f4 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.lastUpdated -> IndexType.Descending), unique = false))
+    val r = List(f1, f2, f3, f4)
 
     assert(Await.result(Future.sequence(r), 30.seconds).forall(_ == true), "Indices cannot be ensured")
   }
