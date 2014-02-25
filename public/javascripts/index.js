@@ -1,4 +1,5 @@
 var papers;
+var searchTagCache = [];
 var offCanvasNavVisible = false;
 var alphaNumRegx = /^[A-Za-z0-9 _.-]+$/;
 var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
@@ -153,10 +154,44 @@ function initBinds(){
 
     $('#search_tag_input').tagsInput({
         'width':'600px',
-        'height': '100%',
+        'height': '47px',
         'defaultText': 'Search papers by tags',
         'minChars' : 3,
-        'maxChars' : 20
+        'maxChars' : 20,
+        'onAddTag':function(value){
+            searchTagCache.push(value);
+        },
+        'onRemoveTag':function(value){
+            searchTagCache.splice( $.inArray(value, searchTagCache), 1 );
+        },
+    });
+
+    $('#search_tag_submit').click(function(){
+        if(searchTagCache.length>0){
+            $.ajax({
+              type: 'POST',
+              url: '/api1/searchTags',
+              data: JSON.stringify({tags:searchTagCache}),
+              contentType: 'application/json; charset=utf-8'
+            })
+              .done(function(result){
+                    if(result.status=="success"){
+                        $('#search_results').empty();
+                        if(result.data.length){
+                            for(var i=0;i<result.data.length;i++){
+                                $('#search_results').append('<a href="/paper/'+result.data[i]._id+'" '+'class="btn btn-default" style="width:700px;text-align:left;">'+result.data[i].title+'</a>');
+                            }
+                        }else{
+                            $('#search_results').append('<p style="color:red">No matching papers found</p>');
+                        }
+
+                        $('#search_result_container').slideDown();
+                        //location.reload(); //very crude way of refreshing the view..
+                    }else {
+                        console.log("Paper search by tags request has failed.")
+                    }
+              });
+        }
     });
 
     $('#paper_settings_tag_input').tagsInput({
@@ -172,6 +207,12 @@ function initBinds(){
             var paper = getPaper($('#paper_settings_id').attr('data-id'));
             paper.tags.splice( $.inArray(value, paper.tags), 1 );
         },
+    });
+
+    $('#search_result_container').hide();
+
+    $('#search_slide_up').click(function(){
+        $('#search_result_container').slideUp();
     });
 }
 
@@ -303,7 +344,7 @@ function removePaper(id){
     }
 }
 
-//jQuery extensions
+//extensions
 
 jQuery.extend({
     getValues: function(url) {

@@ -92,12 +92,31 @@ body {
 
 #search{
     background-color:#336BA3;
-    padding:30px 50px 50px 50px;
+    padding:30px 50px 20px 50px;
     text-align:center;
+}
+
+#search_slide_up {
+    font-size:35px;
 }
 
 #search_tag_input_tag {
     width:100%;
+}
+
+#search_tag_submit {
+    margin: 20px 0px 20px 0px;
+}
+
+#search_result_container {
+    padding: 10px;
+    background-color:#336BA3;
+    color:#888;
+    text-align:center;
+}
+
+#search_results {
+    vertical-align:middle;
 }
 
 #dashboard {
