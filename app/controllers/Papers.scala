@@ -8,6 +8,7 @@ import play.api.libs.json.Json
 import util.Generator
 import scala.concurrent.Future
 import play.api.Logger
+import util.Implicits._
 
 object Papers extends Controller {
 
@@ -29,11 +30,11 @@ object Papers extends Controller {
         p match {
           case Some(p) =>
             tryOrError {
-              if (UsernameAuth.hasUsername(p.username, session)) {
+              if (UsernameAuth.hasView(p.username, session)) {
                 val paperJson = Paper.model2json(p)
                 Ok(views.html.paper(JsonResult.jsonSuccess(paperJson)))
               } else {
-                JsonResult.error("Forbidden. Are you logged in?")
+                JsonResult.noPermission
               }
             }
           case None =>
@@ -69,7 +70,7 @@ object Papers extends Controller {
    */
   def paperSubmit(id: String) = Action.async {
     implicit req =>
-      def readPaper(p: Option[Paper]) = {
+      def readPaper(p: Option[Paper]): Future[SimpleResult] = {
         p match {
           case None =>
             Future.successful(
@@ -80,22 +81,27 @@ object Papers extends Controller {
                 Future.successful(
                   JsonResult.error("Input is not a valid json"))
               case Some(json) =>
-                val newPaper = Paper.json2model(json)
-                if (oldpaper._id != newPaper._id) {
+                if (UsernameAuth.hasView(json getAsString Paper.username, session)) {
+                  val newPaper = Paper.json2model(json)
+                  if (oldpaper._id != newPaper._id) {
 
-                  Future.successful(
-                    JsonResult.error("Oldpaper and newpaper ids are not equal"))
-                } else if (oldpaper == newPaper) {
+                    Future.successful(
+                      JsonResult.error("Oldpaper and newpaper ids are not equal"))
+                  } else if (oldpaper == newPaper) {
 
-                  Future.successful(
-                    JsonResult.error("Paper not changed"))
-                } else {
+                    Future.successful(
+                      JsonResult.error("Paper not changed"))
+                  } else {
 
-                  val newPaperUpdatedTime = newPaper.updatedTime()
-                  PaperDAO.save(newPaperUpdatedTime, ow = true).map {
-                    le =>
-                      JsonResult.success("Paper saved")
+                    val newPaperUpdatedTime = newPaper.updatedTime()
+                    PaperDAO.save(newPaperUpdatedTime, ow = true).map {
+                      le =>
+                        JsonResult.success("Paper saved")
+                    }
                   }
+                } else {
+                  Future.successful(
+                    JsonResult.noPermission)
                 }
             }
         }
@@ -111,7 +117,8 @@ object Papers extends Controller {
   def paperNew = Action.async {
     implicit req =>
       val id = Generator.oid()
-      val newPaper = Paper.createBlank(id, None)
+      val username = req.session.get("username")
+      val newPaper = Paper.createBlank(id, username)
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper._id))
@@ -136,12 +143,17 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val id = j asString "_id"
+            val username = j getAsString "username"
             for {
               p <- PaperDAO.findByIdModel(id)
             } yield {
               val paperJson = Paper.model2json(
-                p.getOrElse(throw new Exception("Paper not found")))
-              JsonResult.success(paperJson)
+                  p.getOrElse(throw new Exception("Paper not found")))
+              if (UsernameAuth.hasView(p.get.username, username)) {
+                JsonResult.success(paperJson)
+              } else {
+                JsonResult.noPermission
+              }
             }
           }
         case None =>
@@ -153,6 +165,7 @@ object Papers extends Controller {
 
   def savePaper = Action.async {
     implicit req =>
+      // TODO add user
       req.body.asJson match {
         case Some(j) =>
           tryOrError {
@@ -180,13 +193,17 @@ object Papers extends Controller {
                   case Some(paper) =>
                     val newId = Generator.oid()
                     val nowms = System.currentTimeMillis()
-                    val newPaper = paper.copy(
-                      _id = newId,
-                      created = nowms,
-                      lastUpdated = nowms)
-                    PaperDAO.save(newPaper, ow = false).map {
-                      le =>
-                        newId
+                    if (UsernameAuth.hasView(paper.username, req.session.get("username"))) {
+                      val newPaper = paper.copy(
+                        _id = newId,
+                        created = nowms,
+                        lastUpdated = nowms)
+                      PaperDAO.save(newPaper, ow = false).map {
+                        le =>
+                          newId
+                      }
+                    } else {
+                      throw new Exception("No permission")
                     }
                   case None =>
                     throw new Exception("Paper not found")
@@ -208,7 +225,9 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val searchTags = (j \ "tags").as[Vector[String]]
-            val tagQ = Json.obj(Paper.tags -> Json.obj("$all" -> searchTags))
+            val tagQ = Json.obj(
+              Paper.username -> req.session.get("username"),
+              Paper.tags -> Json.obj("$all" -> searchTags))
             for {
               r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
             } yield {
@@ -227,7 +246,15 @@ object Papers extends Controller {
           tryOrError {
             val paperId = j asString "_id"
             for {
-              le <- PaperDAO.removeById(paperId)
+              le <- {
+                val username = req.session.get("username")
+                username.map {
+                  username =>
+                    PaperDAO.remove(Json.obj(Paper._id -> paperId, Paper.username -> username))
+                }.getOrElse {
+                    PaperDAO.remove(Json.obj(Paper._id -> paperId))
+                }
+              }
             } yield {
               JsonResult.success("")
             }

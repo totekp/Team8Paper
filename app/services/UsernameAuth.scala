@@ -16,7 +16,7 @@ object UsernameAuth {
     }
   }
 
-  def hasUsername(paperUsername: Option[String], s: Session): Boolean = {
+  def hasView(paperUsername: Option[String], s: Session): Boolean = {
     hasView(paperUsername, s.get("username"))
   }
 

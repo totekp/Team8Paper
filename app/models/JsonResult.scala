@@ -2,7 +2,7 @@ package models
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.json.Json.JsValueWrapper
-import play.api.mvc.Results
+import play.api.mvc.{SimpleResult, Results}
 
 object JsonResult {
   def error(data: String) = {
@@ -11,6 +11,10 @@ object JsonResult {
         "status" -> "error",
         "data" -> data)
     }
+  }
+
+  val noPermission: SimpleResult = {
+    error("No permission")
   }
 
   def success(data: JsValueWrapper) = {
