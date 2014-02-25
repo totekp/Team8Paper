@@ -84,6 +84,7 @@ case class Paper(
                   username: Option[String]
                   ) {
   def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
+  def hasUsername = username.isDefined
 }
 
 object Paper extends Jsonable[Paper] {
