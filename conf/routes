@@ -11,6 +11,10 @@ POST        /paper/:id                  controllers.Papers.paperSubmit(id)
 # default screen
 GET         /paper                      controllers.Papers.paperNew
 
+# user auth
+POST        /login                      controllers.Users.login
+POST        /logout                     controllers.Users.logout
+
 # api1 calls
 GET         /api1/recentPaperids        controllers.Papers.recentPaperids
 POST        /api1/getPaper              controllers.Papers.getPaper

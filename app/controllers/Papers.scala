@@ -87,8 +87,7 @@ object Papers extends Controller {
   def paperNew = Action.async {
     implicit req =>
       val id = Generator.oid()
-      val newPaper = Paper.createBlank(id)
-      Future(Ok("" + Paper.model2json(newPaper)))
+      val newPaper = Paper.createBlank(id, None)
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper._id))

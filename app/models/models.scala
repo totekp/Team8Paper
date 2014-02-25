@@ -3,6 +3,7 @@ package models
 import play.api.libs.json.{Json, JsValue, JsObject}
 import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
+import play.api.Logger
 
 trait Jsonable[T] {
   def model2json(m: T): JsObject
@@ -79,7 +80,8 @@ case class Paper(
                   created: Long,
                   lastUpdated: Long,
                   elements: Vector[Element],
-                  groups: Vector[Group]
+                  groups: Vector[Group],
+                  username: Option[String]
                   ) {
   def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
 }
@@ -88,9 +90,9 @@ object Paper extends Jsonable[Paper] {
   
   val n = 7
 
-  def createBlank(id: String): Paper = {
+  def createBlank(id: String, username: Option[String]): Paper = {
     val now = System.currentTimeMillis
-    Paper(id, "New Paper", Vector.empty, now, now, Vector.empty, Vector.empty)
+    Paper(id, "New Paper", Vector.empty, now, now, Vector.empty, Vector.empty, username)
   }
 
   val _id = "_id"
@@ -100,6 +102,7 @@ object Paper extends Jsonable[Paper] {
   val elements = "elements"
   val created = "created"
   val groups = "groups"
+  val username = "username"
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
@@ -110,6 +113,7 @@ object Paper extends Jsonable[Paper] {
     b += Paper.groups -> m.groups.map(Group.model2json)
     b += Paper.created -> m.created
     b += Paper.lastUpdated -> m.lastUpdated
+    m.username.map(b += Paper.username -> _)
 
     val r = b.result()
     Json.obj(r: _*)
@@ -124,12 +128,13 @@ object Paper extends Jsonable[Paper] {
         created = j asLong Paper.created,
         lastUpdated = j asLong Paper.lastUpdated,
         elements = (j \ Paper.elements).as[Vector[JsObject]].map(Element.json2model),
-        groups = (j \ Paper.groups).as[Vector[JsObject]].map(Group.json2model)
+        groups = (j \ Paper.groups).as[Vector[JsObject]].map(Group.json2model),
+        username = j getAsString Paper.username
       )
       p
     } catch {
       case e: Exception =>
-        println(e)
+        Logger.error(e.getStackTraceString)
         throw e
     }
   }
