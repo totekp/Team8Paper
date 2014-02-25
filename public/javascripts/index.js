@@ -219,7 +219,7 @@ function removeDashboardEntry(id) {
 
 function addDashboardEntry(id) {
     updatePapers();
-    addPaperToDash();
+    addPaperToDash(getPaper(id));
 }
 
 function updateDashboardEntry(id) {
@@ -307,6 +307,7 @@ function initDashboard(){
 //Helper functions
 
 function addPaperToDash(paper){
+    console.log(paper);
     var created = new Date(paper.created);
     var updated = new Date(paper.lastUpdated);
     $('#paper_templates').append(dashPaperTemplate);
