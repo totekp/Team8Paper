@@ -72,6 +72,18 @@ body {
     background-image: linear-gradient(to bottom, #E3F5FF 0%, #336BA3 100%);
 }
 
+.btn-paper {
+    width:100%;
+    margin-bottom: 3px;
+}
+
+#dashboard {
+    width: 100%;
+}
+
+#paper_templates_container {
+    width:100%;
+}
 #cover_photo {
     /*-webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,0.6), rgba(0,0,0,0));*/
     width:600px;
@@ -132,7 +144,7 @@ body {
 }
 
 #paper_settings_submit {
-    margin: 20px 0px 0px 0px;
+    margin-top: 20px;
 }
 
 #footer {

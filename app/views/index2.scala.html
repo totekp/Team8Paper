@@ -63,7 +63,7 @@
 
             <div id="dashboard">
                 <h2>Your Paper Dashboard</h2>
-                <p>Right-click each paper for options</p>
+                <p>Click each paper for options</p>
                 <div id="paper_container">
                     <div id="paper_settings" class="thumbnail">
                         <div id="paper_settings_inner" class="thumbnail">
@@ -85,7 +85,10 @@
                             </table>
                             <p>Tags</p>
                             <input type="text" id="paper_settings_tag_input" class="form-control" placeholder="add tags separated by spaces">
-                            <a style='width:100%' id='paper_settings_submit' class='btn btn-primary' role='button'>Submit Changes</a>
+                            <a id='paper_settings_submit' class='btn btn-primary btn-paper' role='button'>Submit Changes</a>
+                            <a id='paper_settings_duplicate' class='btn btn-primary btn-paper' role='button'>Duplicate</a>
+                            <a id='paper_settings_delete' class='btn btn-danger btn-paper' role='button'>Delete</a>
+
                         </div>
                     </div>
                     <div id="paper_templates_container">

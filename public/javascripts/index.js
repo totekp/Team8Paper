@@ -54,7 +54,6 @@ $(document).ready(function(){
     initBinds();
     initCanvasMenu();
     initDashboard();
-    initDashContextMenu();
 });
 
 //Transition functions
@@ -92,10 +91,38 @@ function initBinds(){
             type: 'post'
         })
           .done(function(result){
-            if(result.status=="success"){
-                location.reload(); //very crude way of refreshing the view..
-            }
+            updateDashboardEntry(paper._id);
           });
+    });
+
+    $('#paper_settings_duplicate').click(function(){
+         var id = $('#paper_settings_id').attr('data-id');
+         var paper = getPaper(id);
+
+         $.ajax({
+          type: 'POST',
+          url: '/api1/duplicatePaper',
+          data: JSON.stringify({_id:paper._id}),
+          contentType: 'application/json; charset=utf-8'
+        })
+        .done(function(result){
+            addDashboardEntry(paper._id);
+        });
+    });
+
+    $('#paper_settings_delete').click(function(){
+        var id = $('#paper_settings_id').attr('data-id');
+        var paper = getPaper(id);
+
+        $.ajax({
+          type: 'POST',
+          url: '/api1/deletePaper',
+          data: JSON.stringify({_id:paper._id}),
+          contentType: 'application/json; charset=utf-8'
+        })
+        .done(function(result){
+            removeDashboardEntry(paper._id);
+        });
     });
 
     $(window).resize(function () {
@@ -148,6 +175,10 @@ function initBinds(){
     });
 }
 
+function removeDashboardEntry(id) {
+    $("#thumbnail_"+id).fadeOut(1000);
+}
+
 function initCanvasMenu(){
     $('#off_canvas_nav').multilevelpushmenu({
         menu: arrMenu,
@@ -191,60 +222,6 @@ function initDashboard(){
     }
 }
 
-function initDashContextMenu(){
-    $.contextMenu({
-        selector: '.context-menu-one',
-        callback: function(key, options) {
-            var paper = {
-                _id: options.$trigger[0].id,
-                title: $('#'+options.$trigger[0].id).attr('data-title'),
-                created: $('#'+options.$trigger[0].id).attr('data-created'),
-                lastUpdated: $('#'+options.$trigger[0].id).attr('data-updated'),
-                tags: $('#'+options.$trigger[0].id).attr('data-tags')
-            };
-            if(key=='edit'){
-                $('#paper_settings_id').attr('data-id',paper._id);
-                $('#paper_settings_title_input').attr('value',paper.title);
-                $('#paper_settings_created').html(paper.created);
-                $('#paper_settings_updated').html(paper.lastUpdated);
-                $('#paper_settings_tag_input').importTags(paper.tags);
-            }else if(key=='duplicate'){
-                $.ajax({
-                  type: 'POST',
-                  url: '/api1/duplicatePaper',
-                  data: JSON.stringify({_id:paper._id}),
-                  contentType: 'application/json; charset=utf-8'
-                })
-                  .done(function(result){
-                        if(result.status=="success"){
-                            location.reload(); //very crude way of refreshing the view..
-                        }
-                  });
-            }else if(key=='delete'){
-                $.ajax({
-                  type: 'POST',
-                  url: '/api1/deletePaper',
-                  data: JSON.stringify({_id:paper._id}),
-                  contentType: 'application/json; charset=utf-8'
-                })
-                  .done(function(result){
-                        if(result.status=="success"){
-                            location.reload(); //very crude way of refreshing the view..
-                        }
-                  });
-            }
-        },
-        items: {
-            "edit": {name: "Edit", icon: "edit"},
-            "sep1": "---------",
-            "duplicate": {name: "Duplicate", icon: "copy"},
-            "delete": {name: "Delete", icon: "delete"}
-        }
-    });
-}
-
-
-
 //Helper functions
 
 function addPaperToDash(paper){
@@ -265,6 +242,8 @@ function addPaperToDash(paper){
         paper.tags.join(',')+
         '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
     );
+
+
     //Account for long titles to prevent screwing up each paper templates
     if(paper.title.length > 15) {
         $('#paper_label').append(paper.title.slice(0,12)+'...');
@@ -280,6 +259,27 @@ function addPaperToDash(paper){
     $('#paper_image').attr('id','image_'+paper._id);
     $('#paper_label').attr('id','label_'+paper._id);
     $('#paper_date').attr('id','date_'+paper._id);
+    $('#thumbnail_'+paper._id).click(function (event) {
+        handlePaperSelection(event);
+    });
+}
+
+function handlePaperSelection(event) {
+    var data = $("#"+event.currentTarget.id).children('div[id*="image_"]').children();
+    console.log(data[0]);
+    var paper = {
+        _id: data[0].id,
+        title: $('#'+data[0].id).attr('data-title'),
+        created: $('#'+data[0].id).attr('data-created'),
+        lastUpdated: $('#'+data[0].id).attr('data-updated'),
+        tags: $('#'+data[0].id).attr('data-tags')
+    };
+
+    $('#paper_settings_id').attr('data-id',paper._id);
+    $('#paper_settings_title_input').attr('value',paper.title);
+    $('#paper_settings_created').html(paper.created);
+    $('#paper_settings_updated').html(paper.lastUpdated);
+    $('#paper_settings_tag_input').importTags(paper.tags);
 }
 
 function getPaper(id){
