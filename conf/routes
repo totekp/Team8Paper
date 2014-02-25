@@ -23,6 +23,9 @@ POST        /api1/duplicatePaper        controllers.Papers.duplicatePaper
 POST        /api1/searchTags            controllers.Papers.searchTags
 POST        /api1/deletePaper           controllers.Papers.deletePaper
 
+# debug
+GET         /debug/clear                controllers.DebugController.clear
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file               controllers.Assets.at(path="/public", file)
