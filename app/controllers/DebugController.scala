@@ -4,6 +4,8 @@ import play.api.mvc._
 import util.Implicits._
 import models.JsonResult
 import services.PaperDAO
+import play.api.libs.concurrent.Execution.Implicits._
+
 
 object DebugController extends Controller {
 
