@@ -30,7 +30,11 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
     val f4 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.lastUpdated -> IndexType.Descending), unique = false))
     val r = List(f1, f2, f3, f4)
 
-    assert(Await.result(Future.sequence(r), 30.seconds).forall(_ == true), "Indices cannot be ensured")
+    Await.result(f1, Duration.Inf)
+    Await.result(f2, Duration.Inf)
+    Await.result(f3, Duration.Inf)
+    Await.result(f4, Duration.Inf)
+//    assert(Await.result(Future.sequence(r), 30.seconds).forall(_ == true), "Indices cannot be ensured")
   }
 
 
