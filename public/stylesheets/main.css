@@ -1,12 +1,45 @@
+*::selection
+{
+    background-color:transparent;
+}
+*::-moz-selection
+{
+    background-color:transparent;
+}
+*
+{
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    /*IE10*/
+    -ms-user-select: none;
+    user-select: none;
 
+    /*You just need this if you are only concerned with android and not desktop browsers.*/
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 
 
 
 .textBox {
     width: 200px;
     height: 100px;
-    border:1px solid #000000;
+    border:1px solid #ddd;
     z-index: 1;
+    border-radius: 4px;
+}
+
+.tagsinput {
+    border-radius: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.boxSelected {
+    border:1px solid #134;
+}
+
+.boxDraggable {
+    border:1px solid #5FAACF;
 }
 
 .textBoxTextArea {
@@ -28,7 +61,7 @@
 .ui-menu { width: 200px; }
 
 #content_wrapper {
-    min-width:768px;
+    min-width:600px;
     padding-left:50px;
 }
 

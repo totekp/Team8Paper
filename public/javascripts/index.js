@@ -45,11 +45,7 @@ var arrMenu = [
 
 //Initialization
 $(document).ready(function(){
-    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
-    if(response.status!="success"){
-        console.log("Failed to retrieve papers in non-async request");
-    }
-    papers = response.data;
+    updatePapers();
 
     initTransitions();
     initBinds();
@@ -78,7 +74,7 @@ function initBinds(){
         if(id == ''){
             alert('Please select a paper to edit.')
             return;
-        }else if(newTitle.length < 3){
+        }else if(newTitle.length <= 3){
             alert('Please input at least 4 characters long.');
             return;
         }
@@ -107,7 +103,7 @@ function initBinds(){
           contentType: 'application/json; charset=utf-8'
         })
         .done(function(result){
-            addDashboardEntry(paper._id);
+            addDashboardEntry(result.data);
         });
     });
 
@@ -158,6 +154,7 @@ function initBinds(){
         'defaultText': 'Search papers by tags',
         'minChars' : 3,
         'maxChars' : 20,
+        'tagClass' : "thumbnail",
         'onAddTag':function(value){
             searchTagCache.push(value);
         },
@@ -217,7 +214,51 @@ function initBinds(){
 }
 
 function removeDashboardEntry(id) {
-    $("#thumbnail_"+id).fadeOut(1000);
+    $("#thumbnail_"+id).fadeOut(500);
+}
+
+function addDashboardEntry(id) {
+    updatePapers();
+    addPaperToDash();
+}
+
+function updateDashboardEntry(id) {
+    updatePapers();
+    paper = getPaper(id);
+    var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
+
+    var created = new Date(paper.created);
+    var updated = new Date(paper.lastUpdated);
+    data.html(
+        '<i id='+
+        paper._id+
+        ' data-title="'+
+        paper.title+
+        '" data-created="'+
+        created.toLocaleDateString()+
+        '" data-updated="'+
+        updated.toLocaleDateString()+
+        '" data-tags="'+
+        paper.tags.join(',')+
+        '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
+    );
+
+    if(paper.title.length > 15) {
+        $('#label_'+paper._id).html(paper.title.slice(0,12)+'...');
+    }else{
+        $('#label_'+paper._id).html(paper.title);
+    }
+
+    $('#date_'+paper._id).html(created.toLocaleDateString());
+    $('#paper_settings_updated').html(updated.toLocaleDateString());
+}
+
+function updatePapers() {
+    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
+        if(response.status!="success"){
+            console.log("Failed to retrieve papers in non-async request");
+        }
+    papers = response.data;
 }
 
 function initCanvasMenu(){
@@ -307,7 +348,6 @@ function addPaperToDash(paper){
 
 function handlePaperSelection(event) {
     var data = $("#"+event.currentTarget.id).children('div[id*="image_"]').children();
-    console.log(data[0]);
     var paper = {
         _id: data[0].id,
         title: $('#'+data[0].id).attr('data-title'),

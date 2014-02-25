@@ -26,6 +26,17 @@ var paperData = (function() {
         }
     }
 
+    function doesElementExist(id) {
+        for(var i = 0; i < getElementsLength(); i++)
+        {
+            var currElement = getElement(i);
+            if(currElement._id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function addElement(textBox) {
         data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(textBox));
     }
@@ -63,8 +74,24 @@ var paperData = (function() {
         }
     }
 
+    function doesGroupExist(id) {
+        for(var i = 0; i < getGroupsLength(); i++)
+        {
+            var currGroup = getGroup(i);
+            if(currGroup._id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function addGroup(textBox) {
-        data.data.groups[getGroupsLength()] = JSON.parse(JSON.stringify(textBox));
+        if(!doesGroupExist(textBox._id)) {
+            data.data.groups[getGroupsLength()] = JSON.parse(JSON.stringify(textBox));
+        }
+        else {
+            console.log(textBox + "  not Added")
+        }
     }
 
     function removeGroup(id) {
@@ -123,7 +150,6 @@ var paperData = (function() {
     }
 
     function addElementToGroup(elementID, groupID) {
-        console.log(groupID);
         var currGroup = getGroupByID(groupID);
         currGroup.elementIds[currGroup.elementIds.length] = elementID;
     }
@@ -131,10 +157,10 @@ var paperData = (function() {
     return {getTags : getTags, getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
-    getGroupByID : getGroupByID, addGroup : addGroup, removeGroup : removeGroup,
+    getGroupByID : getGroupByID, doesGroupExist : doesGroupExist, addGroup : addGroup, removeGroup : removeGroup,
     getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement,
     getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
-    addElementToGroup : addElementToGroup};
+    addElementToGroup : addElementToGroup, doesElementExist : doesElementExist};
 })();
 
 
@@ -181,7 +207,12 @@ var paper = (function() {
     }
 
     function setSelectedGroup(group) {
+
+        if(selectedGroup != "") {
+            $('#'+selectedGroup).removeClass("boxSelected");
+        }
         selectedGroup = group;
+        $('#'+selectedGroup).addClass("boxSelected");
         $("#paper_toolbar").fadeIn(400);
     }
 
@@ -193,7 +224,20 @@ var paper = (function() {
                 $("#paper_toolbar").fadeOut(400);
             }
      });
-
+    $("#paper_draggable_group").click(
+        function(){
+            var isDraggable = $("#"+selectedGroup).draggable("option", "disabled");
+            console.log(isDraggable);
+            $("#"+selectedGroup).draggable("option", "disabled", !isDraggable);
+            if(isDraggable) {
+                $("#"+selectedGroup).removeClass("boxSelected");
+                $("#"+selectedGroup).addClass("boxDraggable");
+            }
+            else {
+                $("#"+selectedGroup).addClass("boxSelected");
+                $("#"+selectedGroup).removeClass("boxDraggable");
+            }
+    });
     return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize, removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup};
 })();
 
@@ -212,17 +256,16 @@ var textBox = (function() {
         else {
             addedElement = paperData.getElementsInGroup(boxID);
             addedElement = paperData.getElementByID(addedElement);
-            console.log(addedElement);
         }
 
         $("#"+boxID).append("<div contenteditable class = 'text_element' data-name='" + addedElement._id + "' id= '" + addedElement._id + "'></div>");
-
         if(!isNewBox) {
             $("#"+addedElement._id).text(addedElement.data);
         }
 
         $('#'+boxID).addClass("textBox");
         $('#'+boxID).css("position", "absolute");
+        $('#'+boxID).css("opacity", 1);
 
         //$('#'+boxID).append("<textarea class='textBoxTextArea'></textarea>");
         $('#'+boxID).append("<div class='closeButton'></div>");
@@ -230,7 +273,7 @@ var textBox = (function() {
         setTextAreaMax(boxID);
 
          (function(boxID) {
-         $('#'+boxID).draggable({cursor: "crosshair", containment: "#paper_canvas", stop:
+         $('#'+boxID).draggable({disabled: "true", cursor: "crosshair", containment: "#paper_canvas", stop:
             function(event, ui) {
                     paper.updateNotePosition(ui, boxID);
                 }
@@ -249,7 +292,7 @@ var textBox = (function() {
 
         $('.textBox').mousedown(
             function(event) {
-                console.log(this.id);
+                //console.log(this.id);
                 paper.setSelectedGroup(this.id);
         });
 
@@ -314,31 +357,49 @@ document.addEventListener('keydown', function (event) {
       el = event.target,
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
 
-
-if (input) {
-    if (esc) {
-        // restore state
-        document.execCommand('undo');
-        el.blur();
-    }
-    else if (nl) {
-        // save
-        if(el.getAttribute('data-name') == 'title') {
-            data.data.title = el.innerHTML;
+    if (input) {
+        console.log(nl);
+        if (esc) {
+            // restore state
+            document.execCommand('undo');
+            el.blur();
         }
-        else {
+        else if(el.getAttribute('data-name') == 'title') {
+            if(nl) {
+                data.data.title = el.innerHTML;
+
+                el.blur();
+                event.preventDefault();
+                document.title = data.data.title;
+
+                updateJSON();
+            }
+        }
+    }
+
+}, true);
+
+document.addEventListener('keyup', function (event) {
+  var esc = event.which == 27,
+      nl = event.which == 13,
+      el = event.target,
+      input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
+
+    if (input) {
+        if (esc) {
+            // restore state
+            document.execCommand('undo');
+            el.blur();
+        }
+        else if(paperData.doesElementExist(elementID)){
             var elementID = el.getAttribute('data-name');
             paperData.getElementByID(elementID).data = el.innerHTML;
-            console.log(data);
-        }
-        updateJSON();
-
-        el.blur();
-        event.preventDefault();
-        document.title = data.data.title;
+            updateJSON();
         }
     }
+
 }, true);
+
 
 var currentSelection;
 
@@ -363,8 +424,6 @@ function updateJSON() {
 }
 
 function initCanvas() {
-    //var btn = $.fn.button.noConflict() // reverts $.fn.button to jqueryui btn
-    //$.fn.btn = btn // assigns bootstrap button functionality to $.fn.btn
     console.log(data);
     resizeCanvas();
     bindCanvasClick();
@@ -376,7 +435,7 @@ function initTags() {
     var tags = paperData.getTags().join(',');
     $('#paper_tags_input_display').importTags(tags);
     $('#paper_tags_input_display').tagsInput({
-        'width':'100%',
+        'width':'99%',
         'height': '47px',
         'minChars' : 3,
         'maxChars' : 20,
