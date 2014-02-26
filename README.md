@@ -6,11 +6,11 @@ live server -> http://team8paper.herokuapp.com
 
 1. Clone project repo
 2. Install sbt
-3. Install Mongodb
-4. Run Mongo, preferably as a daemon (default)
-5. Cd to project root, run command 'sbt' and you should get a console
-6. In console, run command 'run' and web app will start on localhost:9000
-7. Visit localhost:9000 in a browser to view the applications. Changes to source code will show on reload.
+3. If using local database, install and run Mongodb
+4. Cd to project root, run command 'sbt' and you should get a console
+5. In console, run command 'run' and web app will start on localhost:9000
+6. Visit localhost:9000 in a browser to view the applications. Changes to source code will show on reload.
+7. Application configurations are located at `./conf/application.conf` (database URI, secret, etc), and additional configuration is here http://www.playframework.com/documentation/2.2.x/ProductionConfiguration
 
 # Product Vision
 
