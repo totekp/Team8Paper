@@ -99,6 +99,9 @@ var paperData = (function() {
         {
             var currGroup = getGroup(i);
             if(currGroup._id == id) {
+                for(var x = 0; x < currGroup.elementIds.length; x++) {
+                    removeElement(currGroup.elementIds[x]);
+                }
                 data.data.groups.splice(i, 1);
                 return true;
             }
@@ -193,7 +196,7 @@ var paper = (function() {
 
     function removeNoteFromPaper(boxID) {
         var removed = paperData.removeGroup(boxID);
-        $("#" + selectedGroup).remove();
+        $("#" + boxID).remove();
         if (removed) {
             updateJSON();
         }
@@ -214,6 +217,10 @@ var paper = (function() {
         selectedGroup = group;
         $('#'+selectedGroup).addClass("boxSelected");
         $("#paper_toolbar").fadeIn(400);
+    }
+
+    function getSelectedGroup() {
+        return selectedGroup;
     }
 
     $("#paper_remove_group").click(
@@ -238,7 +245,9 @@ var paper = (function() {
                 $("#"+selectedGroup).removeClass("boxDraggable");
             }
     });
-    return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize, removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup};
+    return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize,
+    removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup,
+    getSelectedGroup : getSelectedGroup};
 })();
 
 
@@ -258,9 +267,9 @@ var textBox = (function() {
             addedElement = paperData.getElementByID(addedElement);
         }
 
-        $("#"+boxID).append("<div contenteditable class = 'text_element' data-name='" + addedElement._id + "' id= '" + addedElement._id + "'></div>");
+        $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + addedElement._id + "' placeholder='Start Typing'></textarea>");
         if(!isNewBox) {
-            $("#"+addedElement._id).text(addedElement.data);
+            $("#"+addedElement._id).val(addedElement.data);
         }
 
         $('#'+boxID).addClass("textBox");
@@ -356,11 +365,16 @@ document.title = data.data.title;
 
 document.addEventListener('keydown', function (event) {
   var esc = event.which == 27,
+      del = event.which == 46,
       nl = event.which == 13,
       el = event.target,
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
-
     if (input) {
+        console.log(el.nodeName);
+        if (del && el.nodeName == 'BODY') {
+            paper.removeNoteFromPaper(paper.getSelectedGroup());
+            updateJSON();
+        }
         if (esc) {
             // restore state
             document.execCommand('undo');
@@ -379,16 +393,17 @@ document.addEventListener('keydown', function (event) {
         }
     }
 
+
 }, true);
 
 document.addEventListener('keyup', function (event) {
   var esc = event.which == 27,
       nl = event.which == 13,
       el = event.target,
-      input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
+      input = el.nodeName != 'INPUT';
 
     if (input) {
-        var elementID = el.getAttribute('data-name');
+        var elementID = el.id;
         if (esc) {
             // restore state
             document.execCommand('undo');
@@ -396,7 +411,8 @@ document.addEventListener('keyup', function (event) {
         }
 
         else if(paperData.doesElementExist(elementID)){
-            paperData.getElementByID(elementID).data = el.innerHTML;
+            paperData.getElementByID(elementID).data = $("#"+elementID).val();
+            console.log($("#"+elementID).val())
             updateJSON();
         }
     }
@@ -417,14 +433,23 @@ function bindCanvasClick() {
     });
 }
 
+
+var shouldUpdateJSON = false;
 function updateJSON() {
-    $.ajax({
-        url: window.location.toString(),
-        data: JSON.stringify(data.data),
-        contentType: 'application/json',
-        type: 'post'
-    });
+    shouldUpdateJSON = true;
 }
+
+setInterval(function() {
+    if(shouldUpdateJSON) {
+        $.ajax({
+                url: window.location.toString(),
+                data: JSON.stringify(data.data),
+                contentType: 'application/json',
+                type: 'post'
+        });
+        shouldUpdateJSON = false;
+    }
+}, 1000);
 
 function initCanvas() {
     console.log(data);
