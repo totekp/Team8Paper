@@ -247,7 +247,7 @@ var textBox = (function() {
     //textBoxVars = pageX, pageY, width, height, content
 
     function createTextBox(event, boxID, isNewBox) {
-        $("body").append("<div id='" + boxID + "'></div>");
+        $("#paper_canvas").append("<div id='" + boxID + "'></div>");
 
         var addedElement;
         if(isNewBox) {
@@ -266,6 +266,9 @@ var textBox = (function() {
         $('#'+boxID).addClass("textBox");
         $('#'+boxID).css("position", "absolute");
         $('#'+boxID).css("opacity", 1);
+        $('#'+boxID).click(function(e) {
+            e.stopPropagation();
+        });
 
         //$('#'+boxID).append("<textarea class='textBoxTextArea'></textarea>");
         $('#'+boxID).append("<div class='closeButton'></div>");
@@ -302,6 +305,7 @@ var textBox = (function() {
     function createNewTextBox(event, boxID) {
         var addedElement = createTextBox(event, boxID, true);
         $('#'+boxID).css({top: event.pageY, left: event.pageX});
+
         textBoxVars._id = boxID;
         textBoxVars.title = "";
         textBoxVars.x = event.pageX;
@@ -330,7 +334,6 @@ var textBox = (function() {
         newElement.lastUpdated = event.timeStamp;
 
         paperData.addElement(newElement);
-        console.log(data.data);
         return newElement;
     }
 
@@ -358,7 +361,6 @@ document.addEventListener('keydown', function (event) {
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
 
     if (input) {
-        console.log(nl);
         if (esc) {
             // restore state
             document.execCommand('undo');
@@ -386,13 +388,14 @@ document.addEventListener('keyup', function (event) {
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
 
     if (input) {
+        var elementID = el.getAttribute('data-name');
         if (esc) {
             // restore state
             document.execCommand('undo');
             el.blur();
         }
+
         else if(paperData.doesElementExist(elementID)){
-            var elementID = el.getAttribute('data-name');
             paperData.getElementByID(elementID).data = el.innerHTML;
             updateJSON();
         }

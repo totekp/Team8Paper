@@ -69,7 +69,7 @@ function initBinds(){
     });
 
     $('#paper_settings_submit').click(function(){
-        var newTitle = $('#paper_settings_title_input').prop('value');
+        var newTitle = $('#paper_settings_title_input').val();
         var id = $('#paper_settings_id').attr('data-id');
         if(id == ''){
             alert('Please select a paper to edit.')
@@ -307,7 +307,6 @@ function initDashboard(){
 //Helper functions
 
 function addPaperToDash(paper){
-    console.log(paper);
     var created = new Date(paper.created);
     var updated = new Date(paper.lastUpdated);
     $('#paper_templates').append(dashPaperTemplate);
@@ -348,6 +347,7 @@ function addPaperToDash(paper){
 }
 
 function handlePaperSelection(event) {
+
     var data = $("#"+event.currentTarget.id).children('div[id*="image_"]').children();
     var paper = {
         _id: data[0].id,
@@ -356,9 +356,9 @@ function handlePaperSelection(event) {
         lastUpdated: $('#'+data[0].id).attr('data-updated'),
         tags: $('#'+data[0].id).attr('data-tags')
     };
-
+    console.log(paper);
     $('#paper_settings_id').attr('data-id',paper._id);
-    $('#paper_settings_title_input').attr('value',paper.title);
+    $('#paper_settings_title_input').val(paper.title);
     $('#paper_settings_created').html(paper.created);
     $('#paper_settings_updated').html(paper.lastUpdated);
     $('#paper_settings_tag_input').importTags(paper.tags);
