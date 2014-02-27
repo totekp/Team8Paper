@@ -245,18 +245,27 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val paperId = j asString "_id"
+            val username = req.session.get("username")
+            val q = username.map(u =>
+              Json.obj(Paper._id -> paperId, Paper.username -> u))
+              .getOrElse(Json.obj(Paper._id -> paperId))
             for {
-              le <- {
-                val username = req.session.get("username")
-                username.map {
-                  username =>
-                    PaperDAO.remove(Json.obj(Paper._id -> paperId, Paper.username -> username))
-                }.getOrElse {
-                    PaperDAO.remove(Json.obj(Paper._id -> paperId))
+              a <- PaperDAO.findOne(q)
+              r <- {
+                a match {
+                  case Some(le) =>
+                    PaperDAO.remove(q).map {
+                      _ =>
+                        JsonResult.success("")
+                    }
+                  case None =>
+                    Future.successful(
+                      JsonResult.error("Paper not found")
+                    )
                 }
               }
             } yield {
-              JsonResult.success("")
+              r
             }
           }
         case None =>
