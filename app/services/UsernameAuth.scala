@@ -20,7 +20,7 @@ object UsernameAuth {
     isOwner(paperUsername, s.get("username"))
   }
 
-  def canReadPublic(permissions: Option[String]) = {
+  def isReadPublic(permissions: Option[String]) = {
     permissions match {
       case Some(s) =>
         s.contains("-rp")
