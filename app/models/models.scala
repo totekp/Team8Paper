@@ -81,7 +81,8 @@ case class Paper(
                   lastUpdated: Long,
                   elements: Vector[Element],
                   groups: Vector[Group],
-                  username: Option[String]
+                  username: Option[String],
+                  permissions: Option[String] = None
                   ) {
   def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
   def hasUsername = username.isDefined
@@ -91,9 +92,11 @@ object Paper extends Jsonable[Paper] {
   
   val n = 7
 
-  def createBlank(id: String, username: Option[String]): Paper = {
+  def createBlank(id: String, username: Option[String],
+                  permissions: Option[String] = None): Paper = {
     val now = System.currentTimeMillis
-    Paper(id, "New Paper", Vector.empty, now, now, Vector.empty, Vector.empty, username)
+    Paper(id, "New Paper", Vector.empty, now, now,
+      Vector.empty, Vector.empty, username, permissions)
   }
 
   val _id = "_id"
@@ -104,6 +107,7 @@ object Paper extends Jsonable[Paper] {
   val created = "created"
   val groups = "groups"
   val username = "username"
+  val permissions = "permissions"
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
@@ -115,6 +119,7 @@ object Paper extends Jsonable[Paper] {
     b += Paper.created -> m.created
     b += Paper.lastUpdated -> m.lastUpdated
     m.username.map(b += Paper.username -> _)
+    m.permissions.map(b += Paper.permissions -> _)
 
     val r = b.result()
     Json.obj(r: _*)
@@ -130,7 +135,8 @@ object Paper extends Jsonable[Paper] {
         lastUpdated = j asLong Paper.lastUpdated,
         elements = (j \ Paper.elements).as[Vector[JsObject]].map(Element.json2model),
         groups = (j \ Paper.groups).as[Vector[JsObject]].map(Group.json2model),
-        username = j getAsString Paper.username
+        username = j getAsString Paper.username,
+        permissions = j getAsString Paper.permissions
       )
       p
     } catch {
