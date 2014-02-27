@@ -30,7 +30,7 @@ object Papers extends Controller {
         p match {
           case Some(p) =>
             tryOrError {
-              if (UsernameAuth.canView(p.username, session)) {
+              if (UsernameAuth.isOwner(p.username, session)) {
                 val paperJson = Paper.model2json(p)
                 Ok(views.html.paper(JsonResult.jsonSuccess(paperJson)))
               } else {
@@ -81,7 +81,7 @@ object Papers extends Controller {
                 Future.successful(
                   JsonResult.error("Input is not a valid json"))
               case Some(json) =>
-                if (UsernameAuth.canView(json getAsString Paper.username, session)) {
+                if (UsernameAuth.isOwner(json getAsString Paper.username, session)) {
                   val newPaper = Paper.json2model(json)
                   if (oldpaper._id != newPaper._id) {
 
@@ -149,7 +149,7 @@ object Papers extends Controller {
             } yield {
               val paperJson = Paper.model2json(
                   p.getOrElse(throw new Exception("Paper not found")))
-              if (UsernameAuth.canView(p.get.username, username)) {
+              if (UsernameAuth.isOwner(p.get.username, username)) {
                 JsonResult.success(paperJson)
               } else {
                 JsonResult.noPermission
@@ -171,7 +171,7 @@ object Papers extends Controller {
           tryOrError {
             val paper = j \ "paper"
             val p = Paper.json2model(paper)
-            if (UsernameAuth.canView(p.username, req.session)) {
+            if (UsernameAuth.isOwner(p.username, req.session)) {
               PaperDAO.save(Paper.json2model(paper), ow = true).map {
                 le =>
                   JsonResult.success("")
@@ -201,7 +201,7 @@ object Papers extends Controller {
                   case Some(paper) =>
                     val newId = Generator.oid()
                     val nowms = System.currentTimeMillis()
-                    if (UsernameAuth.canView(paper.username, req.session.get("username"))) {
+                    if (UsernameAuth.isOwner(paper.username, req.session.get("username"))) {
                       val newPaper = paper.copy(
                         _id = newId,
                         created = nowms,
@@ -262,7 +262,7 @@ object Papers extends Controller {
               r <- {
                 a match {
                   case Some(p) =>
-                    if (UsernameAuth.canView(p.username, username)) {
+                    if (UsernameAuth.isOwner(p.username, username)) {
                       PaperDAO.remove(q).map {
                         _ =>
                           JsonResult.success("")

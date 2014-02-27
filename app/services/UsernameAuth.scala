@@ -5,7 +5,7 @@ import play.api.mvc.Session
 
 object UsernameAuth {
 
-  def canView(paperUsername: Option[String], clientUsername: Option[String]): Boolean = {
+  def isOwner(paperUsername: Option[String], clientUsername: Option[String]): Boolean = {
     (paperUsername, clientUsername) match {
       case (Some(a), Some(b)) =>
         a == b
@@ -16,8 +16,8 @@ object UsernameAuth {
     }
   }
 
-  def canView(paperUsername: Option[String], s: Session): Boolean = {
-    canView(paperUsername, s.get("username"))
+  def isOwner(paperUsername: Option[String], s: Session): Boolean = {
+    isOwner(paperUsername, s.get("username"))
   }
 
   def canReadPublic(permissions: Option[String]) = {
