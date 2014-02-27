@@ -9,6 +9,7 @@ import util.Generator
 import scala.concurrent.Future
 import play.api.Logger
 import util.Implicits._
+import scala.collection.mutable
 
 object Papers extends Controller {
 
@@ -33,6 +34,42 @@ object Papers extends Controller {
               if (UsernameAuth.isOwner(p.username, session)) {
                 val paperJson = Paper.model2json(p)
                 Ok(views.html.paper(JsonResult.jsonSuccess(paperJson)))
+              } else {
+                JsonResult.noPermission
+              }
+            }
+          case None =>
+            JsonResult.error("Paper not found")
+        }
+      }
+  }
+
+  // For debug purposes
+  def paperInfo(id: String) = Action.async {
+    implicit req =>
+      for {
+        p <- PaperDAO.findByIdModel(id)
+      } yield {
+        p match {
+          case Some(p) =>
+            tryOrError {
+              if (UsernameAuth.isOwner(p.username, session)) {
+                val sb = mutable.StringBuilder.newBuilder
+
+                var data = mutable.HashMap[String, String]()
+                data += "id" -> p._id
+                data += "title" -> p.title
+                data += "username" -> p.username.toString
+                data += "number of elements" -> p.elements.size.toString
+                data += "number of groups" -> p.groups.size.toString
+                data += "number of tags" -> p.tags.size.toString
+                data += "permissions" -> p.permissions.toString
+                data = data.map(t => t._1.capitalize -> t._2)
+                sb.append(data.toList.sortBy(_._1).map(t => s"${t._1} -> ${t._2}").mkString("\n"))
+                sb.append("\n\n")
+
+                sb.append(Json.prettyPrint(PaperDAO.jsonable.model2json(p)))
+                Ok(sb.toString)
               } else {
                 JsonResult.noPermission
               }

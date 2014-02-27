@@ -6,6 +6,7 @@
 GET         /                           controllers.Papers.index
 
 GET         /paper/:id                  controllers.Papers.paperView(id)
+GET         /paper/:id/info             controllers.Papers.paperInfo(id)
 POST        /paper/:id                  controllers.Papers.paperSubmit(id)
 
 # default screen
