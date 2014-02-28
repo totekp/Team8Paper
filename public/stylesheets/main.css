@@ -1,24 +1,10 @@
-*::selection
-{
-    background-color:transparent;
-}
-*::-moz-selection
-{
-    background-color:transparent;
-}
-*
-{
+/*Fixes weird Windows based browser selection bug. Removed: causes issues with OSX browsers
+*:not(input){
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
-    /*IE10*/
     -ms-user-select: none;
     user-select: none;
-
-    /*You just need this if you are only concerned with android and not desktop browsers.*/
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
-
+}*/
 
 .textBox {
     width: 200px;

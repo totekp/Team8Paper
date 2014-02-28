@@ -43,6 +43,7 @@ var arrMenu = [
   }
 ];
 
+
 //Initialization
 $(document).ready(function(){
     updatePapers();
@@ -53,14 +54,20 @@ $(document).ready(function(){
     initDashboard();
 });
 
-//Transition functions
+//Init functions
+
+function updatePapers() {
+    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
+        if(response.status!="success"){
+            console.log("Failed to retrieve papers in non-async request");
+        }
+    papers = response.data;
+}
 
 function initTransitions(){
     $("#cover_contents").hide().fadeIn(2100);
 
 }
-
-//Utility functions
 
 function initBinds(){
     $('#btn_start').click(function(){
@@ -109,16 +116,16 @@ function initBinds(){
 
     $('#paper_settings_delete').click(function(){
         var id = $('#paper_settings_id').attr('data-id');
-        var paper = getPaper(id);
 
         $.ajax({
           type: 'POST',
           url: '/api1/deletePaper',
-          data: JSON.stringify({_id:paper._id}),
+          data: JSON.stringify({_id:id}),
           contentType: 'application/json; charset=utf-8'
         })
         .done(function(result){
-            removeDashboardEntry(paper._id);
+            resetSettingsPanel();
+            removeDashboardEntry(id);
         });
     });
 
@@ -213,54 +220,6 @@ function initBinds(){
     });
 }
 
-function removeDashboardEntry(id) {
-    $("#thumbnail_"+id).fadeOut(500);
-}
-
-function addDashboardEntry(id) {
-    updatePapers();
-    addPaperToDash(getPaper(id));
-}
-
-function updateDashboardEntry(id) {
-    updatePapers();
-    paper = getPaper(id);
-    var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
-
-    var created = new Date(paper.created);
-    var updated = new Date(paper.lastUpdated);
-    data.html(
-        '<i id='+
-        paper._id+
-        ' data-title="'+
-        paper.title+
-        '" data-created="'+
-        created.toLocaleDateString()+
-        '" data-updated="'+
-        updated.toLocaleDateString()+
-        '" data-tags="'+
-        paper.tags.join(',')+
-        '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
-    );
-
-    if(paper.title.length > 15) {
-        $('#label_'+paper._id).html(paper.title.slice(0,12)+'...');
-    }else{
-        $('#label_'+paper._id).html(paper.title);
-    }
-
-    $('#date_'+paper._id).html(created.toLocaleDateString());
-    $('#paper_settings_updated').html(updated.toLocaleDateString());
-}
-
-function updatePapers() {
-    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
-        if(response.status!="success"){
-            console.log("Failed to retrieve papers in non-async request");
-        }
-    papers = response.data;
-}
-
 function initCanvasMenu(){
     $('#off_canvas_nav').multilevelpushmenu({
         menu: arrMenu,
@@ -304,7 +263,59 @@ function initDashboard(){
     }
 }
 
+
+
 //Helper functions
+
+function resetSettingsPanel(){
+    $('#paper_settings_id').attr('data-id','');
+    $('#paper_settings_title_input').val('');
+    $('#paper_settings_created').html('---------------------');
+    $('#paper_settings_updated').html('---------------------');
+    $('#paper_settings_tag_input').importTags('');
+}
+
+function removeDashboardEntry(id) {
+    removePaper(id);
+    $("#thumbnail_"+id).animate({opacity: 0}, 500);
+    window.setTimeout(function(){$("#thumbnail_"+id).remove();},1000);
+    /*Relative positioning of entries mess up fadeOut. This solution is crude
+     *but works slightly better with less flicker*/
+}
+
+function addDashboardEntry(id) {
+    updatePapers(); //This is inefficient...we should retrieve the paper on duplicate and not just the id..
+    addPaperToDash(getPaper(id));
+}
+
+function updateDashboardEntry(id) {
+    paper = getPaper(id);
+    var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
+    var created = new Date(paper.created);
+    var updated = new Date(paper.lastUpdated);
+    data.html(
+        '<i id='+
+        paper._id+
+        ' data-title="'+
+        paper.title+
+        '" data-created="'+
+        created.toLocaleDateString()+
+        '" data-updated="'+
+        updated.toLocaleDateString()+
+        '" data-tags="'+
+        paper.tags.join(',')+
+        '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
+    );
+
+    if(paper.title.length > 15) {
+        $('#label_'+paper._id).html(paper.title.slice(0,12)+'...');
+    }else{
+        $('#label_'+paper._id).html(paper.title);
+    }
+
+    $('#date_'+paper._id).html(created.toLocaleDateString());
+    $('#paper_settings_updated').html(updated.toLocaleDateString());
+}
 
 function addPaperToDash(paper){
     var created = new Date(paper.created);
@@ -347,7 +358,6 @@ function addPaperToDash(paper){
 }
 
 function handlePaperSelection(event) {
-
     var data = $("#"+event.currentTarget.id).children('div[id*="image_"]').children();
     var paper = {
         _id: data[0].id,
@@ -356,7 +366,6 @@ function handlePaperSelection(event) {
         lastUpdated: $('#'+data[0].id).attr('data-updated'),
         tags: $('#'+data[0].id).attr('data-tags')
     };
-    console.log(paper);
     $('#paper_settings_id').attr('data-id',paper._id);
     $('#paper_settings_title_input').val(paper.title);
     $('#paper_settings_created').html(paper.created);
@@ -378,8 +387,8 @@ function removePaper(id){
     var i = 0;
     while (i<papers.length){
         if(papers[i]._id == id){
+            papers.splice(i,1);
             i = papers.length;
-            papers.remove(i);
         }
         i++;
     }
