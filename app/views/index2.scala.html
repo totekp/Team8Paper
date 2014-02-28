@@ -4,7 +4,6 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"/>
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.contextMenu.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/index.css")"/>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")"></script>
@@ -28,6 +27,7 @@
             </nav>
             <nav class="navbar navbar-inverse" role="navigation">
                 <ul class="nav navbar-nav">
+                    <li><a  data-toggle="modal" data-target="#myModal"><i class="fa fa-user fa-lg"></i></a></li>
                     <li><a id="nav_home" class="smoothScroll" href="#main_cover" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
                     <li><a id="nav_search" class="smoothScroll" href="#search"><i class="fa fa-search fa-lg"></i></a></li>
                     <li><a id="nav_dashboard" class="smoothScroll" href="#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
@@ -52,14 +52,16 @@
             </div>
 
             <div id="search">
-                <div id="search_input_container" class="inner">
-                    <h2>Search Papers</h2>
-                    <input type="text" id="search_tag_input">
-                    <a id="search_tag_submit" class="btn btn-default">Search Papers</a>
-                </div>
-                <div id="search_result_container">
-                    <a id="search_slide_up">^</a>
-                    <div id="search_results">
+                <div id="search-inner" class="inner">
+                    <div id="search_input_container">
+                        <h2>Search Papers</h2>
+                        <input type="text" id="search_tag_input">
+                        <a id="search_tag_submit" class="btn btn-default">Search Papers</a>
+                    </div>
+                    <div id="search_result_container">
+                        <a id="search_slide_up">^</a>
+                        <div id="search_results">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,6 +110,26 @@
     </div>
 
     <div id="off_canvas_nav"></div>
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h1 class="modal-title">Paper</h1>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" placeholder="username">
+                    <input type="password" class="form-control" placeholder="password">
+                    <button id="signin_btn" type="button" class="btn btn-primary form-control">Sign in</button>
+                </div>
+                <div class="modal-footer">
+                    <a class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</>
+                    <a class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 </body>
 </html>
