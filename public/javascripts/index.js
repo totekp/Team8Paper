@@ -10,6 +10,13 @@ var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;te
                              "<p><a href='#' style='width:100%' id='paper_open_btn' class='btn btn-primary' role='button'>Open</a></p>"+
                            "</div>"+
                         "</div>";
+
+var searchResultTemplate = "<div id='search-result-item' class='row' style='width:100%;margin:0;'>"+
+                                "<div id='col-left' class='col-md-4 result-col'></div>"+
+                                "<div id='col-mid' class='col-md-4 result-col'></div>"+
+                                "<div id='col-right' class='col-md-4 result-col'></div>"+
+                            "</div>"
+
 var arrMenu = [
   {
     title: 'Paper',
@@ -157,11 +164,12 @@ function initBinds(){
 
     $('#search_tag_input').tagsInput({
         'width':'600px',
-        'height': '47px',
+        'height': '42px',
         'defaultText': 'Search papers by tags',
         'minChars' : 3,
         'maxChars' : 20,
-        'tagClass' : "thumbnail",
+        'margin' : "auto",
+        'class' : "thumbnail",
         'onAddTag':function(value){
             searchTagCache.push(value);
         },
@@ -183,7 +191,18 @@ function initBinds(){
                         $('#search_results').empty();
                         if(result.data.length){
                             for(var i=0;i<result.data.length;i++){
-                                $('#search_results').append('<a href="/paper/'+result.data[i]._id+'" '+'class="btn btn-default" style="width:700px;text-align:left;">'+result.data[i].title+'</a>');
+                                var created = new Date(result.data[i].created).formatMMDDYYYY();
+                                var updated = new Date(result.data[i].lastUpdated).formatMMDDYYYY();
+
+                                $('#search_results').append(searchResultTemplate);
+                                $('#col-left').append('<p>'+result.data[i].title+'</p>');
+                                $('#col-mid').append('<p>created: '+created+'</p>');
+                                $('#col-mid').append('<p>updated: '+updated+'</p>');
+                                $('#col-right').append('<a class="btn btn-default" href="/paper/'+result.data[i]._id+'">Open</a>');
+                                $('#search-result-item').attr('id','result_'+result.data[i]._id);
+                                $('#col-left').attr('id','col_left_'+result.data[i]._id);
+                                $('#col-mid').attr('id','col_mid_'+result.data[i]._id);
+                                $('#col-right').attr('id','col_right_'+result.data[i]._id);
                             }
                         }else{
                             $('#search_results').append('<p style="color:red">No matching papers found</p>');
@@ -291,17 +310,17 @@ function addDashboardEntry(id) {
 function updateDashboardEntry(id) {
     paper = getPaper(id);
     var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
-    var created = new Date(paper.created);
-    var updated = new Date(paper.lastUpdated);
+    var created = new Date(paper.created).formatMMDDYYYY();
+    var updated = new Date(paper.lastUpdated).formatMMDDYYYY();
     data.html(
         '<i id='+
         paper._id+
         ' data-title="'+
         paper.title+
         '" data-created="'+
-        created.toLocaleDateString()+
+        created+
         '" data-updated="'+
-        updated.toLocaleDateString()+
+        updated+
         '" data-tags="'+
         paper.tags.join(',')+
         '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
@@ -410,3 +429,9 @@ jQuery.extend({
        return result;
     }
 });
+
+Date.prototype.formatMMDDYYYY = function(){
+    return this.getMonth() +
+    "/" +  this.getDate() +
+    "/" +  this.getFullYear();
+}

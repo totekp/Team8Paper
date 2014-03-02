@@ -143,6 +143,19 @@ body {
     vertical-align:middle;
 }
 
+.result-col{
+    height:50px;
+    color:#444;
+    border:1px solid #bbb;
+    background-color:white;
+}
+
+
+#search_tag_input_tagsinput {
+    margin: auto;
+    overflow-y: hidden;
+}
+
 #dashboard {
     padding:50px 20px 100px 20px;
     background-color:#fff;
