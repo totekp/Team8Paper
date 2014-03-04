@@ -12,9 +12,10 @@ var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;te
                         "</div>";
 
 var searchResultTemplate = "<div id='search-result-item' class='row' style='width:100%;margin:0;'>"+
-                                "<div id='col-left' class='col-md-4 result-col'></div>"+
-                                "<div id='col-mid' class='col-md-4 result-col'></div>"+
-                                "<div id='col-right' class='col-md-4 result-col'></div>"+
+                                "<div id='col-left' class='col-md-3 result-col'></div>"+
+                                "<div id='col-mid-left' class='col-md-3 result-col'></div>"+
+                                "<div id='col-mid-right' class='col-md-3 result-col'></div>"+
+                                "<div id='col-right' class='col-md-3 result-col'></div>"+
                             "</div>"
 
 var arrMenu = [
@@ -196,12 +197,13 @@ function initBinds(){
 
                                 $('#search_results').append(searchResultTemplate);
                                 $('#col-left').append('<p>'+result.data[i].title+'</p>');
-                                $('#col-mid').append('<p>created: '+created+'</p>');
-                                $('#col-mid').append('<p>updated: '+updated+'</p>');
+                                $('#col-mid-left').append('<p>created:<br>'+created+'</p>');
+                                $('#col-mid-right').append('<p>updated:<br>'+updated+'</p>');
                                 $('#col-right').append('<a class="btn btn-default" href="/paper/'+result.data[i]._id+'">Open</a>');
                                 $('#search-result-item').attr('id','result_'+result.data[i]._id);
                                 $('#col-left').attr('id','col_left_'+result.data[i]._id);
-                                $('#col-mid').attr('id','col_mid_'+result.data[i]._id);
+                                $('#col-mid-left').attr('id','col_mid_left_'+result.data[i]._id);
+                                $('#col-mid-right').attr('id','col_mid_right_'+result.data[i]._id);
                                 $('#col-right').attr('id','col_right_'+result.data[i]._id);
                             }
                         }else{
