@@ -12,11 +12,11 @@ object DebugController extends Controller {
 
   def clear = Action.async {
     implicit req =>
-//      PaperDAO.coll.drop().map {
-//        _ =>
-//          Redirect(routes.Papers.index())
-//      }
-      Future.successful(Ok("Disabled"))
+      PaperDAO.coll.drop().map {
+        _ =>
+          Redirect(routes.Papers.index())
+      }
+//      Future.successful(Ok("Disabled"))
   }
 
 }

@@ -1,6 +1,6 @@
 package services
 
-import models.{Paper, Jsonable}
+import models.{User, Paper, Jsonable}
 import play.api.libs.json.{Json, JsObject}
 import reactivemongo.api.collections.default.BSONCollection
 import reactivemongo.bson.BSONDocument
@@ -13,8 +13,6 @@ import reactivemongo.core.commands.LastError
 
 object MongoShop {
   def db = ReactiveMongoPlugin.db
-  def elements = db.collection[JSONCollection]("elements")
-  def papers = db.collection[JSONCollection]("papers")
 }
 
 trait MongoDAOTrait[Model] {
@@ -39,17 +37,11 @@ trait MongoDAOTrait[Model] {
   }
 
   def remove(q: JsObject): Future[LastError] = coll.remove(q)
-}
-
-object PaperDAO extends MongoDAOTrait[Paper] {
-  def coll = MongoShop.db.collection[JSONCollection]("papers")
-
-  val jsonable = Paper
 
   def findById(id: String): Future[Option[JsObject]] =
     coll.find(Json.obj("_id" -> id)).one[JsObject]
 
-  def findByIdModel(id: String): Future[Option[Paper]] =
+  def findByIdModel(id: String): Future[Option[Model]] =
     findById(id).map(_.map(jsonable.json2model))
 
   def find(q: JsObject, s: JsObject, limit: Int = Int.MaxValue): Future[Vector[JsObject]] = {
@@ -60,17 +52,23 @@ object PaperDAO extends MongoDAOTrait[Paper] {
     coll.find(q).one[JsObject]
   }
 
-
-  def findOneModel(q: JsObject): Future[Option[Paper]] = {
+  def findOneModel(q: JsObject): Future[Option[Model]] = {
     findOne(q).map(_.map(jsonable.json2model))
   }
 
-  def findModel(q: JsObject, s: JsObject, limit: Int = Int.MaxValue): Future[Vector[Paper]] = {
+  def findModel(q: JsObject, s: JsObject, limit: Int = Int.MaxValue): Future[Vector[Model]] = {
     find(q, s, limit).map(_.collect{
       case j: JsObject => jsonable.json2model(j)
     })
   }
+}
 
+object PaperDAO extends MongoDAOTrait[Paper] {
+  lazy val coll = MongoShop.db.collection[JSONCollection]("papers")
+  val jsonable = Paper
+}
 
-
+object UserDAO extends MongoDAOTrait[User] {
+  lazy val coll = MongoShop.db.collection[JSONCollection]("users")
+  val jsonable = User
 }

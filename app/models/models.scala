@@ -217,12 +217,3 @@ object Element extends Jsonable[Element] {
     }
   }
 }
-
-
-case class User(
-  username: String,
-  created: Long,
-  lastUpdated: Long,
-  hash: String,
-  salt: String
-)
