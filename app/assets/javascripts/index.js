@@ -192,13 +192,13 @@ function initBinds(){
                         $('#search_results').empty();
                         if(result.data.length){
                             for(var i=0;i<result.data.length;i++){
-                                var created = new Date(result.data[i].created).formatMMDDYYYY();
-                                var updated = new Date(result.data[i].lastUpdated).formatMMDDYYYY();
+                                var created = new Date(result.data[i].created).formatDateTime();
+                                var updated = new Date(result.data[i].lastUpdated).formatDateTime();
 
                                 $('#search_results').append(searchResultTemplate);
                                 $('#col-left').append('<p>'+result.data[i].title+'</p>');
-                                $('#col-mid-left').append('<p>created:<br>'+created+'</p>');
-                                $('#col-mid-right').append('<p>updated:<br>'+updated+'</p>');
+                                $('#col-mid-left').append('<p>'+created+'</p>');
+                                $('#col-mid-right').append('<p>'+updated+'</p>');
                                 $('#col-right').append('<a class="btn btn-default" href="/paper/'+result.data[i]._id+'">Open</a>');
                                 $('#search-result-item').attr('id','result_'+result.data[i]._id);
                                 $('#col-left').attr('id','col_left_'+result.data[i]._id);
@@ -312,8 +312,8 @@ function addDashboardEntry(id) {
 function updateDashboardEntry(id) {
     paper = getPaper(id);
     var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
-    var created = new Date(paper.created).formatMMDDYYYY();
-    var updated = new Date(paper.lastUpdated).formatMMDDYYYY();
+    var created = new Date(paper.created).formatDateTime();
+    var updated = new Date(paper.lastUpdated).formatDateTime();
     data.html(
         '<i id='+
         paper._id+
@@ -334,13 +334,13 @@ function updateDashboardEntry(id) {
         $('#label_'+paper._id).html(paper.title);
     }
 
-    $('#date_'+paper._id).html(created.toLocaleDateString());
-    $('#paper_settings_updated').html(updated.toLocaleDateString());
+    $('#date_'+paper._id).html(created);
+    $('#paper_settings_updated').html(updated);
 }
 
 function addPaperToDash(paper){
-    var created = new Date(paper.created);
-    var updated = new Date(paper.lastUpdated);
+    var created = new Date(paper.created).formatDateTime();
+    var updated = new Date(paper.lastUpdated).formatDateTime();
     $('#paper_templates').append(dashPaperTemplate);
     $('#paper_template').attr('id','thumbnail_'+paper._id);
     $('#paper_image').append(
@@ -349,9 +349,9 @@ function addPaperToDash(paper){
         ' data-title="'+
         paper.title+
         '" data-created="'+
-        created.toLocaleDateString()+
+        created+
         '" data-updated="'+
-        updated.toLocaleDateString()+
+        updated+
         '" data-tags="'+
         paper.tags.join(',')+
         '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
@@ -365,7 +365,7 @@ function addPaperToDash(paper){
         $('#paper_label').append(paper.title);
     }
 
-    $('#paper_date').append(created.toLocaleDateString());
+    $('#paper_date').append(created);
     $('#paper_open_btn').attr('href','/paper/'+paper._id);
 
     //Set the id of the current paper template to something else to avoid conflicts in the code above
@@ -432,8 +432,17 @@ jQuery.extend({
     }
 });
 
-Date.prototype.formatMMDDYYYY = function(){
+Date.prototype.formatDateTime = function(){
+    var hours = this.getHours();
+    var minutes = this.getMinutes();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
     return this.getMonth() +
     "/" +  this.getDate() +
-    "/" +  this.getFullYear();
+    "/" +  this.getFullYear() + " "
+    + hours + ":"
+    + minutes + " "
+    + ampm;
 }
