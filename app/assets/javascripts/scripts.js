@@ -474,7 +474,7 @@ function initTags() {
         'onRemoveTag':function(value){
             paperData.getTags().splice( $.inArray(value, paper.tags), 1 );
             updateJSON();
-        },
+        }
     });
 }
 

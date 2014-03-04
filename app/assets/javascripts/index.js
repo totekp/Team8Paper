@@ -149,17 +149,17 @@ function initBinds(){
 
     $('#nav_home').tooltip({
         placement:'right',
-        title:'Home',
+        title:'Home'
     });
 
     $('#nav_search').tooltip({
         placement:'right',
-        title:'Search papers',
+        title:'Search papers'
     });
 
     $('#nav_dashboard').tooltip({
         placement:'right',
-        title:'Dashboard',
+        title:'Dashboard'
     });
 
     $('#search_tag_input').tagsInput({
@@ -175,7 +175,7 @@ function initBinds(){
         },
         'onRemoveTag':function(value){
             searchTagCache.splice( $.inArray(value, searchTagCache), 1 );
-        },
+        }
     });
 
     $('#search_tag_submit').click(function(){
@@ -229,7 +229,7 @@ function initBinds(){
         'onRemoveTag':function(value){
             var paper = getPaper($('#paper_settings_id').attr('data-id'));
             paper.tags.splice( $.inArray(value, paper.tags), 1 );
-        },
+        }
     });
 
     $('#search_result_container').hide();
