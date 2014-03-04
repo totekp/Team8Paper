@@ -46,10 +46,14 @@ var paperData = (function() {
         {
             var currElement = getElement(i);
             if(currElement._id == id) {
-                data.data.notes.elements(i, 1);
+                data.data.elements(i, 1);
             }
         }
+    }
 
+    function purgePaper() {
+        data.data.elements = [];
+        data.data.groups = [];
     }
 
     function getGroups() {
@@ -90,7 +94,7 @@ var paperData = (function() {
             data.data.groups[getGroupsLength()] = JSON.parse(JSON.stringify(textBox));
         }
         else {
-            console.log(textBox + "  not Added")
+            console.log(textBox + "  not Added");
         }
     }
 
@@ -157,27 +161,40 @@ var paperData = (function() {
         currGroup.elementIds[currGroup.elementIds.length] = elementID;
     }
 
+    function getNextID() {
+        if(getGroupsLength() > 0) {
+            var nextID = getGroup(getGroupsLength()-1)._id.replace("groupID_", "");
+            nextID++;
+            return nextID;
+        }
+        return 0;
+
+    }
+
     return {getTags : getTags, getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
     getGroupByID : getGroupByID, doesGroupExist : doesGroupExist, addGroup : addGroup, removeGroup : removeGroup,
     getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement,
     getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
-    addElementToGroup : addElementToGroup, doesElementExist : doesElementExist};
+    addElementToGroup : addElementToGroup, doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID };
 })();
 
 
 var paper = (function() {
-    var boxID = paperData.getGroupsLength();
+    var boxID = paperData.getNextID();
     var groupID = "groupID_";
     var selectedGroup = "";
+    var canCreateNewGroups = true;
 
     function addNote(event) {
-        var textBoxCreated = textBox.createNewTextBox(event, groupID + boxID);
-        //An easy way to do a clone of an object.
-        paperData.addGroup(textBoxCreated);
-        boxID++;
-        updateJSON();
+        if(canCreateNewGroups) {
+            var textBoxCreated = textBox.createNewTextBox(event, groupID + boxID);
+            //An easy way to do a clone of an object.
+            paperData.addGroup(textBoxCreated);
+            boxID++;
+            updateJSON();
+        }
     }
 
     function updateNotePosition(ui, boxID) {
@@ -202,6 +219,16 @@ var paper = (function() {
         }
     }
 
+    function removeAllNotesFromPaper() {
+        groups = paperData.getGroups();
+        for(var i = 0; i < groups.length; i++) {
+            currentGroup = groups[i]._id;
+            $("#" + currentGroup).remove();
+        }
+        paperData.purgePaper();
+        updateJSON();
+    }
+
     function initExistingNotes() {
         for(var i = 0; i< paperData.getGroupsLength(); i++)
         {
@@ -219,9 +246,32 @@ var paper = (function() {
         $("#paper_toolbar").fadeIn(400);
     }
 
+    function toggleGroupCreation() {
+        canCreateNewGroups = !canCreateNewGroups;
+        return canCreateNewGroups;
+    }
+
     function getSelectedGroup() {
         return selectedGroup;
     }
+
+    $("#paper_create_new_group").click(
+        function() {
+        if(toggleGroupCreation()) {
+            $("#paper_create_new_group").children().removeClass("option_disabled");
+            $("#paper_create_new_group").attr("title", "Click to disable creation of new groups");
+        }
+        else {
+            $("#paper_create_new_group").children().addClass("option_disabled");
+            $("#paper_create_new_group").attr("title", "Click to enable creation of new groups");
+        }
+    });
+
+    $("#paper_delete_all_groups").click(
+        function() {
+            removeAllNotesFromPaper();
+        }
+    )
 
     $("#paper_remove_group").click(
         function(){
@@ -234,7 +284,6 @@ var paper = (function() {
     $("#paper_draggable_group").click(
         function(){
             var isDraggable = $("#"+selectedGroup).draggable("option", "disabled");
-            console.log(isDraggable);
             $("#"+selectedGroup).draggable("option", "disabled", !isDraggable);
             if(isDraggable) {
                 $("#"+selectedGroup).removeClass("boxSelected");
@@ -304,7 +353,6 @@ var textBox = (function() {
 
         $('.textBox').mousedown(
             function(event) {
-                //console.log(this.id);
                 paper.setSelectedGroup(this.id);
         });
 
@@ -370,7 +418,6 @@ document.addEventListener('keydown', function (event) {
       el = event.target,
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
     if (input) {
-        console.log(el.nodeName);
         if (del && el.nodeName == 'BODY') {
             paper.removeNoteFromPaper(paper.getSelectedGroup());
             updateJSON();
@@ -412,7 +459,6 @@ document.addEventListener('keyup', function (event) {
 
         else if(paperData.doesElementExist(elementID)){
             paperData.getElementByID(elementID).data = $("#"+elementID).val();
-            console.log($("#"+elementID).val())
             updateJSON();
         }
     }
@@ -464,7 +510,7 @@ function initTags() {
     $('#paper_tags_input_display').importTags(tags);
     $('#paper_tags_input_display').tagsInput({
         'width':'99%',
-        'height': '47px',
+        'height': '42px',
         'minChars' : 3,
         'maxChars' : 20,
         'onAddTag':function(value){
