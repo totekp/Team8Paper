@@ -4,13 +4,13 @@ live server -> http://team8paper.herokuapp.com
 
 # Installation and Running from source
 
-1. Clone project repo
-2. Install sbt
-3. If using local database, install and run Mongodb
-4. Cd to project root, run command 'sbt' and you should get a console
+1. Clone project repo `git clone git@github.com:nanop/Team8Paper.git`
+2. Install sbt `http://www.scala-sbt.org/`
+3. If using local database, install and run Mongodb `(optional) http://www.mongodb.org/downloads`
+4. `cd` to project root, run command 'sbt' and you should get a console
 5. In console, run command 'run' and web app will start on localhost:9000
-6. Visit localhost:9000 in a browser to view the applications. Changes to source code will show on reload.
-7. Application configurations are located at `./conf/application.conf` (database URI, secret, etc), and additional configuration is here http://www.playframework.com/documentation/2.2.x/ProductionConfiguration
+6. Visit localhost:9000 in a browser to view the application. Changes to source code will show on reload.
+7. Application configurations are located at `./conf/application.conf` (database URI, secret, etc), and additional configurations are found here http://www.playframework.com/documentation/2.2.x/ProductionConfiguration
 
 # Product Vision
 
