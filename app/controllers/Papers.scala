@@ -10,6 +10,7 @@ import scala.concurrent.Future
 import play.api.Logger
 import util.Implicits._
 import scala.collection.mutable
+import common.Common._
 
 object Papers extends Controller {
 
@@ -78,26 +79,6 @@ object Papers extends Controller {
             JsonResult.error("Paper not found")
         }
       }
-  }
-
-  private def tryOrError(block: => SimpleResult) = {
-    try {
-      block
-    } catch {
-      case e: Exception =>
-        Logger.error(e.getStackTraceString)
-        JsonResult.error(e.getMessage)
-    }
-  }
-
-  private def tryOrError(block: => Future[SimpleResult]) = {
-    try {
-      block
-    } catch {
-      case e: Exception =>
-        Logger.error(e.getStackTraceString)
-        Future.successful(JsonResult.error(e.getMessage))
-    }
   }
 
   /**
