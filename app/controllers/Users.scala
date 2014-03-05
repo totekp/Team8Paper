@@ -13,14 +13,14 @@ import util.PasswordCrypto
 
 object Users extends Controller {
 
-  def login = Action {
+  def loginNoPassword = Action {
     implicit req =>
       req.body.asJson match {
         case Some(j) =>
           try {
             val username = j asString "username"
 
-            Redirect(routes.Papers.index())
+            JsonResult.success("Login success")
               .withSession("username" -> username)
           } catch {
             case e: Exception =>
@@ -31,7 +31,7 @@ object Users extends Controller {
       }
   }
 
-  def loginWithPassword = Action.async {
+  def login = Action.async {
     implicit req =>
       req.body.asJson match {
         case Some(j) =>
@@ -106,7 +106,8 @@ object Users extends Controller {
 
   def logout = Action {
     implicit req =>
-      Redirect(routes.Papers.index()).withNewSession
+      JsonResult.success("Logout success")
+        .withNewSession
   }
 
 }
