@@ -15,7 +15,7 @@ GET         /paper                         controllers.Papers.paperNew
 # user auth ajax
 POST        /api1/loginNoPassword          controllers.Users.loginNoPassword
 POST        /api1/register                 controllers.Users.register
-POST        /api1/loginWithPassword        controllers.Users.login
+POST        /api1/login                    controllers.Users.login
 
 # api1 calls
 GET         /api1/recentPaperids           controllers.Papers.recentPaperids
