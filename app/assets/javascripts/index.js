@@ -83,6 +83,31 @@ function initBinds(){
         offCanvasNavVisible = true;
     });
 
+    $("#sign-in").click(function(){
+        var username = $('#login_username').val();
+        $.ajax({
+            type: 'POST',
+            url: '/login',
+            data: JSON.stringify({username:username}),
+            contentType: 'application/json; charset=utf-8'
+        })
+          .done(function(result){
+            console.log(result);
+          });
+    });
+
+    $("#sign-out").click(function(){
+        $.ajax({
+            type: 'POST',
+            url: '/logout',
+            data: JSON.stringify({}),
+            contentType: 'application/json; charset=utf-8'
+        })
+          .done(function(result){
+            console.log(result);
+          });
+    });
+
     $('#paper_settings_submit').click(function(){
         var newTitle = $('#paper_settings_title_input').val();
         var id = $('#paper_settings_id').attr('data-id');
@@ -145,6 +170,18 @@ function initBinds(){
     $('#off_canvas_toggle').tooltip({
         placement:'right',
         title:'Paper quick options',
+        html:true
+    });
+
+    $('#sign-in-link').tooltip({
+        placement:'right',
+        title:'Sign in',
+        html:true
+    });
+
+    $('#sign-out').tooltip({
+        placement:'right',
+        title:'Sign out',
         html:true
     });
 

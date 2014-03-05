@@ -20,11 +20,18 @@
             </nav>
             <nav class="navbar navbar-inverse" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a  data-toggle="modal" data-target="#myModal"><i class="fa fa-sign-in fa-lg"></i></a></li>
+                    <li><a id="sign-in-link" data-toggle="modal" data-target="#sign-in-modal"><i class="fa fa-sign-in fa-lg"></i></a></li>
+                    <li><a id="sign-out"><i class="fa fa-sign-out fa-lg"></i></a></li>
+                </ul>
+
+            </nav>
+            <nav class="navbar navbar-inverse" role="navigation">
+                <ul class="nav navbar-nav">
                     <li><a id="nav_home" class="smoothScroll" href="#main_cover" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
                     <li><a id="nav_search" class="smoothScroll" href="#search"><i class="fa fa-search fa-lg"></i></a></li>
                     <li><a id="nav_dashboard" class="smoothScroll" href="#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
                 </ul>
+
             </nav>
         </div>
 
@@ -105,7 +112,7 @@
 
     <div id="off_canvas_nav"></div>
 
-    <div id="myModal" class="modal fade">
+    <div id="sign-in-modal" class="modal fade">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
@@ -113,9 +120,9 @@
                     <h1 class="modal-title">Paper</h1>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" placeholder="username">
-                    <input type="password" class="form-control" placeholder="password">
-                    <button id="signin_btn" type="button" class="btn btn-primary form-control">Sign in</button>
+                    <input id="login_username" type="text" class="form-control" placeholder="username">
+                    <input id="login_password" type="password" class="form-control" placeholder="password">
+                    <input id="sign-in" type="submit" class="btn btn-primary form-control" value="Sign in">
                 </div>
                 <div class="modal-footer">
                     <a class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</>
