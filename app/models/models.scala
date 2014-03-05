@@ -82,7 +82,8 @@ case class Paper(
                   elements: Vector[Element],
                   groups: Vector[Group],
                   username: Option[String],
-                  permissions: Option[String] = None
+                  permissions: Option[String] = None,
+                  history: Vector[PaperHistory] = Vector.empty
                   ) {
   def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
   def hasUsername = username.isDefined
