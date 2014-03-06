@@ -58,6 +58,7 @@ $(document).ready(function(){
     updatePapers();
     initTransitions();
     initBinds();
+    initState();
     initCanvasMenu();
     initDashboard();
 });
@@ -76,7 +77,19 @@ function initTransitions(){
     $("#cover-contents").hide().fadeIn(2100);
 }
 
+function initState(){ //Hide views based on whether user is signed in
+    //Nav bar
+    if(getCookie("PLAY_SESSION")){
+        navSignedInState();
+        throwPageBroadcast("Welcome!");
+    }else{
+        navSignedOutState();
+        throwPageBroadcast("Signed in as a Guest!");
+    }
+}
+
 function initBinds(){
+
     $('#btn-start').click(function(){
         $( '#off-canvas-nav' ).multilevelpushmenu( 'expand' );
         offCanvasNavVisible = true;
@@ -124,7 +137,7 @@ function initBinds(){
                     $('#sign-in-modal').modal('hide');
                 },1600);
                 reInit();
-                console.log(document.cookie);
+                navSignedInState();
             }else{
                 throwSignInError('Oops! Check your credentials!');
             }
@@ -178,6 +191,7 @@ function initBinds(){
             if(result.status == "success"){
                 throwPageBroadcast("Successfully signed out!");
                 reInit();
+                navSignedOutState();
             }
           });
     });
@@ -268,7 +282,7 @@ function initBinds(){
         html:true
     });
 
-    $('#sign-out').tooltip({
+    $('#sign-out-nav').tooltip({
         placement:'right',
         title:'Sign out',
         html:true
@@ -416,11 +430,6 @@ function reInit() {
     reInitDashboard();
 }
 
-function reInitDashboard(){
-    $('#paper-templates').empty();
-    initDashboard();
-}
-
 function reInitCanvasMenu(){
     //Remove items from recent papers menu
     for(var i=0;i<canvasPaperCache.length;i++){
@@ -444,6 +453,11 @@ function reInitCanvasMenu(){
     $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
 }
 
+
+function reInitDashboard(){
+    $('#paper-templates').empty();
+    initDashboard();
+}
 
 //Helper functions
 
@@ -574,6 +588,16 @@ function removePaper(id){
     }
 }
 
+function navSignedInState(){
+    $('#sign-in-nav').slideUp();
+    $('#sign-out-nav').slideDown();
+}
+
+function navSignedOutState(){
+    $('#sign-in-nav').slideDown();
+    $('#sign-out-nav').slideUp();
+}
+
 function throwPageBroadcast(message){
     $('#page-broadcast').empty();
     $('#page-broadcast').append(message);
@@ -638,5 +662,51 @@ Date.prototype.formatDateTime = function(){
     + minutes + ":"
     + seconds + " "
     + ampm;
+};
+
+
+String.prototype.trimLeft = function() {
+    return this.replace(/^\s+/, "");
+};
+
+String.prototype.trimRight = function() {
+    return this.replace(/\s+$/, "");
+};
+
+Array.prototype.map = function(callback, thisArg) {
+    for (var i=0, n=this.length, a=[]; i<n; i++) {
+        if (i in this) a[i] = callback.call(thisArg, this[i]);
+    }
+    return a;
+};
+
+function getCookies() {
+    var c = document.cookie, v = 0, cookies = {};
+    if (document.cookie.match(/^\s*\$Version=(?:"1"|1);\s*(.*)/)) {
+        c = RegExp.$1;
+        v = 1;
+    }
+    if (v === 0) {
+        c.split(/[,;]/).map(function(cookie) {
+            var parts = cookie.split(/=/, 2),
+                name = decodeURIComponent(parts[0].trimLeft()),
+                value = parts.length > 1 ? decodeURIComponent(parts[1].trimRight()) : null;
+            cookies[name] = value;
+        });
+    } else {
+        c.match(/(?:^|\s+)([!#$%&'*+\-.0-9A-Z^`a-z|~]+)=([!#$%&'*+\-.0-9A-Z^`a-z|~]*|"(?:[\x20-\x7E\x80\xFF]|\\[\x00-\x7F])*")(?=\s*[,;]|$)/g).map(function($0, $1) {
+            var name = $0,
+                value = $1.charAt(0) === '"'
+                          ? $1.substr(1, -1).replace(/\\(.)/g, "$1")
+                          : $1;
+            cookies[name] = value;
+        });
+    }
+    return cookies;
 }
+
+function getCookie(name) {
+    return getCookies()[name];
+}
+
 
