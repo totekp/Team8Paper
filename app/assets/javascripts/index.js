@@ -63,6 +63,35 @@ $(document).ready(function(){
 
 //Init functions
 
+function reInit() {
+    updatePapers();
+    reInitCanvasMenu();
+    reInitDashboard();
+}
+
+function reInitDashboard(){
+    $('#paper-templates').empty();
+    initDashboard();
+}
+
+function reInitCanvasMenu(){
+    var removeItems = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
+    $( '#off-canvas-nav' ).multilevelpushmenu( 'removeitems' , removeItems );
+    //Push items to off canvas menu
+    var itemsArray = [];
+    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
+    for(var i=0;i<papers.length;i++){
+        if(i<10){
+            itemsArray.push({
+                name: papers[i].title,
+                icon: 'fa fa-pencil-square-o',
+                link: '/paper/' + papers[i]._id + ''
+            });
+        }
+    }
+    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
+}
+
 function updatePapers() {
     var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
         if(response.status!="success"){
@@ -122,6 +151,7 @@ function initBinds(){
                 window.setTimeout(function(){
                     $('#sign-in-modal').modal('hide');
                 },1600);
+                reInit();
                 console.log(document.cookie);
             }else{
                 throwSignInError('Oops! Check your credentials!');
@@ -175,6 +205,7 @@ function initBinds(){
           .done(function(result){
             if(result.status == "success"){
                 throwPageBroadcast("Successfully signed out!");
+                reInit();
             }
           });
     });
@@ -219,7 +250,6 @@ function initBinds(){
           contentType: 'application/json; charset=utf-8'
         })
         .done(function(result){
-            console.log(result);
             if(result.status == "success"){
                 addDashboardEntry(result.data);
                 throwPageBroadcast("Successfully duplicated your paper");
