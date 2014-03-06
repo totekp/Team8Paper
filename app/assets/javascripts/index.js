@@ -183,10 +183,10 @@ function initBinds(){
         var newTitle = $('#paper-settings-title-input').val();
         var id = $('#paper-settings-id').attr('data-id');
         if(id == ''){
-            alert('Please select a paper to edit.')
+            throwPageBroadcast("Please select a paper to edit");
             return;
         }else if(newTitle.length <= 3){
-            alert('Please input at least 4 characters long.');
+            throwPageBroadcast("Please input at least 4 characters long");
             return;
         }
         var paper = getPaper(id);
@@ -201,8 +201,9 @@ function initBinds(){
           .done(function(result){
             if(result.status == "success"){
                 updateDashboardEntry(paper._id);
+                throwPageBroadcast("Successfully updated your paper!");
             }else{
-                throwPageBroadcast("Sorry! You don't have permission to edit this paper")
+                throwPageBroadcast("Sorry! You don't have permission to edit this paper");
             }
           });
     });
@@ -221,8 +222,9 @@ function initBinds(){
             console.log(result);
             if(result.status == "success"){
                 addDashboardEntry(result.data);
+                throwPageBroadcast("Successfully duplicated your paper");
             }else{
-                throwPageBroadcast("Sorry! You don't have permission to duplicate this paper")
+                throwPageBroadcast("Sorry! You don't have permission to duplicate this paper");
             }
         });
     });
@@ -240,8 +242,9 @@ function initBinds(){
             if(result.status == "success"){
                 resetSettingsPanel();
                 removeDashboardEntry(id);
+                throwPageBroadcast("Successfully deleted your paper");
             }else{
-                throwPageBroadcast("Sorry! You don't have permission to delete this paper")
+                throwPageBroadcast("Sorry! You don't have permission to delete this paper");
             }
         });
     });
@@ -327,14 +330,12 @@ function initBinds(){
                                 $('#col-mid-right').attr('id','col-mid-right-'+result.data[i]._id);
                                 $('#col-right').attr('id','col-right-'+result.data[i]._id);
                             }
+                            $('#search-result-container').slideDown();
                         }else{
-                            $('#search-results').append('<p style="color:red">No matching papers found</p>');
+                            throwPageBroadcast("No matching papers found");
                         }
-
-                        $('#search-result-container').slideDown();
-                        //location.reload(); //very crude way of refreshing the view..
                     }else {
-                        console.log("Paper search by tags request has failed.")
+                        throwPageBroadcast("Oops! Your search request has failed");
                     }
               });
         }
