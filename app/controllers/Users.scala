@@ -36,7 +36,7 @@ object Users extends Controller {
       req.body.asJson match {
         case Some(j) =>
           tryOrError {
-            val username = j asString "usernme"
+            val username = j asString "username"
             val password = j asString "password"
 
             val userQ = Json.obj(User.username -> username)
