@@ -145,7 +145,12 @@ object Papers extends Controller {
 
   def recentPaperids = Action.async {
     implicit req =>
-      val papers = PaperDAO.find(Json.obj(), Json.obj(Paper.lastUpdated -> -1), 25)
+      val username = req.session.get("username")
+      val q = username.map(u =>
+        Json.obj(Paper.username -> u))
+        .getOrElse(Json.obj(Paper.username -> Json.obj("$exists" -> false)))
+
+      val papers = PaperDAO.find(q, Json.obj(Paper.lastUpdated -> -1), 25)
       for {
         papersJson <- papers
       } yield {

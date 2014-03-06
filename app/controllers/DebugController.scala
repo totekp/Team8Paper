@@ -3,9 +3,10 @@ package controllers
 import play.api.mvc._
 import util.Implicits._
 import models.JsonResult
-import services.PaperDAO
+import services.{UserDAO, PaperDAO}
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
+import play.api.libs.json.{JsArray, Json}
 
 
 object DebugController extends Controller {
@@ -17,6 +18,14 @@ object DebugController extends Controller {
           Redirect(routes.Papers.index())
       }
 //      Future.successful(Ok("Disabled"))
+  }
+
+  def users = Action.async {
+    implicit req =>
+      UserDAO.find(Json.obj(), Json.obj()).map(
+        users =>
+          Ok(Json.prettyPrint(JsArray(users)))
+      )
   }
 
 }

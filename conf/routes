@@ -13,7 +13,7 @@ POST        /paper/:id                   controllers.Papers.paperSubmit(id)
 GET         /paper                       controllers.Papers.paperNew
 
 # user auth ajax
-POST        /api1/loginNoPassword        controllers.Users.loginNoPassword
+#POST        /api1/loginNoPassword        controllers.Users.loginNoPassword
 POST        /api1/register               controllers.Users.register
 POST        /api1/login                  controllers.Users.login
 POST        /api1/logout                 controllers.Users.logout
@@ -28,6 +28,7 @@ POST        /api1/deletePaper            controllers.Papers.deletePaper
 
 # debug
 GET         /debug/clear                 controllers.DebugController.clear
+GET         /debug/users                 controllers.DebugController.users
 
 
 # Map static resources from the /public folder to the /assets URL path
