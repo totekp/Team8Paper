@@ -427,6 +427,7 @@ function initDashboard(){
 function reInit() {
     updatePapers();
     reInitCanvasMenu();
+    resetSettingsPanel();
     reInitDashboard();
 }
 
