@@ -20,7 +20,7 @@ object Common {
     try {
       block
     } catch {
-      case e: Exception =>
+      case e: Throwable =>
         Logger.error(e.getStackTraceString)
         Future.successful(JsonResult.error(e.getMessage))
     }

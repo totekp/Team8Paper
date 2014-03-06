@@ -36,7 +36,7 @@ object Users extends Controller {
       req.body.asJson match {
         case Some(j) =>
           tryOrError {
-            val username = j asString "username"
+            val username = j asString "usernme"
             val password = j asString "password"
 
             val userQ = Json.obj(User.username -> username)
@@ -56,7 +56,9 @@ object Users extends Controller {
                     )
                   }
                 case None =>
-                  throw new Exception("Username does not exist")
+                  Future.successful(
+                    JsonResult.error("Username does not exist")
+                  )
               }
             } yield {
               r
@@ -83,7 +85,9 @@ object Users extends Controller {
               optUser <- fUser
               r <- optUser match {
                 case Some(u) =>
-                  throw new Exception("Username already exists")
+                  Future.successful(
+                    JsonResult.error("Username already exists")
+                  )
                 case None =>
                   val user = User.create(username, password, None)
                   UserDAO.save(user, ow = false).map {
