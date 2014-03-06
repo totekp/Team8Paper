@@ -12,56 +12,58 @@
 <body>
 
     <div id="page" class="pushobj">
-        <div id="main_nav">
-            <nav id="off_canvas_btn" class="navbar navbar-default" role="navigation">
+        <div id="main-nav">
+            <nav id="off-canvas-btn" class="navbar navbar-default" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a id="off_canvas_toggle" style="margin-top : 3px; margin-left:3px;" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
+                    <li><a id="off-canvas-toggle" style="margin-top : 3px; margin-left:3px;" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
                 </ul>
             </nav>
             <nav class="navbar navbar-inverse" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a id="sign-in-link" data-toggle="modal" data-target="#sign-in-modal"><i class="fa fa-sign-in fa-lg"></i></a></li>
-                    <li><a id="sign-out"><i class="fa fa-sign-out fa-lg"></i></a></li>
+                    <li><a id="sign-in-nav" data-toggle="modal" data-target="#sign-in-modal"><i class="fa fa-sign-in fa-lg"></i></a></li>
+                    <li><a id="sign-out-nav"><i class="fa fa-sign-out fa-lg"></i></a></li>
                 </ul>
 
             </nav>
             <nav class="navbar navbar-inverse" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li><a id="nav_home" class="smoothScroll" href="#main_cover" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
-                    <li><a id="nav_search" class="smoothScroll" href="#search"><i class="fa fa-search fa-lg"></i></a></li>
-                    <li><a id="nav_dashboard" class="smoothScroll" href="#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
+                    <li><a id="nav-home" class="smoothScroll" href="#main-cover" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
+                    <li><a id="nav-search" class="smoothScroll" href="#search"><i class="fa fa-search fa-lg"></i></a></li>
+                    <li><a id="nav-dashboard" class="smoothScroll" href="#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
                 </ul>
 
             </nav>
         </div>
 
-        <div id="content_wrapper">
-            <div id="main_cover" class="cover">
-                <div id="cover_inner" class="inner">
-                    <div id="cover_contents">
+        <div id="content-wrapper">
+            <div id="page-broadcast" class="alert alert-warning" hidden>
+            </div>
+            <div id="main-cover" class="cover">
+                <div id="cover-inner" class="inner">
+                    <div id="cover-contents">
                         <h1 class="cover-heading"><i class="fa fa-file-o fa-5x"></i></h1>
                         <h1 class="cover-heading">Team 8 Paper</h1>
                         <p class="lead">Team 8 Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
                         <p class="lead">
-                            <a href="#search" id="btn_start" class="btn btn-lg btn-default smoothScroll">Get Started!</a>
+                            <a href="#search" id="btn-start" class="btn btn-lg btn-default smoothScroll">Get Started!</a>
                         </p>
                     </div>
-                    <img id="cover_photo" src="@routes.Assets.at("stylesheets/images/get_started_paper.png")" alt="cover photo">
+                    <img id="cover-photo" src="@routes.Assets.at("stylesheets/images/get_started_paper.png")" alt="cover photo">
                 </div>
 
             </div>
 
             <div id="search">
                 <div id="search-inner" class="inner">
-                    <div id="search_input_container">
+                    <div id="search-input-container">
                         <h2>Search Papers</h2>
-                        <input type="text" class="form-control" id="search_tag_input">
-                        <a id="search_tag_submit" class="btn btn-default">Search Papers</a>
+                        <input type="text" class="form-control" id="search-tag-input">
+                        <a id="search-tag-submit" class="btn btn-default">Search Papers</a>
 
                     </div>
-                    <div id="search_result_container">
-                        <a id="search_slide_up">^</a>
-                        <div id="search_results">
+                    <div id="search-result-container">
+                        <a id="search-slide-up">^</a>
+                        <div id="search-results">
                         </div>
                     </div>
                 </div>
@@ -71,35 +73,35 @@
             <div id="dashboard">
                 <h2>Your Paper Dashboard</h2>
                 <p>Click each paper for options</p>
-                <div id="paper_container">
-                    <div id="paper_settings" class="thumbnail">
-                        <div id="paper_settings_inner" class="thumbnail">
-                            <span id="paper_settings_id" data-id='' hidden></span>
-                            <table id="paper_settings_table">
+                <div id="paper-container">
+                    <div id="paper-settings" class="thumbnail">
+                        <div id="paper-settings-inner" class="thumbnail">
+                            <span id="paper-settings-id" data-id='' hidden></span>
+                            <table id="paper-settings-table">
                                 <tr>
                                     <th colspan="2">
-                                        <input type="text" id="paper_settings_title_input" class="form-control" placeholder="Title">
+                                        <input type="text" id="paper-settings-title-input" class="form-control" placeholder="Title">
                                     </th>
                                 </tr>
                                 <tr>
                                     <td>Created: </td>
-                                    <td><span id="paper_settings_created" class="paper_settings_meta">---------------------</span></td>
+                                    <td><span id="paper-settings-created" class="paper-settings-meta">---------------------</span></td>
                                 </tr>
                                 <tr>
                                     <td>Updated: </td>
-                                    <td><span id="paper_settings_updated" class="paper_settings_meta">---------------------</span></td>
+                                    <td><span id="paper-settings-updated" class="paper-settings-meta">---------------------</span></td>
                                 </tr>
                             </table>
                             <p>Tags</p>
-                            <input type="text" id="paper_settings_tag_input" class="form-control" placeholder="add tags separated by spaces">
-                            <a id='paper_settings_submit' class='btn btn-primary btn-paper' role='button'>Submit Changes</a>
-                            <a id='paper_settings_duplicate' class='btn btn-primary btn-paper' role='button'>Duplicate</a>
-                            <a id='paper_settings_delete' class='btn btn-danger btn-paper' role='button'>Delete</a>
+                            <input type="text" id="paper-settings-tag-input" class="form-control" placeholder="add tags separated by spaces">
+                            <a id='paper-settings-submit' class='btn btn-primary btn-paper' role='button'>Submit Changes</a>
+                            <a id='paper-settings-duplicate' class='btn btn-primary btn-paper' role='button'>Duplicate</a>
+                            <a id='paper-settings-delete' class='btn btn-danger btn-paper' role='button'>Delete</a>
 
                         </div>
                     </div>
-                    <div id="paper_templates_container">
-                        <div id="paper_templates"></div>
+                    <div id="paper-templates-container">
+                        <div id="paper-templates"></div>
                     </div>
                 </div>
             </div>
@@ -110,7 +112,7 @@
         </div>
     </div>
 
-    <div id="off_canvas_nav"></div>
+    <div id="off-canvas-nav"></div>
 
     <div id="sign-in-modal" class="modal fade">
         <div class="modal-dialog modal-sm">
@@ -120,13 +122,32 @@
                     <h1 class="modal-title">Paper</h1>
                 </div>
                 <div class="modal-body">
-                    <input id="login_username" type="text" class="form-control" placeholder="username">
-                    <input id="login_password" type="password" class="form-control" placeholder="password">
-                    <input id="sign-in" type="submit" class="btn btn-primary form-control" value="Sign in">
+                    <div id="sign-in">
+                        <div id="sign-in-error" class="alert alert-danger" hidden>
+                        </div>
+                        <div id="sign-in-success" class="alert alert-success" hidden>
+                        </div>
+                        <input id="sign-in-username" type="text" class="form-control" placeholder="username">
+                        <input id="sign-in-password" type="password" class="form-control" placeholder="password">
+                        <input id="sign-in-submit" class="btn btn-primary form-control" value="Sign in">
+                    </div>
+                    <div id="sign-up" hidden>
+                        <div id="sign-up-error" class="alert alert-danger" hidden>
+                        </div>
+                        <input id="sign-up-username" type="text" class="form-control" placeholder="username">
+                        <input id="sign-up-password" type="password" class="form-control" placeholder="password">
+                        <input id="sign-up-password-confirm" type="password" class="form-control" placeholder="confirm password">
+                        <input id="sign-up-submit" class="btn btn-primary form-control" value="Submit">
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</>
-                    <a class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</>
+                    <div id="sign-in-footer">
+                        <a id="forgot-password-footer" class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</a>
+                        <a id="sign-up-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</a>
+                    </div>
+                    <div id="sign-up-footer" hidden>
+                        <a id="sign-in-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign in</a>
+                    </div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

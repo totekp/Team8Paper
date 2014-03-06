@@ -1,13 +1,13 @@
 var papers;
 var searchTagCache = [];
 var offCanvasNavVisible = false;
-var alphaNumRegx = /^[A-Za-z0-9 _.-]+$/;
-var dashPaperTemplate = "<div id='paper_template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
-                           "<div id='paper_image'></div>"+
+var alphaNumRegx = /^[A-Za-z0-9_-]+$/;
+var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
+                           "<div id='paper-image'></div>"+
                            "<div class='caption'>"+
-                             "<p id='paper_label'></p>"+
-                             "<p style='font-size:11px;' id='paper_date'></p>"+
-                             "<p><a href='#' style='width:100%' id='paper_open_btn' class='btn btn-primary' role='button'>Open</a></p>"+
+                             "<p id='paper-label'></p>"+
+                             "<p style='font-size:11px;' id='paper-date'></p>"+
+                             "<p><a href='#' style='width:100%' id='paper-open-btn' class='btn btn-primary' role='button'>Open</a></p>"+
                            "</div>"+
                         "</div>";
 
@@ -55,7 +55,6 @@ var arrMenu = [
 //Initialization
 $(document).ready(function(){
     updatePapers();
-
     initTransitions();
     initBinds();
     initCanvasMenu();
@@ -73,44 +72,116 @@ function updatePapers() {
 }
 
 function initTransitions(){
-    $("#cover_contents").hide().fadeIn(2100);
-
+    $("#cover-contents").hide().fadeIn(2100);
 }
 
 function initBinds(){
-    $('#btn_start').click(function(){
-        $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
+    $('#btn-start').click(function(){
+        $( '#off-canvas-nav' ).multilevelpushmenu( 'expand' );
         offCanvasNavVisible = true;
     });
 
-    $("#sign-in").click(function(){
-        var username = $('#login_username').val();
+    $('#sign-up-link').click(function(){
+        $('#sign-in').slideUp();
+        $('#sign-in-footer').slideUp();
+        //Delay transition to sign up form
+        $('#sign-up').delay(800).slideDown();
+        $('#sign-up-footer').delay(800).slideDown();
+    });
+
+    $('#sign-in-link').click(function(){
+        $('#sign-up').slideUp();
+        $('#sign-up-footer').slideUp();
+        //Delay transition to sign in form
+        $('#sign-in').delay(800).slideDown();
+        $('#sign-in-footer').delay(800).slideDown();
+    });
+
+
+    /*Sign in / up validation and submission */
+    $("#sign-in-submit").click(function(){
+        var username = $('#sign-in-username').val();
+        var password = $('#sign-in-password').val();
+        if(!username.length || !password.length){
+            throwSignInError('Please enter all of your credentials');
+            return;
+        }
+        if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password)){
+            throwSignInError('Please enter alpha-numeric characters');
+            return;
+        }
         $.ajax({
             type: 'POST',
-            url: '/login',
-            data: JSON.stringify({username:username}),
+            url: '/api1/login',
+            data: JSON.stringify({username:username,password:password}),
             contentType: 'application/json; charset=utf-8'
         })
           .done(function(result){
-            console.log(result);
+            if(result.status == "success"){
+                throwSignInSuccess("Successfully signed in!");
+                window.setTimeout(function(){
+                    $('#sign-in-modal').modal('hide');
+                },1600);
+                console.log(document.cookie);
+            }else{
+                throwSignInError('Oops! Check your credentials!');
+            }
           });
     });
 
-    $("#sign-out").click(function(){
+    $("#sign-up-submit").click(function(){
+            var username = $('#sign-up-username').val();
+            var password = $('#sign-up-password').val();
+            var passwordConf = $('#sign-up-password-confirm').val();
+            if(!username.length || !password.length || !passwordConf.length){
+                throwSignUpError("Please enter all credentials");
+                return;
+            }
+            if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password) || !alphaNumRegx.test(passwordConf)){
+                throwSignUpError("Not a valid username or password!");
+                return;
+            }
+            if(password != passwordConf){
+                throwSignUpError("Please check that your passwords match!");
+                return;
+            }
+            if(password.length<=5){
+                throwSignUpError("Passwords must be at least 6 characters long!");
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/api1/register',
+                data: JSON.stringify({username:username,password:password}),
+                contentType: 'application/json; charset=utf-8'
+            })
+              .done(function(result){
+                if(result.status == "success"){
+                    $('#sign-in-link').click();
+                    throwSignInSuccess("Successfully signed up!");
+                }else{
+                    throwSignUpError("Aw..Something went wrong. Call Kefu");
+                }
+              });
+        });
+
+    $("#sign-out-nav").click(function(){
         $.ajax({
             type: 'POST',
-            url: '/logout',
+            url: '/api1/logout',
             data: JSON.stringify({}),
             contentType: 'application/json; charset=utf-8'
         })
           .done(function(result){
-            console.log(result);
+            if(result.status == "success"){
+                throwPageBroadcast("Successfully signed out!");
+            }
           });
     });
 
-    $('#paper_settings_submit').click(function(){
-        var newTitle = $('#paper_settings_title_input').val();
-        var id = $('#paper_settings_id').attr('data-id');
+    $('#paper-settings-submit').click(function(){
+        var newTitle = $('#paper-settings-title-input').val();
+        var id = $('#paper-settings-id').attr('data-id');
         if(id == ''){
             alert('Please select a paper to edit.')
             return;
@@ -128,12 +199,16 @@ function initBinds(){
             type: 'post'
         })
           .done(function(result){
-            updateDashboardEntry(paper._id);
+            if(result.status == "success"){
+                updateDashboardEntry(paper._id);
+            }else{
+                throwPageBroadcast("Sorry! You don't have permission to edit this paper")
+            }
           });
     });
 
-    $('#paper_settings_duplicate').click(function(){
-         var id = $('#paper_settings_id').attr('data-id');
+    $('#paper-settings-duplicate').click(function(){
+         var id = $('#paper-settings-id').attr('data-id');
          var paper = getPaper(id);
 
          $.ajax({
@@ -143,12 +218,17 @@ function initBinds(){
           contentType: 'application/json; charset=utf-8'
         })
         .done(function(result){
-            addDashboardEntry(result.data);
+            console.log(result);
+            if(result.status == "success"){
+                addDashboardEntry(result.data);
+            }else{
+                throwPageBroadcast("Sorry! You don't have permission to duplicate this paper")
+            }
         });
     });
 
-    $('#paper_settings_delete').click(function(){
-        var id = $('#paper_settings_id').attr('data-id');
+    $('#paper-settings-delete').click(function(){
+        var id = $('#paper-settings-id').attr('data-id');
 
         $.ajax({
           type: 'POST',
@@ -157,23 +237,27 @@ function initBinds(){
           contentType: 'application/json; charset=utf-8'
         })
         .done(function(result){
-            resetSettingsPanel();
-            removeDashboardEntry(id);
+            if(result.status == "success"){
+                resetSettingsPanel();
+                removeDashboardEntry(id);
+            }else{
+                throwPageBroadcast("Sorry! You don't have permission to delete this paper")
+            }
         });
     });
 
     $(window).resize(function () {
-        $( '#off_canvas_nav' ).multilevelpushmenu( 'redraw' );
+        $( '#off-canvas-nav' ).multilevelpushmenu( 'redraw' );
     });
 
     //Tooltip binds-----------------------------------
-    $('#off_canvas_toggle').tooltip({
+    $('#off-canvas-toggle').tooltip({
         placement:'right',
         title:'Paper quick options',
         html:true
     });
 
-    $('#sign-in-link').tooltip({
+    $('#sign-in-nav').tooltip({
         placement:'right',
         title:'Sign in',
         html:true
@@ -185,22 +269,22 @@ function initBinds(){
         html:true
     });
 
-    $('#nav_home').tooltip({
+    $('#nav-home').tooltip({
         placement:'right',
         title:'Home'
     });
 
-    $('#nav_search').tooltip({
+    $('#nav-search').tooltip({
         placement:'right',
         title:'Search papers'
     });
 
-    $('#nav_dashboard').tooltip({
+    $('#nav-dashboard').tooltip({
         placement:'right',
         title:'Dashboard'
     });
 
-    $('#search_tag_input').tagsInput({
+    $('#search-tag-input').tagsInput({
         'width':'600px',
         'height': '42px',
         'defaultText': 'Search papers by tags',
@@ -216,7 +300,7 @@ function initBinds(){
         }
     });
 
-    $('#search_tag_submit').click(function(){
+    $('#search-tag-submit').click(function(){
         if(searchTagCache.length>0){
             $.ajax({
               type: 'POST',
@@ -226,28 +310,28 @@ function initBinds(){
             })
               .done(function(result){
                     if(result.status=="success"){
-                        $('#search_results').empty();
+                        $('#search-results').empty();
                         if(result.data.length){
                             for(var i=0;i<result.data.length;i++){
                                 var created = new Date(result.data[i].created).formatDateTime();
                                 var updated = new Date(result.data[i].lastUpdated).formatDateTime();
 
-                                $('#search_results').append(searchResultTemplate);
+                                $('#search-results').append(searchResultTemplate);
                                 $('#col-left').append('<p>'+result.data[i].title+'</p>');
                                 $('#col-mid-left').append('<p>'+created+'</p>');
                                 $('#col-mid-right').append('<p>'+updated+'</p>');
                                 $('#col-right').append('<a class="btn btn-default" href="/paper/'+result.data[i]._id+'">Open</a>');
-                                $('#search-result-item').attr('id','result_'+result.data[i]._id);
-                                $('#col-left').attr('id','col_left_'+result.data[i]._id);
-                                $('#col-mid-left').attr('id','col_mid_left_'+result.data[i]._id);
-                                $('#col-mid-right').attr('id','col_mid_right_'+result.data[i]._id);
-                                $('#col-right').attr('id','col_right_'+result.data[i]._id);
+                                $('#search-result-item').attr('id','result-'+result.data[i]._id);
+                                $('#col-left').attr('id','col-left-'+result.data[i]._id);
+                                $('#col-mid-left').attr('id','col-mid-left-'+result.data[i]._id);
+                                $('#col-mid-right').attr('id','col-mid-right-'+result.data[i]._id);
+                                $('#col-right').attr('id','col-right-'+result.data[i]._id);
                             }
                         }else{
-                            $('#search_results').append('<p style="color:red">No matching papers found</p>');
+                            $('#search-results').append('<p style="color:red">No matching papers found</p>');
                         }
 
-                        $('#search_result_container').slideDown();
+                        $('#search-result-container').slideDown();
                         //location.reload(); //very crude way of refreshing the view..
                     }else {
                         console.log("Paper search by tags request has failed.")
@@ -256,30 +340,30 @@ function initBinds(){
         }
     });
 
-    $('#paper_settings_tag_input').tagsInput({
+    $('#paper-settings-tag-input').tagsInput({
         'width':'100%',
         'height': '200px',
         'minChars' : 3,
         'maxChars' : 20,
         'onAddTag':function(value){
-            var paper = getPaper($('#paper_settings_id').attr('data-id'));
+            var paper = getPaper($('#paper-settings-id').attr('data-id'));
             paper.tags.push(value);
         },
         'onRemoveTag':function(value){
-            var paper = getPaper($('#paper_settings_id').attr('data-id'));
+            var paper = getPaper($('#paper-settings-id').attr('data-id'));
             paper.tags.splice( $.inArray(value, paper.tags), 1 );
         }
     });
 
-    $('#search_result_container').hide();
+    $('#search-result-container').hide();
 
-    $('#search_slide_up').click(function(){
-        $('#search_result_container').slideUp();
+    $('#search-slide-up').click(function(){
+        $('#search-result-container').slideUp();
     });
 }
 
 function initCanvasMenu(){
-    $('#off_canvas_nav').multilevelpushmenu({
+    $('#off-canvas-nav').multilevelpushmenu({
         menu: arrMenu,
         containersToPush: [$('.pushobj')],
         menuWidth: '25%',
@@ -289,19 +373,19 @@ function initCanvasMenu(){
         preventItemClick:false
     });
 
-    $( '#off_canvas_toggle' ).click(function(){
+    $( '#off-canvas-toggle' ).click(function(){
         if(offCanvasNavVisible){
-            $( '#off_canvas_nav' ).multilevelpushmenu( 'collapse' );
+            $( '#off-canvas-nav' ).multilevelpushmenu( 'collapse' );
             offCanvasNavVisible = false;
         }else{
-            $( '#off_canvas_nav' ).multilevelpushmenu( 'expand' );
+            $( '#off-canvas-nav' ).multilevelpushmenu( 'expand' );
             offCanvasNavVisible = true;
         }
     });
 
     //Push items to off canvas menu
     var itemsArray = [];
-    var $addToMenu = $( '#off_canvas_nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
+    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
     for(var i=0;i<papers.length;i++){
         if(i<10){
             itemsArray.push({
@@ -311,7 +395,7 @@ function initCanvasMenu(){
             });
         }
     }
-    $('#off_canvas_nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
+    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
 }
 
 
@@ -326,17 +410,17 @@ function initDashboard(){
 //Helper functions
 
 function resetSettingsPanel(){
-    $('#paper_settings_id').attr('data-id','');
-    $('#paper_settings_title_input').val('');
-    $('#paper_settings_created').html('---------------------');
-    $('#paper_settings_updated').html('---------------------');
-    $('#paper_settings_tag_input').importTags('');
+    $('#paper-settings-id').attr('data-id','');
+    $('#paper-settings-title-input').val('');
+    $('#paper-settings-created').html('---------------------');
+    $('#paper-settings-updated').html('---------------------');
+    $('#paper-settings-tag-input').importTags('');
 }
 
 function removeDashboardEntry(id) {
     removePaper(id);
-    $("#thumbnail_"+id).animate({opacity: 0}, 500);
-    window.setTimeout(function(){$("#thumbnail_"+id).remove();},1000);
+    $("#thumbnail-"+id).animate({opacity: 0}, 500);
+    window.setTimeout(function(){$("#thumbnail-"+id).remove();},1000);
     /*Relative positioning of entries mess up fadeOut. This solution is crude
      *but works slightly better with less flicker*/
 }
@@ -348,7 +432,7 @@ function addDashboardEntry(id) {
 
 function updateDashboardEntry(id) {
     paper = getPaper(id);
-    var data = $("#thumbnail_"+paper._id).children('div[id*="image_"]');
+    var data = $("#thumbnail-"+paper._id).children('div[id*="image-"]');
     var created = new Date(paper.created).formatDateTime();
     var updated = new Date(paper.lastUpdated).formatDateTime();
     data.html(
@@ -366,21 +450,21 @@ function updateDashboardEntry(id) {
     );
 
     if(paper.title.length > 15) {
-        $('#label_'+paper._id).html(paper.title.slice(0,12)+'...');
+        $('#label-'+paper._id).html(paper.title.slice(0,12)+'...');
     }else{
-        $('#label_'+paper._id).html(paper.title);
+        $('#label-'+paper._id).html(paper.title);
     }
 
-    $('#date_'+paper._id).html(created);
-    $('#paper_settings_updated').html(updated);
+    $('#date-'+paper._id).html(created);
+    $('#paper-settings-updated').html(updated);
 }
 
 function addPaperToDash(paper){
     var created = new Date(paper.created).formatDateTime();
     var updated = new Date(paper.lastUpdated).formatDateTime();
-    $('#paper_templates').append(dashPaperTemplate);
-    $('#paper_template').attr('id','thumbnail_'+paper._id);
-    $('#paper_image').append(
+    $('#paper-templates').append(dashPaperTemplate);
+    $('#paper-template').attr('id','thumbnail-'+paper._id);
+    $('#paper-image').append(
         '<i id='+
         paper._id+
         ' data-title="'+
@@ -397,26 +481,26 @@ function addPaperToDash(paper){
 
     //Account for long titles to prevent screwing up each paper templates
     if(paper.title.length > 15) {
-        $('#paper_label').append(paper.title.slice(0,12)+'...');
+        $('#paper-label').append(paper.title.slice(0,12)+'...');
     }else{
-        $('#paper_label').append(paper.title);
+        $('#paper-label').append(paper.title);
     }
 
-    $('#paper_date').append(created);
-    $('#paper_open_btn').attr('href','/paper/'+paper._id);
+    $('#paper-date').append(created);
+    $('#paper-open-btn').attr('href','/paper/'+paper._id);
 
     //Set the id of the current paper template to something else to avoid conflicts in the code above
-    $('#paper_open_btn').attr('id','open_btn_'+paper._id);
-    $('#paper_image').attr('id','image_'+paper._id);
-    $('#paper_label').attr('id','label_'+paper._id);
-    $('#paper_date').attr('id','date_'+paper._id);
-    $('#thumbnail_'+paper._id).click(function (event) {
+    $('#paper-open-btn').attr('id','open-btn-'+paper._id);
+    $('#paper-image').attr('id','image-'+paper._id);
+    $('#paper-label').attr('id','label-'+paper._id);
+    $('#paper-date').attr('id','date-'+paper._id);
+    $('#thumbnail-'+paper._id).click(function (event) {
         handlePaperSelection(event);
     });
 }
 
 function handlePaperSelection(event) {
-    var data = $("#"+event.currentTarget.id).children('div[id*="image_"]').children();
+    var data = $("#"+event.currentTarget.id).children('div[id*="image-"]').children();
     var paper = {
         _id: data[0].id,
         title: $('#'+data[0].id).attr('data-title'),
@@ -424,11 +508,11 @@ function handlePaperSelection(event) {
         lastUpdated: $('#'+data[0].id).attr('data-updated'),
         tags: $('#'+data[0].id).attr('data-tags')
     };
-    $('#paper_settings_id').attr('data-id',paper._id);
-    $('#paper_settings_title_input').val(paper.title);
-    $('#paper_settings_created').html(paper.created);
-    $('#paper_settings_updated').html(paper.lastUpdated);
-    $('#paper_settings_tag_input').importTags(paper.tags);
+    $('#paper-settings-id').attr('data-id',paper._id);
+    $('#paper-settings-title-input').val(paper.title);
+    $('#paper-settings-created').html(paper.created);
+    $('#paper-settings-updated').html(paper.lastUpdated);
+    $('#paper-settings-tag-input').importTags(paper.tags);
 }
 
 function getPaper(id){
@@ -450,6 +534,31 @@ function removePaper(id){
         }
         i++;
     }
+}
+
+function throwPageBroadcast(message){
+    $('#page-broadcast').empty();
+    $('#page-broadcast').append(message);
+    $('#page-broadcast').slideDown();
+    $('#page-broadcast').delay(2400).slideUp();
+}
+function throwSignInError(message){
+    $('#sign-in-error').empty();
+    $('#sign-in-error').append(message);
+    $('#sign-in-error').slideDown();
+    $('#sign-in-error').delay(2400).slideUp();
+}
+function throwSignInSuccess(message){
+    $('#sign-in-success').empty();
+    $('#sign-in-success').append(message);
+    $('#sign-in-success').slideDown();
+    $('#sign-in-success').delay(2400).slideUp();
+}
+function throwSignUpError(message){
+    $('#sign-up-error').empty();
+    $('#sign-up-error').append(message);
+    $('#sign-up-error').slideDown();
+    $('#sign-up-error').delay(2400).slideUp();
 }
 
 //extensions
@@ -486,3 +595,4 @@ Date.prototype.formatDateTime = function(){
     + seconds + " "
     + ampm;
 }
+
