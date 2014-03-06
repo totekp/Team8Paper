@@ -12,13 +12,23 @@ var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;te
                            "</div>"+
                         "</div>";
 
-var searchResultTemplate = "<div id='search-result-item' class='row' style='width:100%;margin:0;'>"+
-                                "<div id='col-left' class='col-md-3 result-col'></div>"+
-                                "<div id='col-mid-left' class='col-md-3 result-col'></div>"+
-                                "<div id='col-mid-right' class='col-md-3 result-col'></div>"+
-                                "<div id='col-right' class='col-md-3 result-col'></div>"+
-                            "</div>"
-
+var searchResultTemplate = "<div id='search-result-item' style='text-align:left;width:100%;margin:0;' class='row'>"+
+                                   "<div class='col-md-1'>"+
+                                       "<a id='search-result-icon' style='color:#eef;'><i class='fa fa-file-o fa-3x'></i></a>"+
+                                   "</div>"+
+                                   "<div class='col-md-11'>"+
+                                       "<h3 style='margin:0;'><a id='search-result-title' style='color:#eef;'></a></h3>"+
+                                       "<div id='search-result-meta' style='font-size:9px;color:#bbb;'>"+
+                                           "<div id='search-result-created'>"+
+                                           "</div>"+
+                                           "<div id='search-result-updated'>"+
+                                           "</div>"+
+                                           "<div id='search-result-tags' style='font-size:11px;color:#CCE6A4;'>"+
+                                           "</div>"+
+                                       "</div>"+
+                                   "</div>"+
+                               "</div>"+
+                               "<hr class='soften'/>";
 var arrMenu = [
   {
     title: 'Paper',
@@ -332,19 +342,23 @@ function initBinds(){
                         $('#search-results').empty();
                         if(result.data.length){
                             for(var i=0;i<result.data.length;i++){
+                                console.log(result.data[i]);
                                 var created = new Date(result.data[i].created).formatDateTime();
                                 var updated = new Date(result.data[i].lastUpdated).formatDateTime();
 
                                 $('#search-results').append(searchResultTemplate);
-                                $('#col-left').append('<p>'+result.data[i].title+'</p>');
-                                $('#col-mid-left').append('<p>'+created+'</p>');
-                                $('#col-mid-right').append('<p>'+updated+'</p>');
-                                $('#col-right').append('<a class="btn btn-default" href="/paper/'+result.data[i]._id+'">Open</a>');
+                                $('#search-result-icon').attr('href','/paper/'+result.data[i]._id);
+                                $('#search-result-title').append(result.data[i].title);
+                                $('#search-result-title').attr('href','/paper/'+result.data[i]._id);
+                                $('#search-result-created').append('created: '+created);
+                                $('#search-result-updated').append('updated: '+updated);
+                                $('#search-result-tags').append('tags: '+result.data[i].tags);
+
                                 $('#search-result-item').attr('id','result-'+result.data[i]._id);
-                                $('#col-left').attr('id','col-left-'+result.data[i]._id);
-                                $('#col-mid-left').attr('id','col-mid-left-'+result.data[i]._id);
-                                $('#col-mid-right').attr('id','col-mid-right-'+result.data[i]._id);
-                                $('#col-right').attr('id','col-right-'+result.data[i]._id);
+                                $('#search-result-title').attr('id','search-result-title-'+result.data[i]._id);
+                                $('#search-result-created').attr('id','search-result-created-'+result.data[i]._id);
+                                $('#search-result-updated').attr('id','search-result-updated-'+result.data[i]._id);
+                                $('#search-result-tags').attr('id','search-result-tags-'+result.data[i]._id);
                             }
                             $('#search-result-container').slideDown();
                         }else{
