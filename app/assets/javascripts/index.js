@@ -1,5 +1,6 @@
 var papers;
 var searchTagCache = [];
+var canvasPaperCache = [];
 var offCanvasNavVisible = false;
 var alphaNumRegx = /^[A-Za-z0-9_-]+$/;
 var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
@@ -62,35 +63,6 @@ $(document).ready(function(){
 });
 
 //Init functions
-
-function reInit() {
-    updatePapers();
-    reInitCanvasMenu();
-    reInitDashboard();
-}
-
-function reInitDashboard(){
-    $('#paper-templates').empty();
-    initDashboard();
-}
-
-function reInitCanvasMenu(){
-    var removeItems = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
-    $( '#off-canvas-nav' ).multilevelpushmenu( 'removeitems' , removeItems );
-    //Push items to off canvas menu
-    var itemsArray = [];
-    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
-    for(var i=0;i<papers.length;i++){
-        if(i<10){
-            itemsArray.push({
-                name: papers[i].title,
-                icon: 'fa fa-pencil-square-o',
-                link: '/paper/' + papers[i]._id + ''
-            });
-        }
-    }
-    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
-}
 
 function updatePapers() {
     var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
@@ -424,6 +396,7 @@ function initCanvasMenu(){
                 icon: 'fa fa-pencil-square-o',
                 link: '/paper/' + papers[i]._id + ''
             });
+            canvasPaperCache.push(papers[i].title);
         }
     }
     $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
@@ -436,6 +409,40 @@ function initDashboard(){
     }
 }
 
+//Reinitialization functions to bypass the need to reload page
+function reInit() {
+    updatePapers();
+    reInitCanvasMenu();
+    reInitDashboard();
+}
+
+function reInitDashboard(){
+    $('#paper-templates').empty();
+    initDashboard();
+}
+
+function reInitCanvasMenu(){
+    //Remove items from recent papers menu
+    for(var i=0;i<canvasPaperCache.length;i++){
+        var item = $( '#off-canvas-nav' ).multilevelpushmenu( 'finditemsbyname' , canvasPaperCache[i] ).first();
+        $( '#off-canvas-nav' ).multilevelpushmenu( 'removeitems' , item );
+    }
+    canvasPaperCache.clear();
+    //Push items to off canvas menu
+    var itemsArray = [];
+    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
+    for(var i=0;i<papers.length;i++){
+        if(i<10){
+            itemsArray.push({
+                name: papers[i].title,
+                icon: 'fa fa-pencil-square-o',
+                link: '/paper/' + papers[i]._id + ''
+            });
+            canvasPaperCache.push(papers[i].title);
+        }
+    }
+    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
+}
 
 
 //Helper functions
@@ -593,6 +600,12 @@ function throwSignUpError(message){
 }
 
 //extensions
+
+Array.prototype.clear = function() {
+  while (this.length > 0) {
+    this.pop();
+  }
+};
 
 jQuery.extend({
     getValues: function(url) {
