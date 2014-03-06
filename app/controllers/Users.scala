@@ -41,7 +41,7 @@ object Users extends Controller {
 
             val userQ = Json.obj(User.username -> username)
             val fUser = UserDAO.findOneModel(userQ)
-            val r = for {
+            for {
               optUser <- fUser
               r <- optUser match {
                 case Some(u) =>
@@ -61,7 +61,6 @@ object Users extends Controller {
             } yield {
               r
             }
-            r
           }
         case None =>
           Future.successful(
