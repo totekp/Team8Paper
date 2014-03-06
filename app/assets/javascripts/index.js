@@ -79,7 +79,7 @@ function reInitCanvasMenu(){
     $( '#off-canvas-nav' ).multilevelpushmenu( 'removeitems' , removeItems );
     //Push items to off canvas menu
     var itemsArray = [];
-    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
+    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
     for(var i=0;i<papers.length;i++){
         if(i<10){
             itemsArray.push({
