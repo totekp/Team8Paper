@@ -353,7 +353,7 @@ function initBinds(){
                                 $('#search-result-title').attr('href','/paper/'+result.data[i]._id);
                                 $('#search-result-created').append('created: '+created);
                                 $('#search-result-updated').append('updated: '+updated);
-                                $('#search-result-tags').append('tags: '+result.data[i].tags.join(' '));
+                                $('#search-result-tags').append('tags: '+result.data[i].tags.join(' | '));
 
                                 $('#search-result-item').attr('id','result-'+result.data[i]._id);
                                 $('#search-result-title').attr('id','search-result-title-'+result.data[i]._id);
