@@ -256,9 +256,17 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val searchTags = (j \ "tags").as[Vector[String]]
-            val tagQ = Json.obj(
-              Paper.username -> req.session.get("username"),
-              Paper.tags -> Json.obj("$all" -> searchTags))
+            val tagQ = {
+              req.session.get("username").map {
+                u =>
+                  Json.obj(
+                    Paper.username -> u,
+                    Paper.tags -> Json.obj("$all" -> searchTags)
+                  )
+              }.getOrElse {
+                Json.obj(Paper.tags -> Json.obj("$all" -> searchTags))
+              }
+            }
             for {
               r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
             } yield {

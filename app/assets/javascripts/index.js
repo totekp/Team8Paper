@@ -11,8 +11,8 @@ var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;te
                                "<div class='col-md-9' style='padding:0px'>"+
                                    "<div class='caption' style='padding:0px 0px 15px 0px;'>"+
                                      "<p id='paper-label' style='font-size:21px;'></p>"+
-                                     "<span style='font-size:10px;' id='paper-created'></span><br>"+
-                                     "<span style='font-size:10px;' id='paper-updated'></span>"+
+                                     "<span style='font-size:10px;' id='paper-updated'></span><br>"+
+                                     "<span style='font-size:10px;' id='paper-created'></span>"+
                                    "</div>"+
                                "</div>"+
                            "</div>"+
@@ -26,9 +26,9 @@ var searchResultTemplate = "<div id='search-result-item' style='text-align:left;
                                    "<div class='col-md-11'>"+
                                        "<h3 style='margin:0;'><a id='search-result-title' style='color:#eef;'></a></h3>"+
                                        "<div id='search-result-meta' style='font-size:9px;color:#bbb;'>"+
-                                           "<div id='search-result-created'>"+
-                                           "</div>"+
                                            "<div id='search-result-updated'>"+
+                                           "</div>"+
+                                           "<div id='search-result-created'>"+
                                            "</div>"+
                                            "<div id='search-result-tags' style='font-size:11px;color:#CCE6A4;'>"+
                                            "</div>"+
@@ -358,8 +358,8 @@ function initBinds(){
                                 $('#search-result-icon').attr('href','/paper/'+result.data[i]._id);
                                 $('#search-result-title').append(result.data[i].title);
                                 $('#search-result-title').attr('href','/paper/'+result.data[i]._id);
-                                $('#search-result-created').append('created: '+created);
                                 $('#search-result-updated').append('updated: '+updated);
+                                $('#search-result-created').append('created: '+created);
                                 $('#search-result-tags').append('tags: '+result.data[i].tags.join(' | '));
 
                                 $('#search-result-item').attr('id','search-result-'+result.data[i]._id);
@@ -568,8 +568,8 @@ function addPaperToDash(paper){
         $('#paper-label').append(paper.title);
     }
 
-    $('#paper-created').append('Cr: '+created);
-    $('#paper-updated').append('Up: '+updated);
+    $('#paper-updated').append('M: '+updated);
+    $('#paper-created').append('C: '+created);
     $('#paper-open-btn').attr('href','/paper/'+paper._id);
 
     //Set the id of the current paper template to something else to avoid conflicts in the code above
@@ -688,7 +688,7 @@ Date.prototype.formatDateTime = function(){
     hours = hours ? hours : 12; // the hour '0' should be '12'
     minutes = minutes < 10 ? '0'+minutes : minutes;
     seconds = seconds < 10 ? '0'+seconds : seconds;
-    return this.getMonth() +
+    return (this.getMonth() + 1) +
     "/" +  this.getDate() +
     "/" +  this.getFullYear().toString().substr(2,3) + " "
     + hours + ":"
