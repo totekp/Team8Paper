@@ -355,7 +355,8 @@ function initBinds(){
                                 $('#search-result-updated').append('updated: '+updated);
                                 $('#search-result-tags').append('tags: '+result.data[i].tags.join(' | '));
 
-                                $('#search-result-item').attr('id','result-'+result.data[i]._id);
+                                $('#search-result-item').attr('id','search-result-'+result.data[i]._id);
+                                $('#search-result-icon').attr('id','search-result-icon-'+result.data[i]._id);
                                 $('#search-result-title').attr('id','search-result-title-'+result.data[i]._id);
                                 $('#search-result-created').attr('id','search-result-created-'+result.data[i]._id);
                                 $('#search-result-updated').attr('id','search-result-updated-'+result.data[i]._id);
