@@ -3,13 +3,20 @@ var searchTagCache = [];
 var canvasPaperCache = [];
 var offCanvasNavVisible = false;
 var alphaNumRegx = /^[A-Za-z0-9_-]+$/;
-var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;padding:15px;' class='thumbnail'>"+
-                           "<div id='paper-image'></div>"+
-                           "<div class='caption'>"+
-                             "<p id='paper-label'></p>"+
-                             "<p style='font-size:11px;' id='paper-date'></p>"+
-                             "<p><a href='#' style='width:100%' id='paper-open-btn' class='btn btn-primary' role='button'>Open</a></p>"+
+var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;padding:12px;min-width:200px;' class='btn btn-default'>"+
+                           "<div class='row'>"+
+                               "<div class='col-md-3'>"+
+                                   "<div id='paper-icon'></div>"+
+                               "</div>"+
+                               "<div class='col-md-9' style='padding:0px'>"+
+                                   "<div class='caption' style='padding:0px 0px 15px 0px;'>"+
+                                     "<p id='paper-label' style='font-size:21px;'></p>"+
+                                     "<span style='font-size:10px;' id='paper-created'></span><br>"+
+                                     "<span style='font-size:10px;' id='paper-updated'></span>"+
+                                   "</div>"+
+                               "</div>"+
                            "</div>"+
+                           "<a href='#' style='width:100%' id='paper-open-btn' class='btn btn-primary' role='button'>Open</a>"+
                         "</div>";
 
 var searchResultTemplate = "<div id='search-result-item' style='text-align:left;width:100%;margin:0;' class='row'>"+
@@ -524,8 +531,8 @@ function updateDashboardEntry(id) {
         '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
     );
 
-    if(paper.title.length > 15) {
-        $('#label-'+paper._id).html(paper.title.slice(0,12)+'...');
+    if(paper.title.length > 9) {
+        $('#label-'+paper._id).html(paper.title.slice(0,9)+'..');
     }else{
         $('#label-'+paper._id).html(paper.title);
     }
@@ -539,7 +546,7 @@ function addPaperToDash(paper){
     var updated = new Date(paper.lastUpdated).formatDateTime();
     $('#paper-templates').append(dashPaperTemplate);
     $('#paper-template').attr('id','thumbnail-'+paper._id);
-    $('#paper-image').append(
+    $('#paper-icon').append(
         '<i id='+
         paper._id+
         ' data-title="'+
@@ -550,32 +557,35 @@ function addPaperToDash(paper){
         updated+
         '" data-tags="'+
         paper.tags.join(',')+
-        '" class="fa fa-file-o fa-5x context-menu-one box menu-injected"></i>'
+        '" class="fa fa-file-o fa-4x context-menu-one box menu-injected"  style="padding:0px;"></i>'
     );
 
 
     //Account for long titles to prevent screwing up each paper templates
-    if(paper.title.length > 15) {
-        $('#paper-label').append(paper.title.slice(0,12)+'...');
+    if(paper.title.length > 9) {
+        $('#paper-label').append(paper.title.slice(0,9)+'..');
     }else{
         $('#paper-label').append(paper.title);
     }
 
-    $('#paper-date').append(created);
+    $('#paper-created').append('Cr: '+created);
+    $('#paper-updated').append('Up: '+updated);
     $('#paper-open-btn').attr('href','/paper/'+paper._id);
 
     //Set the id of the current paper template to something else to avoid conflicts in the code above
     $('#paper-open-btn').attr('id','open-btn-'+paper._id);
-    $('#paper-image').attr('id','image-'+paper._id);
+    $('#paper-icon').attr('id','image-'+paper._id);
     $('#paper-label').attr('id','label-'+paper._id);
-    $('#paper-date').attr('id','date-'+paper._id);
+    $('#paper-created').attr('id','created-'+paper._id);
+    $('#paper-updated').attr('id','updated-'+paper._id);
     $('#thumbnail-'+paper._id).click(function (event) {
         handlePaperSelection(event);
     });
 }
 
 function handlePaperSelection(event) {
-    var data = $("#"+event.currentTarget.id).children('div[id*="image-"]').children();
+    console.log(event.currentTarget.id);
+    var data = $("#"+event.currentTarget.id).find('div[id*="image-"]').children();
     var paper = {
         _id: data[0].id,
         title: $('#'+data[0].id).attr('data-title'),
@@ -680,7 +690,7 @@ Date.prototype.formatDateTime = function(){
     seconds = seconds < 10 ? '0'+seconds : seconds;
     return this.getMonth() +
     "/" +  this.getDate() +
-    "/" +  this.getFullYear() + " "
+    "/" +  this.getFullYear().toString().substr(2,3) + " "
     + hours + ":"
     + minutes + ":"
     + seconds + " "
