@@ -244,8 +244,8 @@ function initBinds(){
           url: '/api1/duplicatePaper',
           data: JSON.stringify({_id:paper._id}),
           contentType: 'application/json; charset=utf-8'
-        })
-        .done(function(result){
+         })
+           .done(function(result){
             if(result.status == "success"){
                 addDashboardEntry(result.data);
                 throwPageBroadcast("Successfully duplicated your paper");
