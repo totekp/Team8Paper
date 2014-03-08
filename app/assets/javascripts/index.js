@@ -83,7 +83,7 @@ $(document).ready(function(){
 //Init functions
 
 function updatePapers() {
-    var response = $.getValues('/api1/recentPaperids'); //Non asynchronous request
+    var response = $.getValues('/api1/recentPaperShorts'); //Non asynchronous request
         if(response.status!="success"){
             console.log("Failed to retrieve papers in non-async request");
         }

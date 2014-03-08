@@ -4,7 +4,7 @@ import play.api.mvc._
 import services.{UsernameAuth, PaperDAO}
 import models.{Paper, JsonResult}
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import util.Generator
 import scala.concurrent.Future
 import play.api.Logger
@@ -143,7 +143,7 @@ object Papers extends Controller {
       }
   }
 
-  def recentPaperids = Action.async {
+  def recentPaperShorts = Action.async {
     implicit req =>
       val username = req.session.get("username")
       val q = username.map(u =>
@@ -154,7 +154,7 @@ object Papers extends Controller {
       for {
         papersJson <- papers
       } yield {
-        JsonResult.success(papersJson)
+        JsonResult.success(papersJson.map(j => j - Paper.elements - Paper.groups))
       }
   }
 
