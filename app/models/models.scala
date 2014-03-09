@@ -20,7 +20,7 @@ case class Group(
         height: Option[Int],
         elementIds: Vector[String],
         created: Long,
-        lastUpdated: Long
+        modified: Long
                   ) {
 
 }
@@ -33,7 +33,7 @@ object Group extends Jsonable[Group] {
   val height = "height"
   val elementIds = "elementIds"
   val created = "created"
-  val lastUpdated = "lastUpdated"
+  val modified = "modified"
 
 
   def json2model(j: JsValue): Group = {
@@ -47,7 +47,7 @@ object Group extends Jsonable[Group] {
         height = j getAsInt Group.height,
         elementIds = (j \ Group.elementIds).as[Vector[String]],
         created = j asLong Group.created,
-        lastUpdated = j asLong Group.lastUpdated
+        modified = j asLong Group.modified
       )
       p
     } catch {
@@ -66,7 +66,7 @@ object Group extends Jsonable[Group] {
     m.height.map(b += Group.height -> _)
     b += Group.elementIds -> m.elementIds
     b += Group.created -> m.created
-    b += Group.lastUpdated -> m.lastUpdated
+    b += Group.modified -> m.modified
 
     val r = b.result()
     Json.obj(r: _*)
@@ -74,36 +74,43 @@ object Group extends Jsonable[Group] {
 }
 
 case class Paper(
-                  _id: String,
-                  title: String,
-                  tags: Vector[String],
-                  created: Long,
-                  lastUpdated: Long,
-                  elements: Vector[Element],
-                  groups: Vector[Group],
-                  username: Option[String],
-                  permissions: Option[String] = None,
-                  history: Vector[PaperHistory] = Vector.empty
-                  ) {
-  def updatedTime() = this.copy(lastUpdated = System.currentTimeMillis())
+  _id: String,
+  title: String,
+  tags: Vector[String],
+  created: Long,
+  modified: Long,
+  elements: Vector[Element],
+  groups: Vector[Group],
+  username: Option[String],
+  permissions: Option[String] = None,
+  diffs: Vector[PaperDiff]
+) {
+  def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 }
 
 object Paper extends Jsonable[Paper] {
   
-  val n = 7
-
   def createBlank(id: String, username: Option[String],
                   permissions: Option[String] = None): Paper = {
     val now = System.currentTimeMillis
-    Paper(id, "New Paper", Vector.empty, now, now,
-      Vector.empty, Vector.empty, username, permissions)
+    Paper(
+      id,
+      "Untitled Paper",
+      Vector.empty,
+      now,
+      now,
+      Vector.empty,
+      Vector.empty,
+      username,
+      permissions,
+      Vector.empty)
   }
 
   val _id = "_id"
   val title = "title"
   val tags = "tags"
-  val lastUpdated = "lastUpdated"
+  val modified = "modified"
   val elements = "elements"
   val created = "created"
   val groups = "groups"
@@ -118,7 +125,7 @@ object Paper extends Jsonable[Paper] {
     b += Paper.elements -> m.elements.map(Element.model2json)
     b += Paper.groups -> m.groups.map(Group.model2json)
     b += Paper.created -> m.created
-    b += Paper.lastUpdated -> m.lastUpdated
+    b += Paper.modified -> m.modified
     m.username.map(b += Paper.username -> _)
     m.permissions.map(b += Paper.permissions -> _)
 
@@ -133,11 +140,12 @@ object Paper extends Jsonable[Paper] {
         title = j asString Paper.title,
         tags = (j \ Paper.tags).as[Vector[String]],
         created = j asLong Paper.created,
-        lastUpdated = j asLong Paper.lastUpdated,
+        modified = j asLong Paper.modified,
         elements = (j \ Paper.elements).as[Vector[JsObject]].map(Element.json2model),
         groups = (j \ Paper.groups).as[Vector[JsObject]].map(Group.json2model),
         username = j getAsString Paper.username,
-        permissions = j getAsString Paper.permissions
+        permissions = j getAsString Paper.permissions,
+        diffs = Vector.empty // TODO better handling
       )
       p
     } catch {
@@ -161,7 +169,7 @@ case class Element(
                     width: Int,
                     height: Int,
                     created: Long,
-                    lastUpdated: Long
+                    modified: Long
                     ) {
 
 }
@@ -179,7 +187,7 @@ object Element extends Jsonable[Element] {
   val width = "width"
   val height = "height"
   val created = "created"
-  val lastUpdated = "lastUpdated"
+  val modified = "modified"
 
   def model2json(m: Element): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
@@ -192,7 +200,7 @@ object Element extends Jsonable[Element] {
     b += Element.width -> m.width
     b += Element.height -> m.height
     b += Element.created -> m.created
-    b += Element.lastUpdated -> m.lastUpdated
+    b += Element.modified -> m.modified
     val r = b.result()
     Json.obj(r: _*)
   }
@@ -209,7 +217,7 @@ object Element extends Jsonable[Element] {
         width = j asInt Element.width,
         height = j asInt Element.height,
         created = j asLong Element.created,
-        lastUpdated = j asLong Element.lastUpdated
+        modified = j asLong Element.modified
       )
       e
     } catch {

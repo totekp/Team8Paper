@@ -28,7 +28,7 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
       val f1 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.title -> IndexType.Descending), unique = false))
       val f2 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.tags -> IndexType.Descending), unique = false))
       val f3 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.created -> IndexType.Descending), unique = false))
-      val f4 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.lastUpdated -> IndexType.Descending), unique = false))
+      val f4 = PaperDAO.coll.indexesManager.ensure(Index(Seq(Paper.modified -> IndexType.Descending), unique = false))
 
       Await.result(f1, Duration.Inf)
       Await.result(f2, Duration.Inf)

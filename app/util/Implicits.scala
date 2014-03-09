@@ -14,6 +14,7 @@ object Implicits {
       def getAsInt(key: String) = (j \ key).asOpt[Int]
       def getAsObject(key: String) = (j \ key).asOpt[JsObject]
       def asObject(key: String) = (j \ key).as[JsObject]
-      def asLong(key: String) = (j \ key).as[Long]
+      def asLong(key: String) = Try((j \ key).as[Long])
+        .getOrElse(throw new Exception(s"key $key not found in json object"))
     }
 }

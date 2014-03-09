@@ -372,7 +372,7 @@ var textBox = (function() {
         textBoxVars.elementIds = new Array();
         textBoxVars.elementIds[0] = addedElement._id;
         textBoxVars.created =  event.timeStamp;
-        textBoxVars.lastUpdated = event.timeStamp;
+        textBoxVars.modified = event.timeStamp;
 
         return textBoxVars;
     }
@@ -388,7 +388,7 @@ var textBox = (function() {
         newElement.width = 0;
         newElement.height = 0;
         newElement.created = event.timeStamp;
-        newElement.lastUpdated = event.timeStamp;
+        newElement.modified = event.timeStamp;
 
         paperData.addElement(newElement);
         return newElement;

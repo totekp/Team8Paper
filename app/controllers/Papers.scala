@@ -150,11 +150,11 @@ object Papers extends Controller {
         Json.obj(Paper.username -> u))
         .getOrElse(Json.obj(Paper.username -> Json.obj("$exists" -> false)))
 
-      val papers = PaperDAO.find(q, Json.obj(Paper.lastUpdated -> -1), 25)
+      val papers = PaperDAO.find(q, Json.obj(Paper.modified -> -1), 25)
       for {
         papersJson <- papers
       } yield {
-        JsonResult.success(papersJson.map(j => j - Paper.elements - Paper.groups))
+        JsonResult.success(papersJson.map(j => j)) // TODO strip data
       }
   }
 
@@ -228,7 +228,7 @@ object Papers extends Controller {
                       val newPaper = paper.copy(
                         _id = newId,
                         created = nowms,
-                        lastUpdated = nowms)
+                        modified = nowms)
                       PaperDAO.save(newPaper, ow = false).map {
                         le =>
                           newId
@@ -268,7 +268,7 @@ object Papers extends Controller {
               }
             }
             for {
-              r <- PaperDAO.find(tagQ, Json.obj(Paper.lastUpdated -> -1))
+              r <- PaperDAO.find(tagQ, Json.obj(Paper.modified -> -1))
             } yield {
               JsonResult.success(r)
             }

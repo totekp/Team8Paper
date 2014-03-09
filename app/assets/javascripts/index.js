@@ -352,7 +352,7 @@ function initBinds(){
                             for(var i=0;i<result.data.length;i++){
                                 console.log(result.data[i]);
                                 var created = new Date(result.data[i].created).formatDateTime();
-                                var updated = new Date(result.data[i].lastUpdated).formatDateTime();
+                                var updated = new Date(result.data[i].modified).formatDateTime();
 
                                 $('#search-results').append(searchResultTemplate);
                                 $('#search-result-icon').attr('href','/paper/'+result.data[i]._id);
@@ -516,7 +516,7 @@ function updateDashboardEntry(id) {
     paper = getPaper(id);
     var data = $("#thumbnail-"+paper._id).children('div[id*="image-"]');
     var created = new Date(paper.created).formatDateTime();
-    var updated = new Date(paper.lastUpdated).formatDateTime();
+    var updated = new Date(paper.modified).formatDateTime();
     data.html(
         '<i id='+
         paper._id+
@@ -543,7 +543,7 @@ function updateDashboardEntry(id) {
 
 function addPaperToDash(paper){
     var created = new Date(paper.created).formatDateTime();
-    var updated = new Date(paper.lastUpdated).formatDateTime();
+    var updated = new Date(paper.modified).formatDateTime();
     $('#paper-templates').append(dashPaperTemplate);
     $('#paper-template').attr('id','thumbnail-'+paper._id);
     $('#paper-icon').append(
@@ -590,13 +590,13 @@ function handlePaperSelection(event) {
         _id: data[0].id,
         title: $('#'+data[0].id).attr('data-title'),
         created: $('#'+data[0].id).attr('data-created'),
-        lastUpdated: $('#'+data[0].id).attr('data-updated'),
+        modified: $('#'+data[0].id).attr('data-updated'),
         tags: $('#'+data[0].id).attr('data-tags')
     };
     $('#paper-settings-id').attr('data-id',paper._id);
     $('#paper-settings-title-input').val(paper.title);
     $('#paper-settings-created').html(paper.created);
-    $('#paper-settings-updated').html(paper.lastUpdated);
+    $('#paper-settings-updated').html(paper.modified);
     $('#paper-settings-tag-input').importTags(paper.tags);
 }
 
