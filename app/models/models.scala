@@ -76,7 +76,7 @@ object Group extends Jsonable[Group] {
 case class Paper(
   _id: String,
   title: String,
-  tags: Vector[String],
+  tags: Set[String],
   created: Long,
   modified: Long,
   elements: Vector[Element],
@@ -97,7 +97,7 @@ object Paper extends Jsonable[Paper] {
     Paper(
       id,
       "Untitled Paper",
-      Vector.empty,
+      Set.empty,
       now,
       now,
       Vector.empty,
@@ -138,7 +138,7 @@ object Paper extends Jsonable[Paper] {
       val p = Paper.apply(
         _id = j asString Paper._id,
         title = j asString Paper.title,
-        tags = (j \ Paper.tags).as[Vector[String]],
+        tags = (j \ Paper.tags).as[Set[String]],
         created = j asLong Paper.created,
         modified = j asLong Paper.modified,
         elements = (j \ Paper.elements).as[Vector[JsObject]].map(Element.json2model),
