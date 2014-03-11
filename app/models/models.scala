@@ -9,6 +9,24 @@ trait Jsonable[T] {
   def model2json(m: T): JsObject
 
   def json2model(j: JsValue): T
+
+  def jsonString2model(s: String): T = {
+    val j = Json.parse(s)
+    json2model(j)
+  }
+
+  def model2JsonString(m: T): String = {
+    val j = model2json(m)
+    Json.stringify(j)
+  }
+
+  def jsonString2json(s: String): JsObject = {
+    Json.parse(s).as[JsObject]
+  }
+
+  def json2jsonString(j: JsValue): String = {
+    Json.stringify(j)
+  }
 }
 
 case class Group(

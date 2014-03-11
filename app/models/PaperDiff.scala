@@ -19,8 +19,22 @@ object PaperDiff {
     val title = diff.newTitle.getOrElse(p.title)
     val permissions = if (diff.newPermissions.isDefined) diff.newPermissions else p.permissions
     val tags = p.tags diff diff.diffTags.deletions ++ diff.diffTags.additions
-    val groups = p.groups // TODO diff diff.diffGroups.deletions ++ diff.diffGroups.additions
-    val elements = p.elements // TODO diff diff.diffElements.deletions ++ diff.diffElements.additions
+
+    val groupAdditions = diff.diffGroups
+      .additions
+      .map(Group.jsonString2model)
+    val groupDeletions = diff.diffGroups
+      .deletions
+      .map(Group.jsonString2model)
+    val groups = p.groups -- groupDeletions ++ groupAdditions
+
+    val elementAdditions = diff.diffElements
+      .additions
+      .map(Element.jsonString2model)
+    val elementDeletions = diff.diffElements
+      .deletions
+      .map(Element.jsonString2model)
+    val elements = p.elements -- elementDeletions ++ elementAdditions
 
     Paper.apply(
       _id = p._id,
@@ -64,21 +78,11 @@ object PaperDiff {
       newTitle = preferSecond(old.newTitle, latest.newTitle),
       newPermissions =  preferSecond(old.newPermissions, latest.newPermissions),
       diffTags = old.diffTags.merge(latest.diffTags),
-//      pGroups = (old.pGroups ++ latest.pGroups).distinct,
-//      nGroups = (old.nGroups ++ latest.nGroups).distinct,
-//      pElements = (old.pElements ++ latest.pElements).distinct,
-//      nElements = (old.nElements ++ latest.nElements).distinct,
+      diffGroups = old.diffGroups.merge(latest.diffGroups),
+      diffElements = old.diffElements.merge(latest.diffElements),
       origin =  (old.origin ++ latest.origin).distinct
     )
-//    val sharedGroups = mergeWork.pGroups intersect mergeWork.nGroups
-//    val sharedElements = mergeWork.pElements intersect mergeWork.nElements
-
-    val finalDiff = mergeWork.copy(
-//      pGroups = mergeWork.pGroups diff sharedGroups,
-//      nGroups = mergeWork.nGroups diff sharedGroups,
-//      pElements = mergeWork.pElements diff sharedElements,
-//      nElements = mergeWork.nElements diff sharedElements
-    )
-    finalDiff
+    // TODO unique by id only
+    mergeWork
   }
 }
