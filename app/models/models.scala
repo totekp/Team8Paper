@@ -108,7 +108,20 @@ case class Paper(
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 
+  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
+    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
+    newer.diffWithOlder(this, origin)
+  }
+  
+  def addDiff(older: Paper, origin: Vector[String]): Paper = {
+    val diff = this.diffWithOlder(older, origin)
+    this.copy(
+      diffs = diff +: this.diffs
+    )
+  }
+  
   def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
+    assert(old.modified < this.modified, "Older paper's modified must be less than this paper's modified time")
     val newTitle = {
       if (this.title != old.title)
         Some(this.title)

@@ -10,7 +10,14 @@ case class PaperDiff(
   diffGroups: DiffSet,
   diffElements: DiffSet,
   origin: Vector[String]
-)
+) {
+//  def reverse: PaperDiff = {
+//    Paper(
+//      newModified = newModified,
+//      newTitle =
+//    )
+//  }
+}
 
 object PaperDiff {
   implicit lazy val jsonFormat_PaperDiff = Json.format[PaperDiff]
