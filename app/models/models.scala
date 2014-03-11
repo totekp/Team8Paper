@@ -79,8 +79,8 @@ case class Paper(
   tags: Set[String],
   created: Long,
   modified: Long,
-  elements: Vector[Element],
-  groups: Vector[Group],
+  elements: Set[Element],
+  groups: Set[Group],
   username: Option[String],
   permissions: Option[String] = None,
   diffs: Vector[PaperDiff]
@@ -100,8 +100,8 @@ object Paper extends Jsonable[Paper] {
       Set.empty,
       now,
       now,
-      Vector.empty,
-      Vector.empty,
+      Set.empty,
+      Set.empty,
       username,
       permissions,
       Vector.empty)
@@ -141,8 +141,8 @@ object Paper extends Jsonable[Paper] {
         tags = (j \ Paper.tags).as[Set[String]],
         created = j asLong Paper.created,
         modified = j asLong Paper.modified,
-        elements = (j \ Paper.elements).as[Vector[JsObject]].map(Element.json2model),
-        groups = (j \ Paper.groups).as[Vector[JsObject]].map(Group.json2model),
+        elements = (j \ Paper.elements).as[Set[JsObject]].map(Element.json2model),
+        groups = (j \ Paper.groups).as[Set[JsObject]].map(Group.json2model),
         username = j getAsString Paper.username,
         permissions = j getAsString Paper.permissions,
         diffs = Vector.empty // TODO better handling

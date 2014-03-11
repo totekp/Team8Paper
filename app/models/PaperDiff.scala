@@ -3,33 +3,24 @@ package models
 import play.api.libs.json.Json
 
 case class PaperDiff(
-  dModified: Option[Long],
-  dTitle: Option[String],
-  dPermissions: Option[String],
-  pnTags: PNSet,
-  pGroups: Vector[String],
-  nGroups: Vector[String],
-  pElements: Vector[String],
-  nElements: Vector[String],
+  newModified: Option[Long],
+  newTitle: Option[String],
+  newPermissions: Option[String],
+  diffTags: DiffSet,
+  diffGroups: DiffSet,
+  diffElements: DiffSet,
   origin: Vector[String]
-) {
-  def checkDistinct[T](a: Vector[T]) {
-    assert(a.distinct.size == a.size, s"${a.getClass.getSimpleName} must contain distinct values")
-  }
-  Seq(pGroups, nGroups, pElements, nElements).map(checkDistinct)
-  assert(pGroups.intersect(nGroups).isEmpty, "Groups: removed and added values must be different")
-  assert(pElements.intersect(nElements).isEmpty, "Elements: removed and added values must be different")
-}
+)
 
 object PaperDiff {
   implicit lazy val jsonFormat_PaperDiff = Json.format[PaperDiff]
 
   def patchWithTime(p: Paper, diff: PaperDiff, datetime: Long): Paper = {
-    val title = diff.dTitle.getOrElse(p.title)
-    val permissions = if (diff.dPermissions.isDefined) diff.dPermissions else p.permissions
-    val tags = p.tags diff diff.pnTags.neg ++ diff.pnTags.pos
-    val groups = p.groups diff diff.nGroups ++ diff.pGroups
-    val elements = p.elements diff diff.nElements ++ diff.pElements
+    val title = diff.newTitle.getOrElse(p.title)
+    val permissions = if (diff.newPermissions.isDefined) diff.newPermissions else p.permissions
+    val tags = p.tags diff diff.diffTags.deletions ++ diff.diffTags.additions
+    val groups = p.groups // TODO diff diff.diffGroups.deletions ++ diff.diffGroups.additions
+    val elements = p.elements // TODO diff diff.diffElements.deletions ++ diff.diffElements.additions
 
     Paper.apply(
       _id = p._id,
@@ -41,18 +32,18 @@ object PaperDiff {
       groups = groups,
       username = p.username,
       permissions = permissions,
-      diffs = diff.copy(dModified =  Some(datetime)) +: p.diffs
+      diffs = diff.copy(newModified =  Some(datetime)) +: p.diffs
     )
   }
 
   def mergeWithTime(datetime: Long, diffs: PaperDiff*): PaperDiff = {
-    diffs.reduce(merge).copy(dModified =  Some(datetime))
+    diffs.reduce(merge).copy(newModified =  Some(datetime))
   }
 
   def merge(d1: PaperDiff, d2: PaperDiff): PaperDiff = {
     val (old, latest) = {
-      if (d1.dModified.isDefined && d2.dModified.isDefined) {
-        if (d1.dModified.get < d2.dModified.get) {
+      if (d1.newModified.isDefined && d2.newModified.isDefined) {
+        if (d1.newModified.get < d2.newModified.get) {
           d1 -> d2
         } else {
           d2 -> d1
@@ -69,24 +60,24 @@ object PaperDiff {
     }
 
     val mergeWork = old.copy(
-      dModified =  preferSecond(old.dModified, latest.dModified),
-      dTitle = preferSecond(old.dTitle, latest.dTitle),
-      dPermissions =  preferSecond(old.dPermissions, latest.dPermissions),
-      pnTags = old.pnTags.merge(latest.pnTags),
-      pGroups = (old.pGroups ++ latest.pGroups).distinct,
-      nGroups = (old.nGroups ++ latest.nGroups).distinct,
-      pElements = (old.pElements ++ latest.pElements).distinct,
-      nElements = (old.nElements ++ latest.nElements).distinct,
+      newModified =  preferSecond(old.newModified, latest.newModified),
+      newTitle = preferSecond(old.newTitle, latest.newTitle),
+      newPermissions =  preferSecond(old.newPermissions, latest.newPermissions),
+      diffTags = old.diffTags.merge(latest.diffTags),
+//      pGroups = (old.pGroups ++ latest.pGroups).distinct,
+//      nGroups = (old.nGroups ++ latest.nGroups).distinct,
+//      pElements = (old.pElements ++ latest.pElements).distinct,
+//      nElements = (old.nElements ++ latest.nElements).distinct,
       origin =  (old.origin ++ latest.origin).distinct
     )
-    val sharedGroups = mergeWork.pGroups intersect mergeWork.nGroups
-    val sharedElements = mergeWork.pElements intersect mergeWork.nElements
+//    val sharedGroups = mergeWork.pGroups intersect mergeWork.nGroups
+//    val sharedElements = mergeWork.pElements intersect mergeWork.nElements
 
     val finalDiff = mergeWork.copy(
-      pGroups = mergeWork.pGroups diff sharedGroups,
-      nGroups = mergeWork.nGroups diff sharedGroups,
-      pElements = mergeWork.pElements diff sharedElements,
-      nElements = mergeWork.nElements diff sharedElements
+//      pGroups = mergeWork.pGroups diff sharedGroups,
+//      nGroups = mergeWork.nGroups diff sharedGroups,
+//      pElements = mergeWork.pElements diff sharedElements,
+//      nElements = mergeWork.nElements diff sharedElements
     )
     finalDiff
   }
