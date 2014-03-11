@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/nanop/Team8Paper.png?branch=master)](https://travis-ci.org/nanop/Team8Paper)
 
-live server -> http://team8paper.herokuapp.com
+live server -> https://team8paper.herokuapp.com
 
 # Installation and Running from source
 

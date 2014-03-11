@@ -1,4 +1,5 @@
 
+import controllers.Users
 import models.Paper
 import play.filters.gzip.GzipFilter
 import play.api._
@@ -8,6 +9,7 @@ import scala.concurrent.{Await, Future}
 import play.api.libs.concurrent.Execution.Implicits._
 import services.PaperDAO
 import scala.concurrent.duration._
+import play.api.Play.current
 
 object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
 
@@ -20,6 +22,14 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
       }
     } else {
       super.onHandlerNotFound(request)
+    }
+  }
+
+  override def onRouteRequest(request: RequestHeader): Option[Handler] = {
+    if (Play.isProd && !request.headers.get("x-forwarded-proto").getOrElse("").contains("https")) {
+      Some(Users.secure)
+    } else {
+      super.onRouteRequest(request)
     }
   }
 
