@@ -107,6 +107,33 @@ case class Paper(
   def groupIds = groups.map(_._id)
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
+
+  def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
+    val newTitle = {
+      if (this.title != old.title)
+        Some(this.title)
+      else
+        None
+    }
+    val diffTags = DiffSet.create(this.tags -- old.tags, old.tags -- this.tags)
+    val diffGroups = DiffSet.create(
+      (this.groups -- old.groups).map(Group.model2JsonString),
+      (old.groups -- this.groups).map(Group.model2JsonString)
+    )
+    val diffElements = DiffSet.create(
+      (this.elements -- old.elements).map(Element.model2JsonString),
+      (old.elements -- this.elements).map(Element.model2JsonString)
+    )
+    PaperDiff(
+      newModified = Some(this.modified),
+      newTitle = newTitle,
+      newPermissions = None, // TODO
+      diffTags = diffTags,
+      diffGroups = diffGroups,
+      diffElements = diffElements,
+      origin = origin
+    )
+  }
 }
 
 object Paper extends Jsonable[Paper] {
