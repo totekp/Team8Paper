@@ -85,6 +85,8 @@ case class Paper(
   permissions: Option[String] = None,
   diffs: Vector[PaperDiff]
 ) {
+  def elementIds = elements.map(_._id)
+  def groupIds = groups.map(_._id)
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 }
