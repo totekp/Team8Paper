@@ -9,6 +9,24 @@ trait Jsonable[T] {
   def model2json(m: T): JsObject
 
   def json2model(j: JsValue): T
+
+  def jsonString2model(s: String): T = {
+    val j = Json.parse(s)
+    json2model(j)
+  }
+
+  def model2JsonString(m: T): String = {
+    val j = model2json(m)
+    Json.stringify(j)
+  }
+
+  def jsonString2json(s: String): JsObject = {
+    Json.parse(s).as[JsObject]
+  }
+
+  def json2jsonString(j: JsValue): String = {
+    Json.stringify(j)
+  }
 }
 
 case class Group(
@@ -89,6 +107,46 @@ case class Paper(
   def groupIds = groups.map(_._id)
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
+
+  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
+    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
+    newer.diffWithOlder(this, origin)
+  }
+  
+  def addDiff(older: Paper, origin: Vector[String]): Paper = {
+    val diff = this.diffWithOlder(older, origin)
+    this.copy(
+      diffs = diff +: this.diffs
+    )
+  }
+  
+  def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
+    assert(old.modified < this.modified, "Older paper's modified must be less than this paper's modified time")
+    val newTitle = {
+      if (this.title != old.title)
+        Some(this.title)
+      else
+        None
+    }
+    val diffTags = DiffSet.create(this.tags -- old.tags, old.tags -- this.tags)
+    val diffGroups = DiffSet.create(
+      (this.groups -- old.groups).map(Group.model2JsonString),
+      (old.groups -- this.groups).map(Group.model2JsonString)
+    )
+    val diffElements = DiffSet.create(
+      (this.elements -- old.elements).map(Element.model2JsonString),
+      (old.elements -- this.elements).map(Element.model2JsonString)
+    )
+    PaperDiff(
+      newModified = Some(this.modified),
+      newTitle = newTitle,
+      newPermissions = None, // TODO
+      diffTags = diffTags,
+      diffGroups = diffGroups,
+      diffElements = diffElements,
+      origin = origin
+    )
+  }
 }
 
 object Paper extends Jsonable[Paper] {
