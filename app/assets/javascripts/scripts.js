@@ -37,10 +37,6 @@ var paperData = (function() {
         return false;
     }
 
-    function addElement(textBox) {
-        data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(textBox));
-    }
-
     function removeElement(id) {
         for(var i = 0; i < getElementsLength(); i++)
         {
@@ -54,6 +50,7 @@ var paperData = (function() {
     function purgePaper() {
         data.data.elements = [];
         data.data.groups = [];
+        $("#paper_toolbar").fadeOut(400);
     }
 
     function getGroups() {
@@ -127,6 +124,7 @@ var paperData = (function() {
 
     function addElement(element) {
         data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(element));
+        updateJSON();
     }
 
     function getElementByID(id) {
@@ -255,6 +253,25 @@ var paper = (function() {
         return selectedGroup;
     }
 
+    function checkURL(url) {
+        return((/\.(gif|jpg|jpeg|tiff|png)$/i).test(url));
+    }
+    $("#image-url-submit").click(function(){
+        var imageURL = $('#image-url').val();
+        if(checkURL(imageURL)) {
+            addedElement = textBox.addNewElement(event, "image", imageURL);
+            $("#"+selectedGroup).append("<img id= '" + addedElement._id +"'src='" + addedElement.data +"'style ='max-width: 100%'>");
+            $('#insert-picture-url-modal').modal('hide');
+            paperData.addElementToGroup(addedElement._id, selectedGroup);
+        }
+        else {
+            $('#image-url-error').empty();
+            $('#image-url-error').append("Invalid URL Entered");
+            $('#image-url-error').slideDown();
+            $('#image-url-error').delay(2400).slideUp();
+        }
+    });
+
     $("#paper_create_new_group").click(
         function() {
         if(toggleGroupCreation()) {
@@ -310,15 +327,21 @@ var textBox = (function() {
         var addedElement;
         if(isNewBox) {
             addedElement = addNewElement(event, "text");
+            $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + addedElement._id + "' placeholder='Start Typing'></textarea>");
         }
         else {
-            addedElement = paperData.getElementsInGroup(boxID);
-            addedElement = paperData.getElementByID(addedElement);
-        }
 
-        $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + addedElement._id + "' placeholder='Start Typing'></textarea>");
-        if(!isNewBox) {
-            $("#"+addedElement._id).val(addedElement.data);
+            elementGroup = paperData.getElementsInGroup(boxID);
+            for(var i = 0; i < elementGroup.length; i++) {
+                var currentElement = paperData.getElementByID(elementGroup[i]);
+                if(currentElement.kind == "text") {
+                    $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + currentElement._id + "' placeholder='Start Typing'></textarea>");
+                    $("#"+currentElement._id).val(currentElement.data);
+                }
+                else if(currentElement.kind == "image") {
+                    $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style ='max-width: 100%'>");
+                }
+            }
         }
 
         $('#'+boxID).addClass("textBox");
@@ -377,11 +400,16 @@ var textBox = (function() {
         return textBoxVars;
     }
 
-    function addNewElement(event, elementKind) {
+    function addNewElement(event, elementKind, url) {
         var newElement = new Object();
         newElement._id = paperData.getUniqueElementId();
         newElement.kind = elementKind;
-        newElement.data = "";
+        if(elementKind == "image") {
+            newElement.data = url;
+        }
+        else {
+            newElement.data = "";
+        }
         newElement.x = 0;
         newElement.y = 0;
         newElement.z = 0;
@@ -389,7 +417,7 @@ var textBox = (function() {
         newElement.height = 0;
         newElement.created = event.timeStamp;
         newElement.modified = event.timeStamp;
-
+        console.log(newElement);
         paperData.addElement(newElement);
         return newElement;
     }
@@ -404,7 +432,7 @@ var textBox = (function() {
         $('#'+boxID).children('.textBoxTextArea').css({'max-height' : $('#'+boxID).height()-AREA_MAX_FACTOR , 'max-width' : $('#'+boxID).width()-AREA_MAX_FACTOR});
     }
 
-   return {createNewTextBox : createNewTextBox, loadTextBox : loadTextBox};
+   return {createNewTextBox : createNewTextBox, loadTextBox : loadTextBox, addNewElement : addNewElement};
 })();
 
 
