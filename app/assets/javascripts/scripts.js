@@ -257,7 +257,8 @@ var paper = (function() {
         return((/\.(gif|jpg|jpeg|tiff|png)$/i).test(url));
     }
     $("#image-url-submit").click(function(){
-        var imageURL = $('#image-url').val();
+        var imageURL = $('#image-url-text').val();
+        console.log(imageURL);
         if(checkURL(imageURL)) {
             addedElement = textBox.addNewElement(event, "image", imageURL);
             $("#"+selectedGroup).append("<img id= '" + addedElement._id +"'src='" + addedElement.data +"'style ='max-width: 100%'>");
