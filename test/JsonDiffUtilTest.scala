@@ -32,14 +32,14 @@ class JsonDiffUtilTest extends FunSuite {
   }
 
   test("get mongo modification query") {
-    assert(JsonDiffUtil.mongo.mongoModification(a, b)
+    assert(JsonDiffUtil.mongo.modifications(a, b)
       ==
       Json.obj(
         "$unset" -> Json.obj("a" -> "", "b.a" -> ""),
         "$set" -> Json.obj("c" -> 123)
       )
     )
-    assert(JsonDiffUtil.mongo.mongoModification(b, a)
+    assert(JsonDiffUtil.mongo.modifications(b, a)
       ==
       Json.obj(
         "$unset" -> Json.obj("c" -> ""),
