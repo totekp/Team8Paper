@@ -113,9 +113,4 @@ object Users extends Controller {
         .withNewSession
   }
 
-  def secure = Action {
-    implicit req =>
-      MovedPermanently("https://" + req.host + req.uri)
-  }
-
 }

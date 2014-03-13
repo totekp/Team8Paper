@@ -11,7 +11,7 @@ import services.PaperDAO
 import scala.concurrent.duration._
 import play.api.Play.current
 
-object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
+object Global extends WithFilters(HttpsFilter, new GzipFilter()) with GlobalSettings {
 
 
   override def onHandlerNotFound(request: RequestHeader): Future[SimpleResult] = {
@@ -22,14 +22,6 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
       }
     } else {
       super.onHandlerNotFound(request)
-    }
-  }
-
-  override def onRouteRequest(request: RequestHeader): Option[Handler] = {
-    if (Play.isProd && !request.headers.get("x-forwarded-proto").getOrElse("").contains("https")) {
-      Some(Users.secure)
-    } else {
-      super.onRouteRequest(request)
     }
   }
 
@@ -50,6 +42,19 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
         Logger.error(e.getStackTraceString)
     }
   }
+}
 
+object HttpsFilter extends Filter {
+  def apply(nextFilter: (RequestHeader) => Future[SimpleResult])
+           (rh: RequestHeader): Future[SimpleResult] = {
 
+    nextFilter(rh).map {
+      result =>
+        if (Play.isProd && !rh.headers.get("x-forwarded-proto").getOrElse("").contains("https")) {
+          Results.MovedPermanently("https://" + rh.host + rh.uri)
+        } else {
+          result
+        }
+    }
+  }
 }
