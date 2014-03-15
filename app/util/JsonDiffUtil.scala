@@ -38,19 +38,30 @@ object JsonDiffUtil {
 
   object mongo {
 
+    val set = "$set"
+    val unset = "$unset"
+    
     def modifications(old: JsValue, curr: JsValue): JsObject = {
       val d = deletedKeys(old, curr)
       val added = addedFields(old, curr)
       createModQuery(d, added)
     }
 
+    /**
+     * Cancel fields and keep new
+     * @param oldMod
+     * @param currMod
+     * @return
+     */
     def merge(oldMod: JsValue, currMod: JsValue): JsObject = {
-      val currDeleted = (currMod \ "$unset").as[JsObject].keys
-      val currAdded = (currMod \ "$set").as[JsObject].keys
+      // TODO add input sanity
+      val currDeleted = (currMod \ unset).as[JsObject].keys
+      val currAdded = (currMod \ set).as[JsObject].keys
+      val currAll = currDeleted ++ currAdded
       assert(currDeleted.intersect(currAdded).isEmpty, "no common keys in one modification")
 
-      val oldDeletedAfterCurr = (oldMod \ "$unset").as[JsObject].keys diff currAdded
-      val oldAddedAfterCurr = (oldMod \ "$set").as[JsObject].keys diff currDeleted
+      val oldDeletedAfterCurr = (oldMod \ unset).as[JsObject].keys diff currAll
+      val oldAddedAfterCurr = (oldMod \ set).as[JsObject].keys diff currAll
       assert(oldDeletedAfterCurr.intersect(oldAddedAfterCurr).isEmpty, "no common keys in one modification")
 
       assert(currDeleted.intersect(oldDeletedAfterCurr).isEmpty, "Key cannot be in both deleted")
@@ -59,10 +70,10 @@ object JsonDiffUtil {
       val finalDelete = (currDeleted ++ oldDeletedAfterCurr).toSeq
       val finalAdd = currAdded.toSeq.map {
         key =>
-          key -> currMod \ "$set" \ key
+          key ->(currMod \ set \ key)
       } ++ oldAddedAfterCurr.toSeq.map {
         key =>
-          key -> oldMod \ "$set" \ key
+          key -> (oldMod \ set \ key)
       }
       createModQuery(finalDelete, finalAdd)
     }
@@ -73,10 +84,10 @@ object JsonDiffUtil {
 
     def createModQuery(toDelete: Seq[String], toAdd: Seq[(String, JsValue)]): JsObject = {
       Json.obj(
-        "$unset" -> JsObject(
+        unset -> JsObject(
           toDelete.map(key => key -> JsString(""))
         ),
-        "$set" -> JsObject(
+        set -> JsObject(
           toAdd
         )
       )

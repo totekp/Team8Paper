@@ -58,5 +58,17 @@ class JsonDiffUtilTest extends FunSuite {
     )
   }
 
+  test("merge old and curr") {
+    val a2b = JsonDiffUtil.mongo.modifications(a, b)
+    val b2a = JsonDiffUtil.mongo.modifications(b, a)
+    val r = JsonDiffUtil.mongo.merge(a2b, b2a)
+    assert(a2b == Json.parse("""{"$unset":{"a":"","b.a":""},"$set":{"c":123,"d":123,"e":123}}"""))
+    assert(b2a == Json.parse("""{"$unset":{"c":""},"$set":{"a":123,"b.a":123,"d":111,"e":{"a":"a"}}}"""))
+
+    assert(r == Json.parse("""{"$unset":{"c":""},"$set":{"a":123,"b.a":123,"d":111,"e":{"a":"a"}}}"""))
+
+    assert(JsonDiffUtil.mongo.mergeOldToNew(Seq(a2b, b2a)) == r)
+  }
+
 
 }
