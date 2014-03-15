@@ -13,7 +13,7 @@ import services.PaperDAO
 import scala.concurrent.duration._
 import play.api.Play.current
 
-object Global extends WithFilters(HttpsFilter, new GzipFilter()) with GlobalSettings {
+object Global extends WithFilters(HttpsFilter, Api1Filter, new GzipFilter()) with GlobalSettings {
 
 
   override def onHandlerNotFound(request: RequestHeader): Future[SimpleResult] = {
