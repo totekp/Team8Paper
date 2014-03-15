@@ -3,9 +3,21 @@ package util
 import play.api.libs.json._
 import play.api.libs.json.JsObject
 
-object JsonDiffUtil {
+object JsonUtil {
 
   def dotPath(p: Seq[String], key: String): String = (p :+ key).mkString(".")
+
+  def getValue(in: JsValue, dotPath: String): JsValue = {
+    dotPath.split("\\.").toVector.foldLeft(in) {
+      case (node, key) =>
+        val child = node \ key
+        if (child.isInstanceOf[JsUndefined]) {
+          throw new Exception("Invalid dotPath")
+        } else {
+          child
+        }
+    }
+  }
 
   def deletedKeys(old: JsValue, curr: JsValue): Vector[String] = {
     deletedKeys(old, curr, Vector.empty, Vector.empty)
@@ -45,6 +57,15 @@ object JsonDiffUtil {
       val d = deletedKeys(old, curr)
       val added = addedFields(old, curr)
       createModQuery(d, added)
+    }
+
+    def patch(in: JsObject, mod: JsObject): JsObject = {
+      val toDelete = (mod \ unset).as[Vector[String]]
+
+      val inAfterDelete = in.value -- toDelete
+
+      val toAdd = (mod \ set).as[JsObject].value
+      JsObject.apply((inAfterDelete ++ toAdd).toSeq)
     }
 
     /**
@@ -92,6 +113,26 @@ object JsonDiffUtil {
         )
       )
     }
+
+    def getDelete(mod: JsValue): Vector[String] = {
+      mod match {
+        case mod: JsObject =>
+          (mod \ unset).as[JsObject].keys.toVector
+        case _ =>
+          throw new Exception("Invalid mod input")
+      }
+    }
+
+    def getAdded(mod: JsValue): Vector[(String, JsValue)] = {
+      mod match {
+        case mod: JsObject =>
+          (mod \ unset).as[JsObject].fields.toVector
+        case _ =>
+          throw new Exception("Invalid mod input")
+      }
+    }
+
+
 
   }
 

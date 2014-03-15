@@ -138,12 +138,8 @@ case class Paper(
       (old.elements -- this.elements).map(Element.model2JsonString)
     )
     PaperDiff(
-      newModified = Some(this.modified),
-      newTitle = newTitle,
-      newPermissions = None, // TODO
-      diffTags = diffTags,
-      diffGroups = diffGroups,
-      diffElements = diffElements,
+      modified = this.modified,
+      diff = JsDiff.empty, // TODO
       origin = origin
     )
   }
