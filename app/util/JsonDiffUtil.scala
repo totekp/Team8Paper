@@ -17,23 +17,22 @@ object JsonDiffUtil {
     parents: Vector[String],
     acc: Vector[String]
   ): Vector[String] = {
-    if (old == curr) {
-      Vector.empty
-    } else {
-      val r = old match {
-        case a: JsObject =>
-          a.fields.map {
-            case (key, b) =>
-              if ((curr \ key).isInstanceOf[JsUndefined]) {
-                Vector(dotPath(parents, key))
-              } else {
-                deletedKeys(b, curr \ key, parents :+ key, acc)
-              }
-          }.flatten.toVector
-        case _ =>
-          Vector.empty
-      }
-      r
+    (old, curr) match {
+      case (old: JsObject, curr: JsObject) =>
+        old.fields.map {
+          case (key, oldSubDoc: JsObject) =>
+            deletedKeys(oldSubDoc, curr \ key, parents :+ key, acc)
+
+          case (key, oldSubDoc) =>
+            if ((curr \ key).isInstanceOf[JsUndefined]) {
+              Vector(dotPath(parents, key))
+            } else {
+              Vector.empty
+            }
+        }.flatten.toVector
+
+      case _ =>
+        Vector.empty
     }
   }
 
@@ -95,23 +94,22 @@ object JsonDiffUtil {
     parents: Vector[String],
     acc: Vector[(String, JsValue)]
   ): Vector[(String, JsValue)] = {
-    if (old == curr) {
-      Vector.empty
-    } else {
-      val r = curr match {
-        case a: JsObject =>
-          a.fields.map {
-            case (key, b) =>
-              if ((old \ key).isInstanceOf[JsUndefined]) {
-                Vector(dotPath(parents, key) -> b)
-              } else {
-                addedFields(old \ key, b, parents :+ key, acc)
-              }
-          }.flatten.toVector
-        case _ =>
-          Vector.empty
-      }
-      r
+    curr match {
+      case curr: JsObject =>
+        curr.fields.map {
+          case (key, currSubDoc: JsObject) if (old \ key).isInstanceOf[JsObject] =>
+            addedFields(old \ key, currSubDoc, parents :+ key, acc)
+
+          case (key, currSubDoc) =>
+            if (currSubDoc != (old \ key)) {
+              Vector(dotPath(parents, key) -> currSubDoc)
+            } else {
+              Vector.empty
+            }
+        }.flatten.toVector
+
+      case _ =>
+        Vector.empty
     }
   }
 

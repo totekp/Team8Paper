@@ -10,14 +10,18 @@ class JsonDiffUtilTest extends FunSuite {
     "b" -> Json.obj(
       "a" -> 123,
       "b" -> 123
-    )
+    ),
+    "d" -> 111,
+    "e" -> Json.obj("a" -> "a")
   )
 
   val b = Json.obj(
     "b" -> Json.obj(
       "b" -> 123
     ),
-    "c" -> 123
+    "c" -> 123,
+    "d" -> 123,
+    "e" -> 123
   )
 
   test("find deleted keys") {
@@ -26,9 +30,15 @@ class JsonDiffUtilTest extends FunSuite {
   }
 
   test("find added fields") {
-    assert(JsonDiffUtil.addedFields(a, b).toSet == Set("c" -> JsNumber(123)))
+    assert(JsonDiffUtil.addedFields(a, b).toSet
+      == Set("c" -> JsNumber(123), "d" -> JsNumber(123), "e" -> JsNumber(123)))
     assert(JsonDiffUtil.addedFields(b, a).toSet
-      == Set("a" -> JsNumber(123), "b.a" -> JsNumber(123)))
+      == Set(
+      "a" -> JsNumber(123),
+      "b.a" -> JsNumber(123),
+      "d" -> JsNumber(111),
+      "e"-> Json.obj("a" -> "a")
+    ))
   }
 
   test("get mongo modification query") {
@@ -36,14 +46,14 @@ class JsonDiffUtilTest extends FunSuite {
       ==
       Json.obj(
         "$unset" -> Json.obj("a" -> "", "b.a" -> ""),
-        "$set" -> Json.obj("c" -> 123)
+        "$set" -> Json.obj("c" -> 123, "d" -> 123, "e" -> 123)
       )
     )
     assert(JsonDiffUtil.mongo.modifications(b, a)
       ==
       Json.obj(
         "$unset" -> Json.obj("c" -> ""),
-        "$set" -> Json.obj("a" -> 123, "b.a" -> 123)
+        "$set" -> Json.obj("a" -> 123, "b.a" -> 123, "d" -> 111, "e" -> Json.obj("a" -> "a"))
       )
     )
   }
