@@ -1,6 +1,8 @@
 
 import controllers.Users
-import models.Paper
+import models.{JsonResult, Paper}
+import play.api.http.Status
+import play.api.libs.json.Json
 import play.filters.gzip.GzipFilter
 import play.api._
 import play.api.mvc._
@@ -52,6 +54,21 @@ object HttpsFilter extends Filter {
       result =>
         if (Play.isProd && !rh.headers.get("x-forwarded-proto").getOrElse("").contains("https")) {
           Results.MovedPermanently("https://" + rh.host + rh.uri)
+        } else {
+          result
+        }
+    }
+  }
+}
+
+object Api1Filter extends Filter {
+  def apply(nextFilter: (RequestHeader) => Future[SimpleResult])
+           (rh: RequestHeader): Future[SimpleResult] = {
+
+    nextFilter(rh).map {
+      result =>
+        if (result.header.status == Status.NOT_FOUND) {
+          JsonResult.error(s"Path ${rh.path} is not found. Refer to routes file or docs.")
         } else {
           result
         }
