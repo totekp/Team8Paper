@@ -665,10 +665,13 @@ function papersFilledState(){
 function throwPageBroadcast(message){
     $('#page-broadcast-content').empty();
     $('#page-broadcast-content').append(message);
-    $('#page-broadcast').show().animate({ top:"-=15px",opacity:1.0 }, "slow");
-    $('#page-broadcast').delay(2400).animate({ top:"+=15px",opacity:0 }, "slow",function(){
-        $('#page-broadcast').hide();
-    });
+    if(!$('#page-broadcast').is(":visible")){
+        $('#page-broadcast').show().animate({ top:"-=15px",opacity:1.0 }, "slow");
+        $('#page-broadcast').delay(2400).animate({ top:"+=15px",opacity:0 }, "slow",function(){
+            $('#page-broadcast').hide();
+        });
+    }
+
 }
 function throwSignInError(message){
     $('#sign-in-error').empty();
