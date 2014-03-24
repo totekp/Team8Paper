@@ -91,7 +91,7 @@ function updatePapers() {
 }
 
 function initTransitions(){
-    $("#cover-contents").hide().fadeIn(2100);
+    $("#cover-contents").animate({opacity:1},"slow");
 }
 
 function initState(){ //Hide views based on whether user is signed in
@@ -103,15 +103,15 @@ function initState(){ //Hide views based on whether user is signed in
         navSignedOutState();
         throwPageBroadcast("Signed in as a Guest!");
     }
+
+    if(papers.length){
+        papersFilledState();
+    }else{
+        papersEmptyState();
+    }
 }
 
 function initBinds(){
-
-    $('#btn-start').click(function(){
-        $( '#off-canvas-nav' ).multilevelpushmenu( 'expand' );
-        offCanvasNavVisible = true;
-    });
-
     $('#sign-up-link').click(function(){
         $('#sign-in').slideUp();
         $('#sign-in-footer').slideUp();
@@ -254,7 +254,7 @@ function initBinds(){
          })
            .done(function(result){
             if(result.status == "success"){
-                addDashboardEntry(result.data);
+                addDashboardEntry(result.data,1);
                 throwPageBroadcast("Successfully duplicated your paper");
             }else{
                 throwPageBroadcast("Sorry! You don't have permission to duplicate this paper");
@@ -275,6 +275,11 @@ function initBinds(){
             if(result.status == "success"){
                 resetSettingsPanel();
                 removeDashboardEntry(id);
+                if(papers.length){
+                    papersFilledState();
+                }else{
+                    papersEmptyState();
+                }
                 throwPageBroadcast("Successfully deleted your paper");
             }else{
                 throwPageBroadcast("Sorry! You don't have permission to delete this paper");
@@ -442,7 +447,7 @@ function initCanvasMenu(){
 
 function initDashboard(){
     for(var i=0;i<papers.length;i++){
-        addPaperToDash(papers[i]);
+        addPaperToDash(papers[i],0);
     }
 }
 
@@ -453,6 +458,11 @@ function reInit() {
     reInitSearch();
     resetSettingsPanel();
     reInitDashboard();
+    if(papers.length){
+        papersFilledState();
+    }else{
+        papersEmptyState();
+    }
 }
 
 function reInitSearch(){
@@ -507,9 +517,9 @@ function removeDashboardEntry(id) {
      *but works slightly better with less flicker*/
 }
 
-function addDashboardEntry(id) {
+function addDashboardEntry(id,prepend) {
     updatePapers(); //This is inefficient...we should retrieve the paper on duplicate and not just the id..
-    addPaperToDash(getPaper(id));
+    addPaperToDash(getPaper(id),prepend);
 }
 
 function updateDashboardEntry(id) {
@@ -541,10 +551,14 @@ function updateDashboardEntry(id) {
     $('#paper-settings-updated').html(updated);
 }
 
-function addPaperToDash(paper){
+function addPaperToDash(paper,prepend){
     var created = new Date(paper.created).formatDateTime();
     var updated = new Date(paper.modified).formatDateTime();
-    $('#paper-templates').append(dashPaperTemplate);
+    if(prepend){
+        $('#paper-templates').prepend(dashPaperTemplate);
+    }else{
+        $('#paper-templates').append(dashPaperTemplate);
+    }
     $('#paper-template').attr('id','thumbnail-'+paper._id);
     $('#paper-icon').append(
         '<i id='+
@@ -631,11 +645,30 @@ function navSignedOutState(){
     $('#sign-out-nav').slideUp();
 }
 
+function papersEmptyState(){
+    $('#btn-start').show();
+    $('#search').slideUp();
+    $('#dashboard').slideUp();
+    $('#nav-search').fadeOut();
+    $('#nav-search').fadeOut();
+    $('#nav-dashboard').fadeOut();
+}
+
+function papersFilledState(){
+    $('#btn-start').hide();
+    $('#search').slideDown();
+    $('#dashboard').slideDown();
+    $('#nav-search').fadeIn();
+    $('#nav-dashboard').fadeIn();
+}
+
 function throwPageBroadcast(message){
-    $('#page-broadcast').empty();
-    $('#page-broadcast').append(message);
-    $('#page-broadcast').slideDown();
-    $('#page-broadcast').delay(2400).slideUp();
+    $('#page-broadcast-content').empty();
+    $('#page-broadcast-content').append(message);
+    $('#page-broadcast').show().animate({ top:"-=15px",opacity:1.0 }, "slow");
+    $('#page-broadcast').delay(2400).animate({ top:"+=15px",opacity:0 }, "slow",function(){
+        $('#page-broadcast').hide();
+    });
 }
 function throwSignInError(message){
     $('#sign-in-error').empty();

@@ -36,7 +36,9 @@
         </div>
 
         <div id="content-wrapper">
-            <div id="page-broadcast" class="alert alert-success" hidden>
+            <div id="page-broadcast" class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</i></button>
+                <div id="page-broadcast-content"></div>
             </div>
             <div id="main-cover" class="cover">
                 <div id="cover-inner" class="inner">
@@ -45,7 +47,7 @@
                         <h1 class="cover-heading">Team 8 Paper</h1>
                         <p class="lead">Team 8 Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
                         <p class="lead">
-                            <a href="#search" id="btn-start" class="btn btn-lg btn-default smoothScroll">Get Started!</a>
+                            <a href="/paper" id="btn-start" class="btn btn-lg btn-default">Create New Paper</a>
                         </p>
                     </div>
                     <img id="cover-photo" src="@routes.Assets.at("stylesheets/images/get_started_paper.png")" alt="cover photo">
