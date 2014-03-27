@@ -67,7 +67,7 @@ object Api1Filter extends Filter {
 
     nextFilter(rh).map {
       result =>
-        if (result.header.status == Status.NOT_FOUND) {
+        if (result.header.status == Status.NOT_FOUND && rh.path.startsWith("/api1")) {
           JsonResult.error(s"Path ${rh.path} is not found. Refer to routes file or docs.")
         } else {
           result
