@@ -139,7 +139,7 @@ case class Paper(
     )
     PaperDiff(
       modified = this.modified,
-      diff = JsDiff.empty, // TODO
+      diff = JsonDiff.empty, // TODO
       origin = origin
     )
   }

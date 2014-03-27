@@ -186,31 +186,6 @@ object Papers extends Controller {
       }
   }
 
-  def savePaper = Action.async {
-    implicit req =>
-      // TODO add user
-      req.body.asJson match {
-        case Some(j) =>
-          tryOrError {
-            val paper = j \ "paper"
-            val p = Paper.json2model(paper)
-            if (UsernameAuth.isOwner(p.username, req.session)) {
-              PaperDAO.save(Paper.json2model(paper), ow = true).map {
-                le =>
-                  JsonResult.success("")
-              }
-            } else {
-              Future.successful(
-                JsonResult.noPermission
-              )
-            }
-
-          }
-        case None =>
-          Future.successful(JsonResult.error("Invalid json input"))
-      }
-  }
-
   def duplicatePaper = Action.async {
     implicit req =>
       req.body.asJson match {

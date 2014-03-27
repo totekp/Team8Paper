@@ -5,7 +5,7 @@ import util.JsonUtil
 
 case class PaperDiff(
   modified: Long,
-  diff: JsDiff,
+  diff: JsonDiff,
   origin: Vector[String]
 ) {
 //  def reverse: PaperDiff = {
@@ -16,19 +16,10 @@ case class PaperDiff(
 //  }
 }
 
-case class JsDiff(deleted: Vector[String], added: Map[String, JsValue])
-
-object JsDiff {
-  implicit lazy val jsonFormat_JsDiff = Json.format[JsDiff]
-
-  def empty = JsDiff(Vector.empty, Map.empty)
-
-}
-
 object PaperDiff {
   implicit lazy val jsonFormat_PaperDiff = Json.format[PaperDiff]
 
-  def empty(origin: Vector[String] = Vector.empty) = PaperDiff(System.currentTimeMillis(), JsDiff.empty, origin)
+  def empty(origin: Vector[String] = Vector.empty) = PaperDiff(System.currentTimeMillis(), JsonDiff.empty, origin)
   def patch(p: Paper, diff: PaperDiff): Paper = {
     val pJ = Paper.model2json(p)
 
@@ -43,7 +34,7 @@ object PaperDiff {
     val oldJ = JsonUtil.mongo.createModQuery(dOld.diff.deleted, dOld.diff.added.toSeq)
     val newJ = JsonUtil.mongo.createModQuery(dNew.diff.deleted, dNew.diff.added.toSeq)
     val uJ = JsonUtil.mongo.merge(oldJ, newJ)
-    val uDiff = JsDiff(
+    val uDiff = JsonDiff(
       JsonUtil.mongo.getDelete(uJ),
       JsonUtil.mongo.getAdded(uJ).toMap
     )

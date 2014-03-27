@@ -21,7 +21,6 @@ POST        /api1/logout                 controllers.Users.logout
 # api1 calls
 GET         /api1/recentPaperShorts         controllers.Papers.recentPaperShorts
 POST        /api1/getPaper               controllers.Papers.getPaper
-POST        /api1/savePaper              controllers.Papers.savePaper
 POST        /api1/duplicatePaper         controllers.Papers.duplicatePaper
 POST        /api1/searchTags             controllers.Papers.searchTags
 POST        /api1/deletePaper            controllers.Papers.deletePaper
