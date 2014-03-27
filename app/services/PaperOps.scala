@@ -18,8 +18,9 @@ object PaperOps {
   }
 
   def reduceByInterval(p: Paper, interval: Duration = 5.minutes): Paper = {
-    val diffs = p.diffs
-    assert(diffs.sliding(2).forall(a => a(0).modified >= a(1).modified)) // sanity
+    val diffs = p.diffs.sortWith(_.modified > _.modified)
+    // Dumb check
+    assert(diffs.map(_.modified).size == diffs.map(_.modified).distinct.size, "Diffs must have different modified values")
     val reducedDiffs = diffs.foldLeft(Vector.empty[PaperDiff]) {
       (acc, d) =>
         if (acc.isEmpty || math.abs(acc.last.modified - d.modified) > interval.toMillis) {
