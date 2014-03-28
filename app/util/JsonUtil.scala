@@ -11,10 +11,11 @@ object JsonUtil {
     dotPath.split("\\.").toVector.foldLeft(in) {
       case (node, key) =>
         val child = node \ key
-        if (child.isInstanceOf[JsUndefined]) {
-          throw new Exception("Invalid dotPath")
-        } else {
-          child
+        child match {
+          case _: JsUndefined =>
+            throw new Exception("Invalid dotPath")
+          case _ =>
+            child
         }
     }
   }
