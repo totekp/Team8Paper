@@ -4,6 +4,7 @@
 
 <head>
     <title>Team8Paper</title>
+
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.min.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui.css")"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
@@ -11,7 +12,6 @@
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"/>
 </head>
-
 <body>
 <script>
     var data = @Html(play.api.libs.json.Json.stringify(json));
@@ -29,7 +29,7 @@
         <nav id = "options_toolbar" class="navbar navbar-inverse" role="navigation">
             <ul class="nav navbar-nav">
                 <li><a id="paper_create_new_group" title="Click to disable creation of new groups"><i class="fa fa-ban fa-lg"></i></a></li>
-                <li><a id="paper_delete_all_groups" title="Click to delete all groups"><i class="fa fa-trash-o fa-lg"></i></a></li>
+                <li><a id="paper_delete_all_groups" data-toggle="modal" data-target="#delete-all-groups-modal" title="Click to delete all groups"><i class="fa fa-trash-o fa-lg"></i></a></li>
             </ul>
         </nav>
 
@@ -67,13 +67,27 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div id="delete-all-groups-modal" class="modal fade">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title">Confirm Deletion of All Groups</h3>
+                </div>
+                <div class="modal-body">
+                    <input id="cancel-group-deletion" class="btn btn-primary form-control" value="Cancel">
+                    <input id="confirm-mass-group-deletion" class="btn btn-danger form-control" value="Yes Delete All Groups">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <div id="off_canvas_nav"></div>
 </div>
 
   <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.11.0.min.js")"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
-  <script src="//oss.maxcdn.com/libs/modernizr/2.6.2/modernizr.min.js"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.min.js")"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tagsinput.min.js")"></script>

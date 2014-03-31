@@ -124,7 +124,16 @@ var paperData = (function() {
 
     function addElement(element) {
         data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(element));
-        updateJSON();
+        updateJSON(true);
+    }
+
+    function updateElement(element) {
+        for(var i = 0; i < getElementsLength(); i++) {
+            if(data.data.elements[i]._id == element._id) {
+                data.data.elements[i] = element;
+            }
+        }
+        updateJSON(true);
     }
 
     function getElementByID(id) {
@@ -157,6 +166,7 @@ var paperData = (function() {
     function addElementToGroup(elementID, groupID) {
         var currGroup = getGroupByID(groupID);
         currGroup.elementIds[currGroup.elementIds.length] = elementID;
+        updateJSON();
     }
 
     function getNextID() {
@@ -173,7 +183,7 @@ var paperData = (function() {
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
     getGroupByID : getGroupByID, doesGroupExist : doesGroupExist, addGroup : addGroup, removeGroup : removeGroup,
-    getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement,
+    getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement, updateElement: updateElement,
     getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
     addElementToGroup : addElementToGroup, doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID };
 })();
@@ -256,14 +266,42 @@ var paper = (function() {
     function checkURL(url) {
         return((/\.(gif|jpg|jpeg|tiff|png)$/i).test(url));
     }
+
+    function makeGroupDraggable(group, enable) {
+        var isDraggable = $("#"+group).draggable("option", "disabled");
+        if(enable && !isDraggable) {
+            return;
+        }
+        $("#"+group).draggable("option", "disabled", !isDraggable);
+        if(isDraggable) {
+            $("#"+group).removeClass("boxSelected");
+            $("#"+group).addClass("boxDraggable");
+        }
+        else {
+            $("#"+group).addClass("boxSelected");
+            $("#"+group).removeClass("boxDraggable");
+        }
+    }
+
     $("#image-url-submit").click(function(){
         var imageURL = $('#image-url-text').val();
-        console.log(imageURL);
         if(checkURL(imageURL)) {
             addedElement = textBox.addNewElement(event, "image", imageURL);
             $("#"+selectedGroup).append("<img id= '" + addedElement._id +"'src='" + addedElement.data +"'style ='max-width: 100%'>");
+            $("#"+selectedGroup).css({"height" : "auto", "width" : "auto"});
+            $("#"+addedElement._id).draggable({containment: ("#"+selectedGroup)});
+            addedElement.height = $("#"+addedElement._id).height();
+            addedElement.width = $("#"+addedElement._id).width();
+
+            var currentGroup = paperData.getGroupByID(selectedGroup);
+            currentGroup.width = $("#"+selectedGroup).width();
+            currentGroup.height = $("#"+selectedGroup).height();
+
+            paperData.updateElement(addedElement);
             $('#insert-picture-url-modal').modal('hide');
             paperData.addElementToGroup(addedElement._id, selectedGroup);
+
+
         }
         else {
             $('#image-url-error').empty();
@@ -285,9 +323,16 @@ var paper = (function() {
         }
     });
 
-    $("#paper_delete_all_groups").click(
+    $("#confirm-mass-group-deletion").click(
         function() {
             removeAllNotesFromPaper();
+            $("#delete-all-groups-modal").modal('hide');
+        }
+    )
+
+    $("#cancel-group-deletion").click(
+        function() {
+            $("#delete-all-groups-modal").modal('hide');
         }
     )
 
@@ -301,20 +346,11 @@ var paper = (function() {
      });
     $("#paper_draggable_group").click(
         function(){
-            var isDraggable = $("#"+selectedGroup).draggable("option", "disabled");
-            $("#"+selectedGroup).draggable("option", "disabled", !isDraggable);
-            if(isDraggable) {
-                $("#"+selectedGroup).removeClass("boxSelected");
-                $("#"+selectedGroup).addClass("boxDraggable");
-            }
-            else {
-                $("#"+selectedGroup).addClass("boxSelected");
-                $("#"+selectedGroup).removeClass("boxDraggable");
-            }
+            makeGroupDraggable(selectedGroup);
     });
     return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize,
     removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup,
-    getSelectedGroup : getSelectedGroup};
+    getSelectedGroup : getSelectedGroup, makeGroupDraggable : makeGroupDraggable};
 })();
 
 
@@ -340,7 +376,18 @@ var textBox = (function() {
                     $("#"+currentElement._id).val(currentElement.data);
                 }
                 else if(currentElement.kind == "image") {
-                    $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style ='max-width: 100%'>");
+                    $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style = 'max-width: 100%; height:" + currentElement.height + "px; width:" + currentElement.width + "px; top:" + currentElement.y + "px; left:" + currentElement.x + "px;'>");
+                    //$("#"+currentElement._id).resizable({minHeight: 150, minWidth: 150, aspectRatio: "true"});
+                    (function(currentElement) {
+                        $("#"+currentElement._id).draggable({containment: ("#"+boxID), stop:
+                            function(event, ui) {
+                                currentElement.x = ui.position.left;
+                                currentElement.y = ui.position.top;
+                                paperData.updateElement(currentElement);
+                            }
+                        });
+                    })(currentElement);
+                    //
                 }
             }
         }
@@ -378,7 +425,9 @@ var textBox = (function() {
         $('.textBox').mousedown(
             function(event) {
                 paper.setSelectedGroup(this.id);
+                event.stopPropagation();
         });
+
 
         return addedElement;
     }
@@ -418,7 +467,6 @@ var textBox = (function() {
         newElement.height = 0;
         newElement.created = event.timeStamp;
         newElement.modified = event.timeStamp;
-        console.log(newElement);
         paperData.addElement(newElement);
         return newElement;
     }
@@ -443,6 +491,7 @@ document.title = data.data.title;
 document.addEventListener('keydown', function (event) {
   var esc = event.which == 27,
       del = event.which == 46,
+      ctrl = event.which == 17,
       nl = event.which == 13,
       el = event.target,
       input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA';
@@ -450,6 +499,9 @@ document.addEventListener('keydown', function (event) {
         if (del && el.nodeName == 'BODY') {
             paper.removeNoteFromPaper(paper.getSelectedGroup());
             updateJSON();
+        }
+        else if(ctrl && el.nodeName == 'BODY') {
+            paper.makeGroupDraggable(paper.getSelectedGroup(), true);
         }
         if (esc) {
             // restore state
@@ -475,6 +527,7 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
   var esc = event.which == 27,
       nl = event.which == 13,
+      ctrl = event.which == 17,
       el = event.target,
       input = el.nodeName != 'INPUT';
 
@@ -485,7 +538,9 @@ document.addEventListener('keyup', function (event) {
             document.execCommand('undo');
             el.blur();
         }
-
+        else if(ctrl && el.nodeName == 'BODY') {
+                    paper.makeGroupDraggable(paper.getSelectedGroup(), false);
+        }
         else if(paperData.doesElementExist(elementID)){
             paperData.getElementByID(elementID).data = $("#"+elementID).val();
             updateJSON();
@@ -503,29 +558,36 @@ function resizeCanvas() {
 }
 
 function bindCanvasClick() {
-    $('#paper_canvas').click(function(event) {
+    $('#paper_canvas').mousedown(function(event) {
         paper.addNote(event);
     });
 }
 
 
 var shouldUpdateJSON = false;
-function updateJSON() {
+function updateJSON(isImmediate) {
     shouldUpdateJSON = true;
+    if(isImmediate) {
+        passJSONToServer();
+        shouldUpdateJSON = false;
+    }
 }
 
 setInterval(function() {
     if(shouldUpdateJSON) {
-        $.ajax({
-                url: window.location.toString(),
-                data: JSON.stringify(data.data),
-                contentType: 'application/json',
-                type: 'post'
-        });
+        passJSONToServer();
         shouldUpdateJSON = false;
     }
 }, 1000);
 
+function passJSONToServer() {
+    $.ajax({
+            url: window.location.toString(),
+            data: JSON.stringify(data.data),
+            contentType: 'application/json',
+            type: 'post'
+    });
+}
 function initCanvas() {
     console.log(data);
     resizeCanvas();
