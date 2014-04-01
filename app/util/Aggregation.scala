@@ -2,10 +2,12 @@ package util
 
 import services.{MongoShop, PaperDAO}
 import reactivemongo.core.commands._
-import reactivemongo.bson.{BSONInteger, BSONArray, BSONDocument}
+import reactivemongo.bson.{BSONArray, BSONInteger, BSONDocument}
 import models.Paper
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
+import reactivemongo.api._
+import reactivemongo.bson._
 
 
 object Aggregation {
@@ -44,11 +46,17 @@ object Aggregation {
     val r = Aggregate(PaperDAO.coll.name, Seq(project, unwind, group))
     MongoShop.db.command(r).map {
       b =>
-        val result = b.head.get("result").get.as[Seq[BSONDocument]]
+        val result = b
+          .head
+          .getAs[BSONArray]("result")
+          .get
+          .values
+          .toVector
+          .map(_.asInstanceOf[BSONDocument])
         result.map {
-          tb =>
-            val tagName = tb.get("_id").get.as[String]
-            val count = tb.get("count").get.as[Int]
+          tb: BSONDocument =>
+            val tagName = tb.getAs[String]("_id").get
+            val count = tb.getAs[Int]("count").get
             tagName -> count
         }.toMap
     }
