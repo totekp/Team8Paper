@@ -8,6 +8,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
 import reactivemongo.api._
 import reactivemongo.bson._
+import play.api.Logger
 
 
 object Aggregation {
@@ -46,13 +47,7 @@ object Aggregation {
     val r = Aggregate(PaperDAO.coll.name, Seq(project, unwind, group))
     MongoShop.db.command(r).map {
       b =>
-        val result = b
-          .head
-          .getAs[BSONArray]("result")
-          .get
-          .values
-          .toVector
-          .map(_.asInstanceOf[BSONDocument])
+        val result = b.toVector
         result.map {
           tb: BSONDocument =>
             val tagName = tb.getAs[String]("_id").get

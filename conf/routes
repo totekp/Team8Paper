@@ -28,6 +28,7 @@ POST        /api1/deletePaper            controllers.Papers.deletePaper
 # debug
 GET         /debug/clear                 controllers.DebugController.clear
 GET         /debug/users                 controllers.DebugController.users
+GET         /debug/tagCloud              controllers.DebugController.tagCloud
 
 
 # Map static resources from the /public folder to the /assets URL path

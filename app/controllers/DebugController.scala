@@ -7,6 +7,7 @@ import services.{UserDAO, PaperDAO}
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
 import play.api.libs.json.{JsArray, Json}
+import util.Aggregation
 
 
 object DebugController extends Controller {
@@ -26,6 +27,18 @@ object DebugController extends Controller {
         users =>
           Ok(Json.prettyPrint(JsArray(users)))
       )
+  }
+
+  // TODO authorization
+  def tagCloud = Action.async {
+    implicit req =>
+      val fm = Aggregation.tagCloud
+      for {
+        m <- fm
+      } yield {
+        val desc = m.toVector.sortBy(_._2).reverse.map(_.swap).mkString("\n")
+        Ok(desc)
+      }
   }
 
 }
