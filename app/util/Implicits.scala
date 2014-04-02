@@ -17,4 +17,19 @@ object Implicits {
       def asLong(key: String) = Try((j \ key).as[Long])
         .getOrElse(throw new Exception(s"key $key not found in json object"))
     }
+
+    implicit class StringHelper(s: String) {
+      def toOpt: Option[String] = s match {
+        case null => None
+        case _ =>
+          val trimmed = s.trim
+          if (trimmed.isEmpty)
+            None
+          else
+            Some(trimmed)
+      }
+      def toIntOpt: Option[Int] = s.toOpt.map(_.toInt)
+      def toLongOpt: Option[Long] = s.toOpt.map(_.toLong)
+      def toDoubleOpt: Option[Double] = s.toOpt.map(_.toDouble)
+    }
 }
