@@ -24,6 +24,7 @@ POST        /api1/getPaper               controllers.Papers.getPaper
 POST        /api1/duplicatePaper         controllers.Papers.duplicatePaper
 POST        /api1/searchTags             controllers.Papers.searchTags
 POST        /api1/deletePaper            controllers.Papers.deletePaper
+GET        /api1/tagCloud            controllers.Papers.tagCloud
 
 # debug
 GET         /debug/clear                 controllers.DebugController.clear

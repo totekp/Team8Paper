@@ -5,7 +5,7 @@ import services.{UsernameAuth, PaperDAO}
 import models.{Paper, JsonResult}
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsObject, Json}
-import util.Generator
+import util.{Aggregation, Generator}
 import scala.concurrent.Future
 import play.api.Logger
 import util.Implicits._
@@ -292,5 +292,20 @@ object Papers extends Controller {
           Future.successful(JsonResult.error("Invalid input"))
       }
   }
+
+  def tagCloud = Action.async {
+    implicit req =>
+      val fm = Aggregation.tagCloud(req.session.get("username"))
+      for {
+        m <- fm
+      } yield {
+        val desc = m.toVector.sortBy(_._2).reverse.map(_.swap).map(t =>
+          Json.obj(
+            "_id" -> t._2,
+            "count" -> t._1))
+        JsonResult.success(desc)
+      }
+  }
+
 
 }
