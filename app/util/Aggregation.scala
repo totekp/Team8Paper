@@ -39,12 +39,18 @@ object Aggregation {
         "ok" : 1
 }
  */
-  def tagCloud: Future[Map[String, Int]] = {
+  def tagCloud(username: Option[String]): Future[Map[String, Int]] = {
+    val mat = {
+      username match {
+        case Some(username) => Match(BSONDocument(Paper.username -> username))
+        case None => Match(BSONDocument(Paper.username -> BSONDocument("$exists" -> false)))
+      }
+    }
     val project = Project(Paper.tags -> BSONInteger(1), "_id" -> BSONInteger(0))
     val unwind = Unwind(Paper.tags)
     val group = GroupField(Paper.tags)("count" -> SumValue(1))
 
-    val r = Aggregate(PaperDAO.coll.name, Seq(project, unwind, group))
+    val r = Aggregate(PaperDAO.coll.name, Seq(mat, project, unwind, group))
     MongoShop.db.command(r).map {
       b =>
         val result = b.toVector

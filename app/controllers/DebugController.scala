@@ -29,10 +29,9 @@ object DebugController extends Controller {
       )
   }
 
-  // TODO authorization
   def tagCloud = Action.async {
     implicit req =>
-      val fm = Aggregation.tagCloud
+      val fm = Aggregation.tagCloud(req.session.get("username"))
       for {
         m <- fm
       } yield {
