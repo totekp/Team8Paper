@@ -6,8 +6,22 @@ body {
    font-weight: 300;
 }
 
+.hidden{
+    display:none;
+}
 
-#page {
+#page-broadcast{
+    width:250px;
+    height:60px;
+    position:fixed;
+    float:right;
+    top:30px;
+    right:20px;
+    opacity:0;
+    z-index:1000;
+}
+
+#wrapper {
     width:100%;
     height:100%;
     position:absolute;
@@ -19,6 +33,7 @@ body {
     width:50px;
     background:#151515;
     position:fixed;
+    z-index:999;
 }
 
 .alert {
@@ -65,43 +80,25 @@ body {
 }
 /*END Nav + off canvas*/
 
-#content-wrapper {
+#main {
     min-width:768px;
     padding-left:50px;
     color:white;
 }
 
-.inner {
-    width:600px;
-    display:inline-table;
+.section{
+    width:100%;
+    z-index:998;
+    height:100%;
+    overflow-y: auto;
 }
 
-#cover-contents{
-    opacity:0;
-}
+#section-home {
 
-.lead {
-    color:#eee;
 }
-
-#page-broadcast{
-    width:250px;
-    height:60px;
-    position:fixed;
-    float:right;
-    top:30px;
-    right:20px;
-    opacity:0;
-    z-index:1000;
-}
-
-#btn-start {
-    width:300px;
-}
-
-.cover {
+#cover {
+    width:100%;
     padding:0px 100px 0px 100px;
-    text-align:center;
     /* IE10 Consumer Preview */
     background-image: -ms-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
     /* Mozilla Firefox */
@@ -114,28 +111,69 @@ body {
     background-image: -webkit-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
     /* W3C Markup, IE10 Release Preview */
     background-image: linear-gradient(to bottom, #E3F5FF 0%, #336BA3 100%);
+    display:inline-table;
 }
 
-#cover-header{
-    padding: 30px 0px 40px 0px;
-    font-size:18px;
+#cover-contents{
+    width:600px;
+    text-align:center;
+    margin:auto;
+}
+#btn-start {
+    width:300px;
+}
+.lead {
+    color:#eee;
+}
+.promotion-cell {
+    display:table-cell;
+}
+#promotion-dash {
+    padding:50px 90px 50px 90px;
+    color:#555;
+    width:100%;
+    background-color:#ddd;
+    display:table;
+}
+#promotion-paper {
+    padding:50px 90px 50px 90px;
+    color:#eee;
+    width:100%;
+    background-color:#336BA3;
+    display:table;
+}
+#promotion-trio {
+    width:100%;
+    margin-left:0px;
+    margin-right:0px;
+    height:300px;
+}
+#promotion-about {
+    padding:50px 90px 50px 90px;
+    background-color:white;
+    color:#555;
+    height:100%;
+    text-align:center;
+}
+#promotion-git {
+    padding:50px 90px 50px 90px;
+    background-color:#6282A3;
+    color:#eee;
+    height:100%;
+    text-align:center;
+}
+#promotion-team {
+    color:#555;
+    padding:50px 90px 50px 90px;
+    background-color:white;
+    height:100%;
+    text-align:center;
 }
 
-.cover-header-link{
-
-}
-
-.cover-header-link+.cover-header-link{
-    padding: 0px 10px 0px 10px;
-}
 
 .btn-paper {
     width:100%;
     margin-bottom: 3px;
-}
-
-#dashboard {
-    width: 100%;
 }
 
 #paper-templates-container {
@@ -148,10 +186,19 @@ body {
     height:330px;
 }
 
-#search{
+#search-menu {
+    position: fixed;                /* fix the popout to the left side of the screen */
+    top: 0px;
+    right: -450px;                    /* use a negative margin to pull the icon area of the popout off the edge of the page */
+    width: 450px;
+    border: 1px solid gray;
     background-color:#336BA3;
-    padding:30px 50px 20px 50px;
+    height:100%;
+    z-index:999;
     text-align:center;
+    padding:0px 10px 0px 10px;
+    overflow-y: scroll;
+    opacity:0.975;
 }
 #search-slide-up {
     font-size:35px;
@@ -161,7 +208,7 @@ body {
     margin:0px 0px 0px 0px;
 }
 #search-tag-submit {
-    margin: 20px 0px 20px 0px;
+    padding: 12px 10px 12px 10px;
 }
 #search-result-container {
     padding: 10px;
@@ -171,6 +218,11 @@ body {
 }
 #search-results {
     vertical-align:middle;
+}
+#search-empty-prompt {
+    padding-top:200px;
+    font-size:18px;
+    opacity:0.55;
 }
 
 hr.soften {
@@ -189,37 +241,66 @@ hr.soften {
     margin: auto;
     overflow-y: hidden;
 }
+.tagsinput {
+    border-radius: 4px;
+}
 
-#dashboard {
-    padding:50px 20px 100px 20px;
+
+#section-dashboard {
+    width: 100%;
     background-color:#fff;
     color:black;
-    text-align:center;
-    display:table;
 }
-#dashboard i {
+#section-dashboard i {
     padding:15px;
     color:#999;
 }
 
+#paper-container {
+    height:inherit;
+    width:inherit;
+}
 #paper-templates-container {
     color:black;
-    display:table-cell;
     border-style: solid;
     border-width: 1px;
     border-color: #DAE8F9;
+    width:78%;
+    height:100%;
+    overflow-y:auto;
+    display:inline-block;
+    background-color:#eee;
+}
+#paper-templates-header {
+    padding:5px 20px 0px 20px;
+    margin-bottom:10px;
+    color:white;
+    background-color: #6282A3;
+    display:table;
+    width:100%;
+}
+#paper-templates-header-left {
+    display:table-cell;
+    text-align:left;
+}
+#paper-templates-header-right {
+    display:table-cell;
+    text-align:left;
 }
 #paper-templates {
-    max-height:560px;
     overflow-y:auto;
+    background-color: transparent;
+    text-align:center;
 }
 #paper-settings {
     background:#DAE8F9;
-    display:table-cell;
-    min-width:250px;
-    max-width:250px;
+    min-width:22%;
+    max-width:22%;
     vertical-align: middle;
     margin:0px;
+    height:100%;
+    float:right;
+    display:inline-block;
 }
 #paper-settings-inner {
     margin:0px;
@@ -255,10 +336,6 @@ hr.soften {
 #paper-settings-table td {
     text-align:center;
     padding:10px 5px 10px 5px;
-}
-
-.tagsinput {
-    border-radius: 4px;
 }
 
 /*Fixes weird Windows based browser selection bug. Removed: causes issues with OSX browsers

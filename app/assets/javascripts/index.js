@@ -3,7 +3,7 @@ var searchTagCache = [];
 var canvasPaperCache = [];
 var offCanvasNavVisible = false;
 var alphaNumRegx = /^[A-Za-z0-9_-]+$/;
-var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;padding:12px;min-width:200px;' class='btn btn-default'>"+
+var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;margin:0px 1px 10px 2px;padding:12px;min-width:200px;' class='btn btn-default'>"+
                            "<div class='row'>"+
                                "<div class='col-md-3'>"+
                                    "<div id='paper-icon'></div>"+
@@ -112,6 +112,43 @@ function initState(){ //Hide views based on whether user is signed in
 }
 
 function initBinds(){
+
+    $('#nav-search').click( function() {
+        if ($('#search-menu').hasClass('offscreen')) {
+            $('#search-menu').removeClass('offscreen');
+            showPopout();
+        }
+        else {
+            $('#search-menu').addClass('offscreen');
+            hidePopout();
+        }
+    });
+
+    function showPopout() {
+        $('#search-menu').animate({
+            right: 0
+        }, 'slow');
+    }
+
+    function hidePopout() {
+        $('#search-menu').animate({
+            right: -450
+        }, 'slow');
+    }
+
+    $('#nav-home').click(function(){
+        $('#section-search').addClass('hidden');
+        $('#section-dashboard').addClass('hidden');
+        $('#section-home').removeClass('hidden');
+    });
+
+    $('#nav-dashboard').click(function(){
+        $('#section-home').addClass('hidden');
+        $('#section-search').addClass('hidden');
+        $('#section-dashboard').removeClass('hidden');
+    });
+
+
     $('#sign-up-link').click(function(){
         $('#sign-in').slideUp();
         $('#sign-in-footer').slideUp();
@@ -197,7 +234,7 @@ function initBinds(){
               });
         });
 
-    $("#sign-out-nav").click(function(){
+    $("#nav-sign-out").click(function(){
         $.ajax({
             type: 'POST',
             url: '/api1/logout',
@@ -255,6 +292,7 @@ function initBinds(){
            .done(function(result){
             if(result.status == "success"){
                 addDashboardEntry(result.data,1);
+                $('#paper-templates-header-count').html(papers.length);
                 throwPageBroadcast("Successfully duplicated your paper");
             }else{
                 throwPageBroadcast("Sorry! You don't have permission to duplicate this paper");
@@ -275,6 +313,7 @@ function initBinds(){
             if(result.status == "success"){
                 resetSettingsPanel();
                 removeDashboardEntry(id);
+                $('#paper-templates-header-count').html(papers.length);
                 if(papers.length){
                     papersFilledState();
                 }else{
@@ -298,13 +337,13 @@ function initBinds(){
         html:true
     });
 
-    $('#sign-in-nav').tooltip({
+    $('#nav-sign-in').tooltip({
         placement:'right',
         title:'Sign in',
         html:true
     });
 
-    $('#sign-out-nav').tooltip({
+    $('#nav-sign-out').tooltip({
         placement:'right',
         title:'Sign out',
         html:true
@@ -326,8 +365,8 @@ function initBinds(){
     });
 
     $('#search-tag-input').tagsInput({
-        'width':'600px',
-        'height': '42px',
+        'width':'372px',
+        'height': '40px',
         'defaultText': 'Search papers by tags',
         'minChars' : 3,
         'maxChars' : 20,
@@ -449,6 +488,7 @@ function initDashboard(){
     for(var i=0;i<papers.length;i++){
         addPaperToDash(papers[i],0);
     }
+    $('#paper-templates-header-count').html(papers.length);
 }
 
 //Reinitialization functions to bypass the need to reload page
@@ -636,28 +676,23 @@ function removePaper(id){
 }
 
 function navSignedInState(){
-    $('#sign-in-nav').slideUp();
-    $('#sign-out-nav').slideDown();
+    $('#nav-sign-in').slideUp();
+    $('#nav-sign-out').slideDown();
 }
 
 function navSignedOutState(){
-    $('#sign-in-nav').slideDown();
-    $('#sign-out-nav').slideUp();
+    $('#nav-sign-in').slideDown();
+    $('#nav-sign-out').slideUp();
 }
 
 function papersEmptyState(){
     $('#btn-start').show();
-    $('#search').slideUp();
-    $('#dashboard').slideUp();
-    $('#nav-search').fadeOut();
     $('#nav-search').fadeOut();
     $('#nav-dashboard').fadeOut();
 }
 
 function papersFilledState(){
     $('#btn-start').hide();
-    $('#search').slideDown();
-    $('#dashboard').slideDown();
     $('#nav-search').fadeIn();
     $('#nav-dashboard').fadeIn();
 }
