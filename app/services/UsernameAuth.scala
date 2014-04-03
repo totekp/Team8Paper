@@ -16,6 +16,16 @@ object UsernameAuth {
     }
   }
 
+  def canView(paperUsername: Option[String], session: Session): Boolean = {
+    val r = for {
+      au <- paperUsername
+      bu <- session.get("username")
+    } yield {
+      au == bu
+    }
+    r.getOrElse(false)
+  }
+
   def isOwner(paperUsername: Option[String], s: Session): Boolean = {
     isOwner(paperUsername, s.get("username"))
   }

@@ -172,7 +172,7 @@ object Papers extends Controller {
             } yield {
               val paperJson = Paper.model2json(
                   p.getOrElse(throw new Exception("Paper not found")))
-              if (UsernameAuth.isOwner(p.get.username, username)) {
+              if (UsernameAuth.canView(p.get.username, req.session)) {
                 JsonResult.success(paperJson)
               } else {
                 JsonResult.noPermission
@@ -199,7 +199,7 @@ object Papers extends Controller {
                   case Some(paper) =>
                     val newId = Generator.oid()
                     val nowms = System.currentTimeMillis()
-                    if (UsernameAuth.isOwner(paper.username, req.session.get("username"))) {
+                    if (UsernameAuth.isOwner(paper.username, req.session)) {
                       val newPaper = paper.copy(
                         _id = newId,
                         created = nowms,
@@ -299,10 +299,10 @@ object Papers extends Controller {
       for {
         m <- fm
       } yield {
-        val desc = m.toVector.sortBy(_._2).reverse.map(_.swap).map(t =>
+        val desc = m.toVector.sortBy(_._2).reverse.map(t =>
           Json.obj(
-            "_id" -> t._2,
-            "count" -> t._1))
+            "_id" -> t._1,
+            "count" -> t._2))
         JsonResult.success(desc)
       }
   }
