@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.{Json, JsValue, JsObject}
+import play.api.libs.json.{JsArray, Json, JsValue, JsObject}
 import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
 import play.api.Logger
@@ -150,6 +150,7 @@ object Paper extends Jsonable[Paper] {
   def createBlank(id: String, username: Option[String],
                   permissions: Option[String] = None): Paper = {
     val now = System.currentTimeMillis
+    val diff = PaperDiff.apply(now, JsonDiff.empty, Vector("Paper created"))
     Paper(
       id,
       "Untitled Paper",
@@ -160,7 +161,8 @@ object Paper extends Jsonable[Paper] {
       Set.empty,
       username,
       permissions,
-      Vector.empty)
+      Vector(diff)
+    )
   }
 
   val _id = "_id"
@@ -172,6 +174,7 @@ object Paper extends Jsonable[Paper] {
   val groups = "groups"
   val username = "username"
   val permissions = "permissions"
+  val diffs = "diffs"
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
@@ -184,6 +187,7 @@ object Paper extends Jsonable[Paper] {
     b += Paper.modified -> m.modified
     m.username.map(b += Paper.username -> _)
     m.permissions.map(b += Paper.permissions -> _)
+    b += Paper.diffs -> m.diffs
 
     val r = b.result()
     Json.obj(r: _*)
@@ -201,7 +205,7 @@ object Paper extends Jsonable[Paper] {
         groups = (j \ Paper.groups).as[Set[JsObject]].map(Group.json2model),
         username = j getAsString Paper.username,
         permissions = j getAsString Paper.permissions,
-        diffs = Vector.empty // TODO better handling
+        diffs = (j \ Paper.diffs).as[JsArray].value.toVector.map(_.as[PaperDiff])
       )
       p
     } catch {
