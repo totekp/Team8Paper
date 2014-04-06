@@ -81,7 +81,7 @@ body {
 /*END Nav + off canvas*/
 
 #main {
-    min-width:768px;
+    /*min-width:1024px;*/
     padding-left:50px;
     color:white;
 }
@@ -98,33 +98,32 @@ body {
 }
 #cover {
     width:100%;
-    padding:0px 100px 0px 100px;
-    /* IE10 Consumer Preview */
-    background-image: -ms-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
-    /* Mozilla Firefox */
-    background-image: -moz-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
-    /* Opera */
-    background-image: -o-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
-    /* Webkit (Safari/Chrome 10) */
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #E3F5FF), color-stop(1, #336BA3));
-    /* Webkit (Chrome 11+) */
-    background-image: -webkit-linear-gradient(top, #E3F5FF 0%, #336BA3 100%);
-    /* W3C Markup, IE10 Release Preview */
-    background-image: linear-gradient(to bottom, #E3F5FF 0%, #336BA3 100%);
+    padding:0px 0px 0px 0px;
     display:inline-table;
+    background: #336ba3;
+    background: -moz-linear-gradient(top, #336ba3 0%, #dddddd 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#336ba3), color-stop(100%,#dddddd));
+    background: -webkit-linear-gradient(top, #336ba3 0%,#dddddd 100%);
+    background: -o-linear-gradient(top, #336ba3 0%,#dddddd 100%);
+    background: -ms-linear-gradient(top, #336ba3 0%,#dddddd 100%);
+    background: linear-gradient(to bottom, #336ba3 0%,#dddddd 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#336ba3', endColorstr='#dddddd',GradientType=0 );
 }
 
 #cover-contents{
-    width:600px;
     text-align:center;
-    margin:auto;
+    margin:0px 50px 0px 50px;
+}
+#cover-left {
+    max-width:600px;
+}
+#cover-text {
+    color:#555;
 }
 #btn-start {
     width:300px;
 }
-.lead {
-    color:#eee;
-}
+
 .promotion-cell {
     display:table-cell;
 }
@@ -177,12 +176,12 @@ body {
 }
 
 #paper-templates-container {
-    width:100%;
     border-radius: 4px;
 }
 
 #cover-photo {
-    width:600px;
+    margin-top:100px;
+    width:500px;
     height:330px;
 }
 
@@ -264,7 +263,7 @@ hr.soften {
     border-style: solid;
     border-width: 1px;
     border-color: #DAE8F9;
-    width:77.6%;
+    margin-right:276px;
     height:100%;
     overflow-y:scroll;
     display:inline-block;
@@ -293,12 +292,13 @@ hr.soften {
 }
 #paper-settings {
     background:#DAE8F9;
-    min-width:22%;
-    max-width:22%;
+    width:276px;
     vertical-align: middle;
     margin:0px;
     height:100%;
-    float:right;
+    position:fixed;
+    right:0;
+    top:0;
     display:inline-block;
 }
 #paper-settings-inner {
