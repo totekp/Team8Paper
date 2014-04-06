@@ -16,7 +16,7 @@ object Papers extends Controller {
 
   def index = Action {
     implicit req =>
-      Ok(views.html.index2())
+      Ok(views.html.index())
   }
 
   /**
@@ -111,7 +111,10 @@ object Papers extends Controller {
                       JsonResult.error("Paper not changed"))
                   } else {
 
-                    val newPaperUpdatedTime = newPaper.updatedTime().updatedDiff("Updated paper", req)
+                    val newPaperUpdatedTime = newPaper
+                      .updatedTime()
+                      .prependDiff("Updated paper", req) // TODO specify
+
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
                       le =>
                         JsonResult.success("Paper saved")
@@ -136,7 +139,7 @@ object Papers extends Controller {
     implicit req =>
       val id = Generator.oid()
       val username = req.session.get("username")
-      val newPaper = Paper.createBlank(id, username).updatedDiff("Created paper", req)
+      val newPaper = Paper.createBlank(id, username).prependDiff("Created paper", req)
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper._id))
@@ -166,7 +169,6 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val id = j asString "_id"
-            val username = j getAsString "username"
             for {
               p <- PaperDAO.findByIdModel(id)
             } yield {
@@ -205,7 +207,8 @@ object Papers extends Controller {
                         created = nowms,
                         modified = nowms,
                         diffs = Vector.empty
-                      ).updatedDiff("Duplicated paper", req)
+                      ).prependDiff("Duplicated paper", req)
+
                       PaperDAO.save(newPaper, ow = false).map {
                         le =>
                           newId

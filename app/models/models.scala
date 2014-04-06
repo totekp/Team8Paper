@@ -4,9 +4,8 @@ import play.api.libs.json.{JsArray, Json, JsValue, JsObject}
 import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
 import play.api.Logger
-import controllers.SimpleDiff
-import play.mvc.Http.RequestHeader
 import play.api.mvc.{Request, AnyContent}
+import scala.concurrent.duration._
 
 trait Jsonable[T] {
   def model2json(m: T): JsObject
@@ -111,9 +110,9 @@ case class Paper(
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 
-  def updatedDiff(message: String, req: Request[AnyContent]): Paper = {
-    val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress))
-    this.copy(diffs = diffs :+ newDiff)
+  def prependDiff(message: String, req: Request[AnyContent]): Paper = {
+    val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress), this.modified)
+    this.copy(diffs = SimpleDiff.combine(5.minutes, newDiff +: diffs))
   }
 
 //  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
