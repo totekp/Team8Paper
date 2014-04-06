@@ -1,6 +1,5 @@
 package services
 
-import models.{JsonDiff, PaperDiff, Paper}
 import util.JsonUtil
 import scala.concurrent.duration._
 
