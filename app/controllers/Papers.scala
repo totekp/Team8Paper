@@ -111,7 +111,7 @@ object Papers extends Controller {
                       JsonResult.error("Paper not changed"))
                   } else {
 
-                    val newPaperUpdatedTime = newPaper.updatedTime()
+                    val newPaperUpdatedTime = newPaper.updatedTime().updatedDiff("Updated paper", req)
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
                       le =>
                         JsonResult.success("Paper saved")
@@ -136,7 +136,7 @@ object Papers extends Controller {
     implicit req =>
       val id = Generator.oid()
       val username = req.session.get("username")
-      val newPaper = Paper.createBlank(id, username)
+      val newPaper = Paper.createBlank(id, username).updatedDiff("Created paper", req)
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper._id))
@@ -203,7 +203,9 @@ object Papers extends Controller {
                       val newPaper = paper.copy(
                         _id = newId,
                         created = nowms,
-                        modified = nowms)
+                        modified = nowms,
+                        diffs = Vector.empty
+                      ).updatedDiff("Duplicated paper", req)
                       PaperDAO.save(newPaper, ow = false).map {
                         le =>
                           newId

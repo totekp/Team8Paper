@@ -5,6 +5,8 @@ import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
 import play.api.Logger
 import controllers.SimpleDiff
+import play.mvc.Http.RequestHeader
+import play.api.mvc.{Request, AnyContent}
 
 trait Jsonable[T] {
   def model2json(m: T): JsObject
@@ -109,6 +111,11 @@ case class Paper(
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 
+  def updatedDiff(message: String, req: Request[AnyContent]): Paper = {
+    val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress))
+    this.copy(diffs = diffs :+ newDiff)
+  }
+
 //  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
 //    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
 //    newer.diffWithOlder(this, origin)
@@ -151,7 +158,6 @@ object Paper extends Jsonable[Paper] {
   def createBlank(id: String, username: Option[String],
                   permissions: Option[String] = None): Paper = {
     val now = System.currentTimeMillis
-    val diff = SimpleDiff.create("Paper created", Vector.empty)
     Paper(
       id,
       "Untitled Paper",
@@ -162,7 +168,7 @@ object Paper extends Jsonable[Paper] {
       Set.empty,
       username,
       permissions,
-      Vector(diff)
+      Vector.empty
     )
   }
 
