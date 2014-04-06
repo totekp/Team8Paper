@@ -433,7 +433,7 @@ var textBox = (function() {
         }
 
         $('#'+boxID).addClass("textBox");
-        $('#'+boxID).css("float", "left");
+        $('#'+boxID).css("position", "absolute");
         $('#'+boxID).css("opacity", 1);
         $('#'+boxID).click(function(e) {
             e.stopPropagation();
