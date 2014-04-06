@@ -8,20 +8,21 @@ case class PaperDiff(
   diff: JsonDiff,
   origin: Vector[String]
 ) {
-//  def reverse: PaperDiff = {
-//    Paper(
-//      newModified = newModified,
-//      newTitle =
-//    )
-//  }
+
 }
 
 object PaperDiff {
   implicit lazy val jsonFormat_PaperDiff = Json.format[PaperDiff]
 
   def empty(origin: Vector[String] = Vector.empty) = PaperDiff(System.currentTimeMillis(), JsonDiff.empty, origin)
+
   def patch(p: Paper, diff: PaperDiff): Paper = {
-    val pJ = Paper.model2json(p)
+//    p.copy(
+//      modified =  diff.modified,
+//                  diff.diff.
+//
+//    )
+//    val pJ = Paper.model2json(p)
 
     ???
   }

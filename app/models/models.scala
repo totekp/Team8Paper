@@ -1,9 +1,10 @@
 package models
 
-import play.api.libs.json.{Json, JsValue, JsObject}
+import play.api.libs.json.{JsArray, Json, JsValue, JsObject}
 import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
 import play.api.Logger
+import controllers.SimpleDiff
 
 trait Jsonable[T] {
   def model2json(m: T): JsObject
@@ -101,48 +102,48 @@ case class Paper(
   groups: Set[Group],
   username: Option[String],
   permissions: Option[String] = None,
-  diffs: Vector[PaperDiff]
+  diffs: Vector[SimpleDiff]
 ) {
   def elementIds = elements.map(_._id)
   def groupIds = groups.map(_._id)
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 
-  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
-    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
-    newer.diffWithOlder(this, origin)
-  }
-  
-  def addDiff(older: Paper, origin: Vector[String]): Paper = {
-    val diff = this.diffWithOlder(older, origin)
-    this.copy(
-      diffs = diff +: this.diffs
-    )
-  }
-  
-  def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
-    assert(old.modified < this.modified, "Older paper's modified must be less than this paper's modified time")
-    val newTitle = {
-      if (this.title != old.title)
-        Some(this.title)
-      else
-        None
-    }
-    val diffTags = DiffSet.create(this.tags -- old.tags, old.tags -- this.tags)
-    val diffGroups = DiffSet.create(
-      (this.groups -- old.groups).map(Group.model2JsonString),
-      (old.groups -- this.groups).map(Group.model2JsonString)
-    )
-    val diffElements = DiffSet.create(
-      (this.elements -- old.elements).map(Element.model2JsonString),
-      (old.elements -- this.elements).map(Element.model2JsonString)
-    )
-    PaperDiff(
-      modified = this.modified,
-      diff = JsonDiff.empty, // TODO
-      origin = origin
-    )
-  }
+//  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
+//    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
+//    newer.diffWithOlder(this, origin)
+//  }
+//
+//  def addDiff(older: Paper, origin: Vector[String]): Paper = {
+//    val diff = this.diffWithOlder(older, origin)
+//    this.copy(
+//      diffs = diff +: this.diffs
+//    )
+//  }
+//
+//  def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
+//    assert(old.modified < this.modified, "Older paper's modified must be less than this paper's modified time")
+//    val newTitle = {
+//      if (this.title != old.title)
+//        Some(this.title)
+//      else
+//        None
+//    }
+//    val diffTags = DiffSet.create(this.tags -- old.tags, old.tags -- this.tags)
+//    val diffGroups = DiffSet.create(
+//      (this.groups -- old.groups).map(Group.model2JsonString),
+//      (old.groups -- this.groups).map(Group.model2JsonString)
+//    )
+//    val diffElements = DiffSet.create(
+//      (this.elements -- old.elements).map(Element.model2JsonString),
+//      (old.elements -- this.elements).map(Element.model2JsonString)
+//    )
+//    PaperDiff(
+//      modified = this.modified,
+//      diff = JsonDiff.empty, // TODO
+//      origin = origin
+//    )
+//  }
 }
 
 object Paper extends Jsonable[Paper] {
@@ -150,6 +151,7 @@ object Paper extends Jsonable[Paper] {
   def createBlank(id: String, username: Option[String],
                   permissions: Option[String] = None): Paper = {
     val now = System.currentTimeMillis
+    val diff = SimpleDiff.create("Paper created", Vector.empty)
     Paper(
       id,
       "Untitled Paper",
@@ -160,7 +162,8 @@ object Paper extends Jsonable[Paper] {
       Set.empty,
       username,
       permissions,
-      Vector.empty)
+      Vector(diff)
+    )
   }
 
   val _id = "_id"
@@ -172,6 +175,7 @@ object Paper extends Jsonable[Paper] {
   val groups = "groups"
   val username = "username"
   val permissions = "permissions"
+  val diffs = "diffs"
 
   def model2json(m: Paper): JsObject = {
     val b = Seq.newBuilder[(String, JsValueWrapper)]
@@ -184,6 +188,7 @@ object Paper extends Jsonable[Paper] {
     b += Paper.modified -> m.modified
     m.username.map(b += Paper.username -> _)
     m.permissions.map(b += Paper.permissions -> _)
+    b += Paper.diffs -> m.diffs
 
     val r = b.result()
     Json.obj(r: _*)
@@ -201,7 +206,7 @@ object Paper extends Jsonable[Paper] {
         groups = (j \ Paper.groups).as[Set[JsObject]].map(Group.json2model),
         username = j getAsString Paper.username,
         permissions = j getAsString Paper.permissions,
-        diffs = Vector.empty // TODO better handling
+        diffs = (j \ Paper.diffs).as[JsArray].value.toVector.map(_.as[SimpleDiff])
       )
       p
     } catch {
