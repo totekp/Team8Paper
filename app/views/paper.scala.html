@@ -11,10 +11,20 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"/>
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/froala_editor.min.css")"/>
+
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.11.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tagsinput.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/froala_editor.min.js")"></script>
 </head>
 <body>
 <script>
     var data = @Html(play.api.libs.json.Json.stringify(json));
+
 </script>
 <div id ="paper_page" class="pushobj">
     <div id="main_nav">
@@ -38,13 +48,16 @@
                 <li><a id="paper_draggable_group" title="Click to toggle draggable group"><i class="fa fa-arrows fa-lg"></i></a></li>
                 <li><a id="paper_add_image" data-toggle="modal" data-target="#insert-picture-url-modal" title="Click to add image group"><i class="fa fa-picture-o fa-lg"></i></a></li>
                 <li><a id="paper_remove_group" title="Click to remove selected group"><i class="fa fa-times fa-lg"></i></a></li>
+                <li><a id="off-canvas-toggle" title="Click to view elements in selected group" style="margin-top : 3px; margin-left:3px;" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
             </ul>
         </nav>
     </div>
     <div id="content_wrapper">
         <div contenteditable data-name="title" id="paper_title"></div>
         <input type="text" id="paper_tags_input_display" class="form-control" placeholder="add tags separated by spaces">
-        <div id="paper_canvas"></div>
+        <div id="paper_canvas">
+
+        </div>
     </div>
 
     <div id="insert-picture-url-modal" class="modal fade">
@@ -81,16 +94,10 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
-    <div id="off_canvas_nav"></div>
 </div>
 
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.11.0.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/smoothscroll.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tagsinput.min.js")"></script>
+
   <script type="text/javascript" src="@routes.Assets.at("javascripts/scripts.min.js")"></script>
+
 </body>
 </html>

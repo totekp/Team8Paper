@@ -1,4 +1,38 @@
 //This is the paper itself, it contains the all the textboxes that are to be displayed on screen at any given time
+var paperOffCanvasNavVisible = false;
+var arrMenu = [
+  {
+    title: 'Paper',
+    id: 'menuID',
+    icon: 'fa fa-columns',
+    items: [
+      {
+        name: 'Create New Paper',
+        icon: 'fa fa-plus',
+        link: '/paper'
+      },
+      {
+        name: 'Recent Papers',
+        id: 'itemID',
+        icon: 'fa fa-files-o',
+        link: '',
+        items: [
+          {
+            title: 'Recent Papers',
+            icon: 'fa fa-files-o',
+            items: []
+          }
+        ]
+      },
+      {
+        name: 'Credit',
+        icon: 'fa fa-lightbulb-o',
+        link: ''
+      }
+    ]
+  }
+];
+
 var paperData = (function() {
     function getTags() {
         return data.data.tags;
@@ -364,18 +398,25 @@ var textBox = (function() {
         var addedElement;
         if(isNewBox) {
             addedElement = addNewElement(event, "text");
-            $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + addedElement._id + "' placeholder='Start Typing'></textarea>");
+            $("#"+boxID).append("<textarea class = 'text_element form-control'  id= '" + addedElement._id + "'></textarea>");
+            initializeTextBox(addedElement._id);
         }
         else {
-
             elementGroup = paperData.getElementsInGroup(boxID);
             for(var i = 0; i < elementGroup.length; i++) {
                 var currentElement = paperData.getElementByID(elementGroup[i]);
+                console.log(currentElement.kind);
                 if(currentElement.kind == "text") {
-                    $("#"+boxID).append("<textarea type='text' class = 'text_element form-control'  id= '" + currentElement._id + "' placeholder='Start Typing'></textarea>");
-                    $("#"+currentElement._id).val(currentElement.data);
+                    console.log("in if");
+                    console.log(currentElement.kind);
+                    $("#"+boxID).append("<textarea class = 'text_element form-control'  id= '" + currentElement._id + "'></textarea>");
+                    initializeTextBox(currentElement._id);
+                        console.log("after call: " + console.log(currentElement.kind));
+                    $("#"+ currentElement._id).editable("setHTML", currentElement.data);
                 }
                 else if(currentElement.kind == "image") {
+                    console.log("image1");
+                    console.log(currentElement);
                     $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style = 'max-width: 100%; height:" + currentElement.height + "px; width:" + currentElement.width + "px; top:" + currentElement.y + "px; left:" + currentElement.x + "px;'>");
                     //$("#"+currentElement._id).resizable({minHeight: 150, minWidth: 150, aspectRatio: "true"});
                     (function(currentElement) {
@@ -387,13 +428,12 @@ var textBox = (function() {
                             }
                         });
                     })(currentElement);
-                    //
                 }
             }
         }
 
         $('#'+boxID).addClass("textBox");
-        $('#'+boxID).css("position", "absolute");
+        $('#'+boxID).css("float", "left");
         $('#'+boxID).css("opacity", 1);
         $('#'+boxID).click(function(e) {
             e.stopPropagation();
@@ -432,10 +472,23 @@ var textBox = (function() {
         return addedElement;
     }
 
+    function initializeTextBox(id) {
+        $("#" + id).editable({alwaysVisible: true, inverseSkin: true, buttons: ["bold", "italic", "underline", "strikeThrough", "fontSize", "color",
+        "sep", "formatBlock", "align", "insertOrderedList", "insertUnorderedList", "outdent", "indent", "sep", "selectAll", "createLink", "insertVideo", "undo", "redo", "html"],
+        contentChangedCallback:
+            function() {
+                $("#" + id).editable("getHTML");
+                paperData.getElementByID(id).data = $("#" + id).editable("getHTML")[0];
+                updateJSON();
+                console.log(data);
+        }});
+        console.log(id);
+    }
+
     function createNewTextBox(event, boxID) {
         var addedElement = createTextBox(event, boxID, true);
         $('#'+boxID).css({top: event.pageY, left: event.pageX});
-
+        console.log(event);
         textBoxVars._id = boxID;
         textBoxVars.title = "";
         textBoxVars.x = event.pageX;
@@ -541,10 +594,10 @@ document.addEventListener('keyup', function (event) {
         else if(ctrl && el.nodeName == 'BODY') {
                     paper.makeGroupDraggable(paper.getSelectedGroup(), false);
         }
-        else if(paperData.doesElementExist(elementID)){
+        /** else if(paperData.doesElementExist(elementID)){
             paperData.getElementByID(elementID).data = $("#"+elementID).val();
             updateJSON();
-        }
+        } **/
     }
 
 }, true);
@@ -587,12 +640,15 @@ function passJSONToServer() {
             contentType: 'application/json',
             type: 'post'
     });
+    console.log("After");
+    console.log(data);
 }
 function initCanvas() {
     console.log(data);
     resizeCanvas();
     bindCanvasClick();
     initTags();
+    initBinds();
     paper.initExistingNotes();
 }
 
@@ -612,6 +668,45 @@ function initTags() {
             paperData.getTags().splice( $.inArray(value, paper.tags), 1 );
             updateJSON();
         }
+    });
+}
+
+function initBinds() {
+    $('#nav-home').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#nav-search').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#nav_dashboard').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#paper_create_new_group').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#paper_delete_all_groups').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#paper_draggable_group').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#paper_add_image').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#paper_remove_group').tooltip({
+        placement:'right',
+        html:true
+    });
+    $('#off-canvas-toggle').tooltip({
+        placement:'right',
+        html:true
     });
 }
 
