@@ -115,41 +115,6 @@ case class Paper(
     this.copy(diffs = SimpleDiff.combine(5.minutes, newDiff +: diffs))
   }
 
-//  def diffWithNew(newer: Paper, origin: Vector[String]): PaperDiff = {
-//    assert(newer.modified > this.modified, "Older paper's modified must be less than this paper's modified time")
-//    newer.diffWithOlder(this, origin)
-//  }
-//
-//  def addDiff(older: Paper, origin: Vector[String]): Paper = {
-//    val diff = this.diffWithOlder(older, origin)
-//    this.copy(
-//      diffs = diff +: this.diffs
-//    )
-//  }
-//
-//  def diffWithOlder(old: Paper, origin: Vector[String]): PaperDiff = {
-//    assert(old.modified < this.modified, "Older paper's modified must be less than this paper's modified time")
-//    val newTitle = {
-//      if (this.title != old.title)
-//        Some(this.title)
-//      else
-//        None
-//    }
-//    val diffTags = DiffSet.create(this.tags -- old.tags, old.tags -- this.tags)
-//    val diffGroups = DiffSet.create(
-//      (this.groups -- old.groups).map(Group.model2JsonString),
-//      (old.groups -- this.groups).map(Group.model2JsonString)
-//    )
-//    val diffElements = DiffSet.create(
-//      (this.elements -- old.elements).map(Element.model2JsonString),
-//      (old.elements -- this.elements).map(Element.model2JsonString)
-//    )
-//    PaperDiff(
-//      modified = this.modified,
-//      diff = JsonDiff.empty, // TODO
-//      origin = origin
-//    )
-//  }
 }
 
 object Paper extends Jsonable[Paper] {

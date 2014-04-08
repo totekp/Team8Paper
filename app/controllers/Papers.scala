@@ -5,7 +5,7 @@ import services.{UsernameAuth, PaperDAO}
 import models.{Paper, JsonResult}
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsObject, Json}
-import util.{Aggregation, Generator}
+import util.{T8Logger, Aggregation, Generator}
 import scala.concurrent.Future
 import play.api.Logger
 import util.Implicits._
@@ -113,7 +113,7 @@ object Papers extends Controller {
 
                     val newPaperUpdatedTime = newPaper
                       .updatedTime()
-                      .prependDiff("Updated paper", req) // TODO specify
+                      .prependDiff(T8Logger.getUpdateMessage(oldpaper, newPaper).getOrElse(""), req) // TODO specify
 
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
                       le =>
@@ -160,8 +160,6 @@ object Papers extends Controller {
         JsonResult.success(papersJson.map(j => j)) // TODO strip data
       }
   }
-
-  import util.Implicits._
 
   def getPaper = Action.async {
     implicit req =>
