@@ -18,7 +18,7 @@ class IntegrationSpec extends Specification {
 
 //      browser.goTo("http://localhost:" + port)
 //
-//      browser.pageSource must contain("Team 8 Paper")
+//      browser.pageSource must contain("Team8Paper")
     }
   }
 }
