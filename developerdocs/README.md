@@ -22,5 +22,64 @@ On the persistence side, data are stored as BSON, similar more typed and compres
 
 Many modern systems are interactive. That is, the user interacts with the system using some form of display screen using which data can be entered and results presented. Well-designed UIs are essential to successful systems because they are the most visible part of the system. As such, it is important to get early and frequent feedback from users about their reactions. This can take the form of a prototype, but if this is unfeasible, then mocked up screen shots can be substituted. Your design documentation should include a description of your user interface design. You should explain what the viewer is looking at for each screen. Even command line apps have a UI and you should describe the command line options. If you are making a library rather than an application, then explain your API. Developer documentation should include a sory board, page-flow graph, or some other sort of high-level overview of all the visual "screens" in the application and how they fit together (e.g., which pages link to a page and how).
 
+We used the following libraries to quickly and efficiently build a seamless UI:
+jQuery UI
+Twitter Bootstrap
+jQuery Tags Input
+Bootstrap Font Awesome Icons
+jQueury Multi Level Push Menu
+jQuery Context Menu
+
+Our web application consists of two pages: The main page (index.html) and the paper page (/paper/:id)
+
+Both pages contain a centralized navigation bar fixed to the right side of the screen for all
+navigational links, editing options, persistence options, etc. The remainder of the page is reserved for
+user content. Descriptions for the dynamic navbar are below depending on the page the user views.
+
+Main page:
+The main page has two subviews (home and dashboard).
+
+    - Home page:
+        As a project in development, it's important to present the user with a page that explains the
+        crux of our web application. The content is self explanatory and doesn't add user functionality
+        in any way. The information can be easily digested and contains all core information regarding
+        basic functionality and background into the project.
+
+        - Navbar:
+            The navbar's first element (blue paper button) opens a hidden menu that pushes the entire view
+            to the right. It gives the user quick access to paper options such as creating a new paper and
+            viewing recent papers.
+            The second group of buttons are for user persistence. Depending on whether the user is logged in
+            or not, the button will show either the sign-in or the sign-off button. Selecting the sign-off
+            button will instantly sign off the user. Selecting the sign on button will show a modal described
+            below.
+
+            - Sign in Modal:
+                The sign in modal forces the attention of the user to a form requiring the user to enter their
+                username and password. If they require an account, they can select the sign up link within the
+                modal. The modal's form will change accordingly prompting the user for a username, password,
+                and password verification.
+
+            The third group of buttons include the following: search, home, dashboard. The last two are self
+            explanatory. The search button will expose a hidden menu from the right of the screen allowing
+            the user to search for papers they own via multiple tags. The results are shown within the same
+            menu. The menu is scrollable.
+
+    - Dashboard: The dashboard page
+        The dashboard page allows the user to manage their existing papers. The main content of the page is
+        occupied by the tiles that represent each paper. The user may click on the open button to be
+        redirected to the paper or click on the tile itself. Clicking on the tile will expose the metadata
+        of the selected paper to the fixed right hand section of the page reserved for displaying the metadata.
+        The metadata include:
+        Title
+        Last Modified Date
+        Created Date
+        Tags
+
+        The user may change the title and tags within the section. Once the user has made their changes,
+        they can click on the Submit Changes button to apply the changes to the backend. Users may also
+        duplicate and deleted the selected paper.
+
+
 # User Documentation
 User documentation is embedded in the web application. The learning curve should be low as a result of intuitive design and levels. Usage should be intuitive with different levels of usage from beginner to advanced. Answers can be found by poking around the application or by reading short descriptions associated with user actions.
