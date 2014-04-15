@@ -126,13 +126,13 @@ function initBinds(){
 
     function showPopout() {
         $('#search-menu').animate({
-            right: 0
+            left: 50
         }, 'slow');
     }
 
     function hidePopout() {
         $('#search-menu').animate({
-            right: -450
+            left: -450
         }, 'slow');
     }
 
