@@ -302,7 +302,7 @@ object Papers extends Controller {
       for {
         m <- fm
       } yield {
-        val desc = m.toVector.sortBy(_._2).reverse.map(t =>
+        val desc = m.toVector.sortBy(t => (- t._2, t._1)).map(t =>
           Json.obj(
             "_id" -> t._1,
             "count" -> t._2))
