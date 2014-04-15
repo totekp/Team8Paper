@@ -1,37 +1,18 @@
+var historyResultTemplate = "<div id='history-result-item' style='text-align:left;width:100%;margin:0;'>"+
+                               "<div style='padding-left:25px;'>"+
+                                   "<h6 style='margin:0;'><a id='history-result-title' style='color:#eef;'></a></h6>"+
+                                   "<hr class='soften'/>"+
+                                   "<div id='history-result-messages' style='font-size:9px;color:#bbb;padding-left:50px'>"+
+                                   "</div>"+
+                               "</div>"+
+                            "</div>";
+
+var historyResultMessageTemplate = "<p id='history-result-message' style='font-size:15px;'>"+
+
+                                   "</p>";
+
+
 //This is the paper itself, it contains the all the textboxes that are to be displayed on screen at any given time
-var paperOffCanvasNavVisible = false;
-var arrMenu = [
-  {
-    title: 'Paper',
-    id: 'menuID',
-    icon: 'fa fa-columns',
-    items: [
-      {
-        name: 'Create New Paper',
-        icon: 'fa fa-plus',
-        link: '/paper'
-      },
-      {
-        name: 'Recent Papers',
-        id: 'itemID',
-        icon: 'fa fa-files-o',
-        link: '',
-        items: [
-          {
-            title: 'Recent Papers',
-            icon: 'fa fa-files-o',
-            items: []
-          }
-        ]
-      },
-      {
-        name: 'Credit',
-        icon: 'fa fa-lightbulb-o',
-        link: ''
-      }
-    ]
-  }
-];
 
 var paperData = (function() {
     function getTags() {
@@ -214,13 +195,17 @@ var paperData = (function() {
 
     }
 
+    function getDiffs() {
+        return data.data.diffs;
+    }
+
     return {getTags : getTags, getElements : getElements, getElement : getElement, getElementsLength : getElementsLength,
     getElementByID : getElementByID, addElement : addElement, removeElement : removeElement,
     getGroups : getGroups, getGroup : getGroup, getGroupsLength : getGroupsLength,
     getGroupByID : getGroupByID, doesGroupExist : doesGroupExist, addGroup : addGroup, removeGroup : removeGroup,
     getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement, updateElement: updateElement,
     getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
-    doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID };
+    doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID, getDiffs : getDiffs };
 })();
 
 
@@ -657,6 +642,7 @@ function initCanvas() {
     bindCanvasClick();
     initTags();
     initBinds();
+    initHistoryMenu();
     paper.initExistingNotes();
 }
 
@@ -679,30 +665,40 @@ function initTags() {
     });
 }
 
+function initHistoryMenu() {
+    var paperDiff = paperData.getDiffs();
+    for (var i=0;i<paperDiff.length;i++) {
+        var modified = new Date(paperDiff[i].modified).formatDateTime();
+        var message = paperDiff[i].message.split(';');
+        console.log(message);
+        $('#history-results').append(historyResultTemplate);
+        $('#history-result-title').append(modified);
+        $('#history-result-title').attr('id','history-result-title-'+i);
+        for (var j=0;j<message.length;j++) {
+            $('#history-result-messages').append(historyResultMessageTemplate);
+            $('#history-result-message').append(message[j]);
+            $('#history-result-message').attr('id','history-result-message-'+i+'-'+j);
+        }
+        $('#history-result-messages').attr('id','history-result-messages-'+i);
+    }
+}
+
 function initBinds() {
 
     $('#nav_history').click( function() {
         if ($('#history-menu').hasClass('offscreen')) {
             $('#history-menu').removeClass('offscreen');
-            showPopout();
+            $('#history-menu').animate({
+                left: 50
+            }, 'slow');
         }
         else {
             $('#history-menu').addClass('offscreen');
-            hidePopout();
+            $('#history-menu').animate({
+                left: -450
+            }, 'slow');
         }
     });
-
-    function showPopout() {
-        $('#history-menu').animate({
-            left: 50
-        }, 'slow');
-    }
-
-    function hidePopout() {
-        $('#history-menu').animate({
-            left: -450
-        }, 'slow');
-    }
 
     $('#nav-home').tooltip({
         placement:'right',
@@ -775,8 +771,29 @@ $(function(){
     });
 });
 
+//Misc. prototypes
+Date.prototype.formatDateTime = function(){
+    var hours = this.getHours();
+    var minutes = this.getMinutes();
+    var seconds = this.getSeconds();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    seconds = seconds < 10 ? '0'+seconds : seconds;
+    return (this.getMonth() + 1) +
+    "/" +  this.getDate() +
+    "/" +  this.getFullYear().toString().substr(2,3) + " "
+    + hours + ":"
+    + minutes + ":"
+    + seconds + " "
+    + ampm;
+};
+
 initCanvas();
 
 $(window).resize(function() {
     resizeCanvas();
 });
+
+

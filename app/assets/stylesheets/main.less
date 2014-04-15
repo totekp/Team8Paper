@@ -1,3 +1,9 @@
+body {
+    font-family: "HelveticaNeue-Light", 'century gothic', Arial, "Lucida Grande", sans-serif;
+    -webkit-backface-visibility: hidden;
+    font-weight: 200;
+}
+
 /*Fixes weird Windows based browser selection bug. Removed: causes issues with OSX browsers
 *:not(input){
     -webkit-user-select: none;
@@ -104,6 +110,53 @@
     z-index:998;
     text-align:center;
     padding:0px 10px 0px 10px;
-    overflow-y: scroll;
+    overflow: scroll;
     opacity:0.975;
+    color:white;
 }
+
+#history-result-container {
+    padding-top:30px;
+    background-color:#336BA3;
+    color:#888;
+    text-align:center;
+}
+
+#history-empty-prompt {
+    padding-top:200px;
+    font-size:18px;
+    opacity:0.55;
+}
+
+
+hr.soften {
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, rgba(51,107,163,0.2), rgba(255,255,255,.5), rgba(51,107,163,0.2));
+  background-image:    -moz-linear-gradient(left, rgba(51,107,163,0.2), rgba(255,255,255,.5), rgba(51,107,163,0.2));
+  background-image:     -ms-linear-gradient(left, rgba(51,107,163,0.2), rgba(255,255,255,.5), rgba(51,107,163,0.2));
+  background-image:      -o-linear-gradient(left, rgba(51,107,163,0.2), rgba(255,255,255,.5), rgba(51,107,163,0.2));
+  border: 0;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+::-webkit-scrollbar {
+      width: 10px;
+} /* this targets the default scrollbar (compulsory) */
+
+::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.0);
+} /* the new scrollbar will have a flat appearance with the set background color */
+
+::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius:25px;
+} /* this will style the thumb, ignoring the track */
+
+::-webkit-scrollbar-button {
+      background-color: #7c2929;
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+
+::-webkit-scrollbar-corner {
+      background-color: rgba(0, 0, 0, 0.2);
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */

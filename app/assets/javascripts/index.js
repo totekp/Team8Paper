@@ -21,7 +21,7 @@ var searchResultTemplate = "<div id='search-result-item' style='text-align:left;
                                    "<div class='col-md-1'>"+
                                        "<a id='search-result-icon' style='color:#eef;'><i class='fa fa-file-o fa-3x'></i></a>"+
                                    "</div>"+
-                                   "<div class='col-md-11'>"+
+                                   "<div class='col-md-11' style='padding-left:25px;'>"+
                                        "<h3 style='margin:0;'><a id='search-result-title' style='color:#eef;'></a></h3>"+
                                        "<div id='search-result-meta' style='font-size:9px;color:#bbb;'>"+
                                            "<div id='search-result-updated'>"+
@@ -81,25 +81,17 @@ function initBinds(){
     $('#nav-search').click( function() {
         if ($('#search-menu').hasClass('offscreen')) {
             $('#search-menu').removeClass('offscreen');
-            showPopout();
+            $('#search-menu').animate({
+                left: 50
+            }, 'slow');
         }
         else {
             $('#search-menu').addClass('offscreen');
-            hidePopout();
+            $('#search-menu').animate({
+                left: -450
+            }, 'slow');
         }
     });
-
-    function showPopout() {
-        $('#search-menu').animate({
-            left: 50
-        }, 'slow');
-    }
-
-    function hidePopout() {
-        $('#search-menu').animate({
-            left: -450
-        }, 'slow');
-    }
 
     $('#nav-home').click(function(){
         $('#section-search').addClass('hidden');
