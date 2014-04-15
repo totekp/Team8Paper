@@ -306,7 +306,8 @@ object Papers extends Controller {
           Json.obj(
             "_id" -> t._1,
             "count" -> t._2))
-        JsonResult.success(desc)
+        val total = m.values.sum
+        JsonResult.success(desc, Some(total))
       }
   }
 

@@ -17,12 +17,19 @@ object JsonResult {
     error("No permission")
   }
 
-  def success(data: JsValueWrapper) = {
+  def success(data: JsValueWrapper, data2: Option[JsValueWrapper] = None) = {
     Results.Ok {
       Json.obj(
         "status" -> "success",
         "data" -> data
-      )
+      ) ++ {
+        data2 match {
+          case Some(j) =>
+            Json.obj("data2" -> j)
+          case None =>
+            Json.obj()
+        }
+      }
     }
   }
 
