@@ -76,6 +76,7 @@
     width:50px;
     background:#151515;
     position:fixed;
+    z-index:999;
 }
 
 #paper_canvas {
@@ -90,4 +91,19 @@
     padding-left: 5px;
     margin: auto;
     overflow-y: hidden;
+}
+
+#history-menu {
+    position: fixed;                /* fix the popout to the left side of the screen */
+    top: 0px;
+    left: -450px;                    /* use a negative margin to pull the icon area of the popout off the edge of the page */
+    width: 450px;
+    border: 1px solid gray;
+    background-color:#336BA3;
+    height:100%;
+    z-index:998;
+    text-align:center;
+    padding:0px 10px 0px 10px;
+    overflow-y: scroll;
+    opacity:0.975;
 }

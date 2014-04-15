@@ -680,6 +680,30 @@ function initTags() {
 }
 
 function initBinds() {
+
+    $('#nav_history').click( function() {
+        if ($('#history-menu').hasClass('offscreen')) {
+            $('#history-menu').removeClass('offscreen');
+            showPopout();
+        }
+        else {
+            $('#history-menu').addClass('offscreen');
+            hidePopout();
+        }
+    });
+
+    function showPopout() {
+        $('#history-menu').animate({
+            left: 50
+        }, 'slow');
+    }
+
+    function hidePopout() {
+        $('#history-menu').animate({
+            left: -450
+        }, 'slow');
+    }
+
     $('#nav-home').tooltip({
         placement:'right',
         html:true

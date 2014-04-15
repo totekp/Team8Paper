@@ -1,7 +1,5 @@
 var papers;
 var searchTagCache = [];
-var canvasPaperCache = [];
-var offCanvasNavVisible = false;
 var alphaNumRegx = /^[A-Za-z0-9_-]+$/;
 var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;text-align:center;margin:0px 1px 10px 2px;padding:12px;min-width:200px;' class='btn btn-default'>"+
                            "<div class='row'>"+
@@ -36,38 +34,6 @@ var searchResultTemplate = "<div id='search-result-item' style='text-align:left;
                                    "</div>"+
                                "</div>"+
                                "<hr class='soften'/>";
-var arrMenu = [
-  {
-    title: 'Paper',
-    id: 'menuID',
-    icon: 'fa fa-columns',
-    items: [
-      {
-        name: 'Create New Paper',
-        icon: 'fa fa-plus',
-        link: '/paper'
-      },
-      {
-        name: 'Recent Papers',
-        id: 'itemID',
-        icon: 'fa fa-files-o',
-        link: '',
-        items: [
-          {
-            title: 'Recent Papers',
-            icon: 'fa fa-files-o',
-            items: []
-          }
-        ]
-      },
-      {
-        name: 'Credit',
-        icon: 'fa fa-lightbulb-o',
-        link: ''
-      }
-    ]
-  }
-];
 
 
 //Initialization
@@ -76,7 +42,6 @@ $(document).ready(function(){
     initTransitions();
     initBinds();
     initState();
-    initCanvasMenu();
     initDashboard();
 });
 
@@ -326,16 +291,7 @@ function initBinds(){
         });
     });
 
-    $(window).resize(function () {
-        $( '#off-canvas-nav' ).multilevelpushmenu( 'redraw' );
-    });
-
     //Tooltip binds-----------------------------------
-    $('#off-canvas-toggle').tooltip({
-        placement:'right',
-        title:'Paper quick options',
-        html:true
-    });
 
     $('#nav-sign-in').tooltip({
         placement:'right',
@@ -446,43 +402,6 @@ function initBinds(){
     });
 }
 
-function initCanvasMenu(){
-    $('#off-canvas-nav').multilevelpushmenu({
-        menu: arrMenu,
-        containersToPush: [$('.pushobj')],
-        menuWidth: '25%',
-        menuHeight: '100%',
-        collapsed:true,
-        fullCollapse:true,
-        preventItemClick:false
-    });
-
-    $( '#off-canvas-toggle' ).click(function(){
-        if(offCanvasNavVisible){
-            $( '#off-canvas-nav' ).multilevelpushmenu( 'collapse' );
-            offCanvasNavVisible = false;
-        }else{
-            $( '#off-canvas-nav' ).multilevelpushmenu( 'expand' );
-            offCanvasNavVisible = true;
-        }
-    });
-
-    //Push items to off canvas menu
-    var itemsArray = [];
-    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' ).first();
-    for(var i=0;i<papers.length;i++){
-        if(i<10){
-            itemsArray.push({
-                name: papers[i].title,
-                icon: 'fa fa-pencil-square-o',
-                link: '/paper/' + papers[i]._id + ''
-            });
-            canvasPaperCache.push(papers[i].title);
-        }
-    }
-    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
-}
-
 
 function initDashboard(){
     for(var i=0;i<papers.length;i++){
@@ -494,7 +413,6 @@ function initDashboard(){
 //Reinitialization functions to bypass the need to reload page
 function reInit() {
     updatePapers();
-    reInitCanvasMenu();
     reInitSearch();
     resetSettingsPanel();
     reInitDashboard();
@@ -509,30 +427,6 @@ function reInitSearch(){
     $('#search-results').empty();
     $('#search-result-container').slideUp();
 }
-
-function reInitCanvasMenu(){
-    //Remove items from recent papers menu
-    for(var i=0;i<canvasPaperCache.length;i++){
-        var item = $( '#off-canvas-nav' ).multilevelpushmenu( 'finditemsbyname' , canvasPaperCache[i] ).first();
-        $( '#off-canvas-nav' ).multilevelpushmenu( 'removeitems' , item );
-    }
-    canvasPaperCache.clear();
-    //Push items to off canvas menu
-    var itemsArray = [];
-    var $addToMenu = $( '#off-canvas-nav' ).multilevelpushmenu( 'findmenusbytitle' , 'Recent Papers' );
-    for(var i=0;i<papers.length;i++){
-        if(i<10){
-            itemsArray.push({
-                name: papers[i].title,
-                icon: 'fa fa-pencil-square-o',
-                link: '/paper/' + papers[i]._id + ''
-            });
-            canvasPaperCache.push(papers[i].title);
-        }
-    }
-    $('#off-canvas-nav').multilevelpushmenu( 'additems' , itemsArray , $addToMenu , 0 );
-}
-
 
 function reInitDashboard(){
     $('#paper-templates').empty();

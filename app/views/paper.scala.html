@@ -33,9 +33,12 @@
     <div id="main_nav">
         <nav class="navbar navbar-inverse" role="navigation">
             <ul class="nav navbar-nav">
-                <li><a id="nav_home" class="smoothScroll" href="/" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
-                <li><a id="nav_search" class="smoothScroll" href="/#search"><i class="fa fa-search fa-lg"></i></a></li>
-                <li><a id="nav_dashboard" class="smoothScroll" href="/#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
+                <li><a id="nav_home" href="/" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
+                <li><a id="nav_search" href="/#search"><i class="fa fa-search fa-lg"></i></a></li>
+                <li><a id="nav_dashboard" href="/#dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a id="nav_history"><i class="fa fa-clock-o fa-lg"></i></a></li>
             </ul>
         </nav>
 
@@ -60,6 +63,25 @@
         <input type="text" id="paper_tags_input_display" class="form-control" placeholder="add tags separated by spaces">
         <div id="paper_canvas">
 
+        </div>
+        <div id="history-menu" class="offscreen">
+            <div id="search-inner">
+                <div id="search-input-container">
+                    <h3>Team8Paper History</h3>
+
+                </div>
+
+                <div id="search-result-container">
+                    <a id="search-slide-up">^</a>
+                    <div id="search-results"></div>
+
+                </div>
+                <div id="search-empty-prompt">
+                    <i class="fa fa-search fa-3x"></i>
+                    <p>Search</br> for your papers with one or more tags</p>
+                </div>
+
+            </div>
         </div>
     </div>
 
