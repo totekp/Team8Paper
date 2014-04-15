@@ -667,12 +667,14 @@ function initTags() {
 
 function initHistoryMenu() {
     var paperDiff = paperData.getDiffs();
+    paperDiff.reverse();
     for (var i=0;i<paperDiff.length;i++) {
         var modified = new Date(paperDiff[i].modified).formatDateTime();
         var message = paperDiff[i].message.split(';');
         console.log(message);
         $('#history-results').append(historyResultTemplate);
-        $('#history-result-title').append(modified);
+        var origins = paperDiff[i].origin;
+        $('#history-result-title').append(modified + ' (' + origins + ')');
         $('#history-result-title').attr('id','history-result-title-'+i);
         for (var j=0;j<message.length;j++) {
             $('#history-result-messages').append(historyResultMessageTemplate);
