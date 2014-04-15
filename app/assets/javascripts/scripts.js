@@ -77,14 +77,17 @@ var paperData = (function() {
             var currElement = getElement(i);
             if(currElement._id == id) {
                 data.data.elements(i, 1);
+                return true;
             }
         }
+        return false;
     }
 
     function purgePaper() {
         data.data.elements = [];
         data.data.groups = [];
         $("#paper_toolbar").fadeOut(400);
+        updateJSON();
     }
 
     function getGroups() {
@@ -156,8 +159,12 @@ var paperData = (function() {
         return data.data.elements.length;
     }
 
-    function addElement(element) {
+    function addElement(element, group) {
         data.data.elements[getElementsLength()] = JSON.parse(JSON.stringify(element));
+        if(typeof group != "undefined" && doesGroupExist(group)) {
+            var currGroup = getGroupByID(group);
+            currGroup.elementIds[currGroup.elementIds.length] = element._id;
+        }
         updateJSON(true);
     }
 
@@ -197,12 +204,6 @@ var paperData = (function() {
         return currGroup.elementIds;
     }
 
-    function addElementToGroup(elementID, groupID) {
-        var currGroup = getGroupByID(groupID);
-        currGroup.elementIds[currGroup.elementIds.length] = elementID;
-        updateJSON();
-    }
-
     function getNextID() {
         if(getGroupsLength() > 0) {
             var nextID = getGroup(getGroupsLength()-1)._id.replace("groupID_", "");
@@ -219,7 +220,7 @@ var paperData = (function() {
     getGroupByID : getGroupByID, doesGroupExist : doesGroupExist, addGroup : addGroup, removeGroup : removeGroup,
     getUniqueElementId : getUniqueElementId, getElementsLength : getElementsLength, addElement: addElement, updateElement: updateElement,
     getElement : getElement, getElementByID : getElementByID, removeElement : removeElement, getElementsInGroup : getElementsInGroup,
-    addElementToGroup : addElementToGroup, doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID };
+    doesElementExist : doesElementExist, purgePaper : purgePaper, getNextID : getNextID };
 })();
 
 
@@ -255,12 +256,22 @@ var paper = (function() {
 
     function removeNoteFromPaper(boxID) {
         var removed = paperData.removeGroup(boxID);
-        $("#" + boxID).remove();
         if (removed) {
+            $("#" + boxID).remove();
             updateJSON();
         }
+        selectedGroup = "";
+        $("#paper_toolbar").fadeOut(400);
     }
 
+    function removeElementFromPaper(elementID) {
+        var removed = paperData.removeElement(elementID);
+        if (removed) {
+            $("#" + elementID).remove();
+            updateJSON();
+        }
+
+    }
     function removeAllNotesFromPaper() {
         groups = paperData.getGroups();
         for(var i = 0; i < groups.length; i++) {
@@ -320,22 +331,8 @@ var paper = (function() {
     $("#image-url-submit").click(function(){
         var imageURL = $('#image-url-text').val();
         if(checkURL(imageURL)) {
-            addedElement = textBox.addNewElement(event, "image", imageURL);
-            $("#"+selectedGroup).append("<img id= '" + addedElement._id +"'src='" + addedElement.data +"'style ='max-width: 100%'>");
-            $("#"+selectedGroup).css({"height" : "auto", "width" : "auto"});
-            $("#"+addedElement._id).draggable({containment: ("#"+selectedGroup)});
-            addedElement.height = $("#"+addedElement._id).height();
-            addedElement.width = $("#"+addedElement._id).width();
-
-            var currentGroup = paperData.getGroupByID(selectedGroup);
-            currentGroup.width = $("#"+selectedGroup).width();
-            currentGroup.height = $("#"+selectedGroup).height();
-
-            paperData.updateElement(addedElement);
+            addedElement = textBox.addNewElement(event, "image", imageURL, selectedGroup);
             $('#insert-picture-url-modal').modal('hide');
-            paperData.addElementToGroup(addedElement._id, selectedGroup);
-
-
         }
         else {
             $('#image-url-error').empty();
@@ -374,8 +371,6 @@ var paper = (function() {
         function(){
             if(selectedGroup != "") {
                 removeNoteFromPaper(selectedGroup);
-                selectedGroup = "";
-                $("#paper_toolbar").fadeOut(400);
             }
      });
     $("#paper_draggable_group").click(
@@ -383,7 +378,7 @@ var paper = (function() {
             makeGroupDraggable(selectedGroup);
     });
     return {addNote : addNote, updateNotePosition : updateNotePosition, updateNoteSize : updateNoteSize,
-    removeNoteFromPaper : removeNoteFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup,
+    removeNoteFromPaper : removeNoteFromPaper, removeElementFromPaper : removeElementFromPaper, initExistingNotes : initExistingNotes, setSelectedGroup : setSelectedGroup,
     getSelectedGroup : getSelectedGroup, makeGroupDraggable : makeGroupDraggable};
 })();
 
@@ -405,20 +400,15 @@ var textBox = (function() {
             elementGroup = paperData.getElementsInGroup(boxID);
             for(var i = 0; i < elementGroup.length; i++) {
                 var currentElement = paperData.getElementByID(elementGroup[i]);
-                console.log(currentElement.kind);
                 if(currentElement.kind == "text") {
-                    console.log("in if");
-                    console.log(currentElement.kind);
                     $("#"+boxID).append("<textarea class = 'text_element form-control'  id= '" + currentElement._id + "'></textarea>");
                     initializeTextBox(currentElement._id);
-                        console.log("after call: " + console.log(currentElement.kind));
                     $("#"+ currentElement._id).editable("setHTML", currentElement.data);
                 }
                 else if(currentElement.kind == "image") {
-                    console.log("image1");
-                    console.log(currentElement);
-                    $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style = 'max-width: 100%; height:" + currentElement.height + "px; width:" + currentElement.width + "px; top:" + currentElement.y + "px; left:" + currentElement.x + "px;'>");
+                    $("#"+boxID).append("<img id= '" + currentElement._id +"'src='"+ currentElement.data +"'style = 'max-width: 100%; height:" + currentElement.height + "px; top:" + currentElement.y + "px; left:" + currentElement.x + "px;'>");
                     //$("#"+currentElement._id).resizable({minHeight: 150, minWidth: 150, aspectRatio: "true"});
+                    $("#"+currentElement._id).addClass("context-menu-element");
                     (function(currentElement) {
                         $("#"+currentElement._id).draggable({containment: ("#"+boxID), stop:
                             function(event, ui) {
@@ -433,6 +423,7 @@ var textBox = (function() {
         }
 
         $('#'+boxID).addClass("textBox");
+        $('#'+boxID).addClass("context-menu-one");
         $('#'+boxID).css("position", "absolute");
         $('#'+boxID).css("opacity", 1);
         $('#'+boxID).click(function(e) {
@@ -503,16 +494,10 @@ var textBox = (function() {
         return textBoxVars;
     }
 
-    function addNewElement(event, elementKind, url) {
+    function addNewElement(event, elementKind, url, selectedGroup) {
         var newElement = new Object();
         newElement._id = paperData.getUniqueElementId();
         newElement.kind = elementKind;
-        if(elementKind == "image") {
-            newElement.data = url;
-        }
-        else {
-            newElement.data = "";
-        }
         newElement.x = 0;
         newElement.y = 0;
         newElement.z = 0;
@@ -520,7 +505,30 @@ var textBox = (function() {
         newElement.height = 0;
         newElement.created = event.timeStamp;
         newElement.modified = event.timeStamp;
-        paperData.addElement(newElement);
+
+        if(elementKind == "image") {
+            newElement.data = url;
+            $("#"+selectedGroup).append("<img id= '" + newElement._id +"'src='" + newElement.data +"'style ='max-width: 100%'>");
+            $("#"+selectedGroup).css({"height" : "auto", "width" : "auto"});
+            $("#"+newElement._id).addClass("context-menu-element");
+            $("#"+newElement._id).draggable({containment: ("#"+selectedGroup)});
+            var imageHeight = $('#image-url-height').val();
+            if(!isNaN(imageHeight) && imageHeight > 0) {
+                $("#"+newElement._id).height(imageHeight);
+            }
+            newElement.height = $("#"+newElement._id).height();
+            newElement.width = $("#"+newElement._id).width();
+
+            var currentGroup = paperData.getGroupByID(selectedGroup);
+            currentGroup.width = $("#"+selectedGroup).width();
+            currentGroup.height = $("#"+selectedGroup).height();
+            paperData.addElement(newElement, selectedGroup);
+        }
+        else {
+            newElement.data = "";
+            paperData.addElement(newElement);
+        }
+
         return newElement;
     }
 
@@ -640,7 +648,7 @@ function passJSONToServer() {
             contentType: 'application/json',
             type: 'post'
     });
-    console.log("After");
+    console.log("Updated");
     console.log(data);
 }
 function initCanvas() {
@@ -709,6 +717,39 @@ function initBinds() {
         html:true
     });
 }
+
+$(function(){
+    $.contextMenu({
+        selector: '.context-menu-one',
+        callback: function(key, options) {
+            if(key == "toggle_drag") {
+                paper.makeGroupDraggable($(this).attr('id'));
+            }
+            else if(key == "delete") {
+                paper.removeNoteFromPaper($(this).attr('id'));
+            }
+        },
+        items: {
+            "toggle_drag": {name: "Toggle Draggable", icon: "toggle_drag"},
+            "delete": {name: "Delete", icon: "delete"},
+            "elements": {name: "Elements", icon: "elements"}
+        }
+    });
+});
+
+$(function(){
+    $.contextMenu({
+        selector: '.context-menu-element',
+        callback: function(key, options) {
+            if(key == "delete") {
+                paper.removeElementFromPaper($(this).attr('id'));
+            }
+        },
+        items: {
+            "delete": {name: "Delete", icon: "delete"}
+        }
+    });
+});
 
 initCanvas();
 

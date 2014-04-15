@@ -12,8 +12,11 @@
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/jquery.multilevelpushmenu.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.tagsinput.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/froala_editor.min.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery.contextMenu.css")"/>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.11.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.ui.position.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.contextMenu.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.10.4.custom.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.multilevelpushmenu.min.js")"></script>
@@ -73,6 +76,8 @@
                         </div>
                         <input id="image-url-text" type="text" class="form-control" placeholder="Image URL">
                         <br>
+                        <input id="image-url-height" type="text" class="form-control" placeholder="Image Width (Blank means default)">
+                        <br>
                         <input id="image-url-submit" class="btn btn-primary form-control" value="Add Image">
                     </div>
                 </div>
@@ -89,6 +94,7 @@
                 </div>
                 <div class="modal-body">
                     <input id="cancel-group-deletion" class="btn btn-primary form-control" value="Cancel">
+                    <br>
                     <input id="confirm-mass-group-deletion" class="btn btn-danger form-control" value="Yes Delete All Groups">
                 </div>
             </div><!-- /.modal-content -->
