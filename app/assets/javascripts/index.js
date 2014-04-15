@@ -686,13 +686,13 @@ function navSignedOutState(){
 }
 
 function papersEmptyState(){
-    $('#btn-start').show();
+    $('#btn-start').removeClass('hidden');
     $('#nav-search').fadeOut();
     $('#nav-dashboard').fadeOut();
 }
 
 function papersFilledState(){
-    $('#btn-start').hide();
+    $('#btn-start').addClass('hidden');
     $('#nav-search').fadeIn();
     $('#nav-dashboard').fadeIn();
 }
