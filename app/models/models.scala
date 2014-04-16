@@ -121,7 +121,7 @@ case class Paper(
             .getOrElse(throw new Exception("Missing team8paper.history.interval in *.conf"))
           )
 
-        this.copy(diffs = SimpleDiff.combine(interval, newDiff +: diffs))
+        this.copy(diffs = SimpleDiff.combine(interval, diffs :+ newDiff))
       case None =>
         this
     }
