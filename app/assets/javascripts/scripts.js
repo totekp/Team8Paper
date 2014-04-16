@@ -674,7 +674,7 @@ function initHistoryMenu() {
         console.log(message);
         $('#history-results').append(historyResultTemplate);
         var origins = paperDiff[i].origin;
-        $('#history-result-title').append(modified + ' (' + origins + ')');
+        $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')'); // TODO handle multiple origins
         $('#history-result-title').attr('id','history-result-title-'+i);
         for (var j=0;j<message.length;j++) {
             $('#history-result-messages').append(historyResultMessageTemplate);
@@ -683,6 +683,12 @@ function initHistoryMenu() {
         }
         $('#history-result-messages').attr('id','history-result-messages-'+i);
     }
+}
+
+function ipInfoHref(ip) {
+    var link = 'http://www.infobyip.com/ip-' + ip + '.html'
+    var html = '<a href="' + link + '">' + ip + '</a>';
+    return html;
 }
 
 function initBinds() {
