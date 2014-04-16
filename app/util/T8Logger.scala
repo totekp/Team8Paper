@@ -13,6 +13,7 @@ object T8Logger {
     )
   }
 
+  // TODO fix random filtering of tags
   def getUpdateMessage(prev: Paper, curr: Paper): Option[String] = {
     val sb = StringBuilder.newBuilder
     val addedTags = curr.tags -- prev.tags

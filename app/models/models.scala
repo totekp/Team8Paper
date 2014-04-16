@@ -110,9 +110,14 @@ case class Paper(
   def updatedTime() = this.copy(modified = System.currentTimeMillis())
   def hasUsername = username.isDefined
 
-  def prependDiff(message: String, req: Request[AnyContent]): Paper = {
-    val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress), this.modified)
-    this.copy(diffs = SimpleDiff.combine(5.minutes, newDiff +: diffs))
+  def appendDiff(message: Option[String], req: Request[AnyContent]): Paper = {
+    message match {
+      case Some(message) =>
+        val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress), this.modified)
+        this.copy(diffs = SimpleDiff.combine(5.minutes, newDiff +: diffs))
+      case None =>
+        this
+    }
   }
 
 }

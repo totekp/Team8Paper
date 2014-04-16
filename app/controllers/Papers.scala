@@ -113,7 +113,7 @@ object Papers extends Controller {
 
                     val newPaperUpdatedTime = newPaper
                       .updatedTime()
-                      .prependDiff(T8Logger.getUpdateMessage(oldpaper, newPaper).getOrElse(""), req) // TODO specify
+                      .appendDiff(T8Logger.getUpdateMessage(oldpaper, newPaper), req) // TODO specify
 
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
                       le =>
@@ -139,7 +139,7 @@ object Papers extends Controller {
     implicit req =>
       val id = Generator.oid()
       val username = req.session.get("username")
-      val newPaper = Paper.createBlank(id, username).prependDiff("Created paper", req)
+      val newPaper = Paper.createBlank(id, username).appendDiff(Some("Created paper"), req)
       PaperDAO.save(newPaper).map {
         le =>
           Redirect(routes.Papers.paperView(newPaper._id))
@@ -205,7 +205,7 @@ object Papers extends Controller {
                         created = nowms,
                         modified = nowms,
                         diffs = Vector.empty
-                      ).prependDiff("Duplicated paper", req)
+                      ).appendDiff(Some("Duplicated paper"), req)
 
                       PaperDAO.save(newPaper, ow = false).map {
                         le =>
