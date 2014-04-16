@@ -1,8 +1,6 @@
 
-import controllers.Users
 import models.{JsonResult, Paper}
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.filters.gzip.GzipFilter
 import play.api._
 import play.api.mvc._
@@ -14,7 +12,6 @@ import scala.concurrent.duration._
 import play.api.Play.current
 
 object Global extends WithFilters(HttpsFilter, Api1Filter, new GzipFilter()) with GlobalSettings {
-
 
   override def onHandlerNotFound(request: RequestHeader): Future[SimpleResult] = {
     if (request.path.endsWith("/")) {

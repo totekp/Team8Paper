@@ -27,7 +27,7 @@ object SimpleDiff {
   }
 
   def combine(interval: Duration, diffs: Vector[SimpleDiff]): Vector[SimpleDiff] = {
-    val descDiffs = diffs.sortBy(- _.modified)
+    val descDiffs = diffs.sortBy(_.modified)
     descDiffs.foldLeft(Vector[SimpleDiff]()){
       case (Vector(), a) => Vector(a)
       case (vs, a) =>

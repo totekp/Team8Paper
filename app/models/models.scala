@@ -3,9 +3,10 @@ package models
 import play.api.libs.json.{JsArray, Json, JsValue, JsObject}
 import play.api.libs.json.Json.JsValueWrapper
 import util.Implicits._
-import play.api.Logger
+import play.api.{Play, Logger}
 import play.api.mvc.{Request, AnyContent}
 import scala.concurrent.duration._
+import play.api.Play.current // TODO use import com.typesafe.config.ConfigFactory
 
 trait Jsonable[T] {
   def model2json(m: T): JsObject
@@ -114,7 +115,13 @@ case class Paper(
     message match {
       case Some(message) =>
         val newDiff = SimpleDiff.create(message, Vector(req.remoteAddress), this.modified)
-        this.copy(diffs = SimpleDiff.combine(5.minutes, newDiff +: diffs))
+        val interval =
+          Duration(
+            Play.configuration.getString("team8paper.history.interval")
+            .getOrElse(throw new Exception("Missing team8paper.history.interval in *.conf"))
+          )
+
+        this.copy(diffs = SimpleDiff.combine(interval, newDiff +: diffs))
       case None =>
         this
     }
