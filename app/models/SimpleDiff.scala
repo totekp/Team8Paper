@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json.Json
 import scala.concurrent.duration.Duration
+import play.api.Logger
 
 case class SimpleDiff(
   modified: Long,
@@ -14,8 +15,8 @@ case class SimpleDiff(
 object SimpleDiff {
   implicit lazy val jsonFormat_SimpleDiff = Json.format[SimpleDiff]
 
-  def create(message: String, origin: Vector[String], time: Long) =
-    SimpleDiff(time, message, origin)
+  def create(message: Vector[String], origin: Vector[String], time: Long) =
+    SimpleDiff(time, message.mkString(";"), origin)
 
   def reduce(prev: SimpleDiff, curr: SimpleDiff): SimpleDiff = {
     if (prev.message.trim.isEmpty)
@@ -28,13 +29,14 @@ object SimpleDiff {
 
   def combine(interval: Duration, diffs: Vector[SimpleDiff]): Vector[SimpleDiff] = {
     val descDiffs = diffs.sortBy(_.modified)
+
     descDiffs.foldLeft(Vector[SimpleDiff]()){
       case (Vector(), a) => Vector(a)
       case (vs, a) =>
-        if (vs.head.modified - a.modified > interval.toMillis) {
+        if (math.abs(a.modified - vs.head.modified) > interval.toMillis) {
           vs :+ a
         } else {
-          reduce(a, vs.head) +: vs.tail
+          reduce(vs.head, a) +: vs.tail
         }
     }
   }
