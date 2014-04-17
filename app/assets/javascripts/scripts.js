@@ -456,15 +456,12 @@ var textBox = (function() {
                 $("#" + id).editable("getHTML");
                 paperData.getElementByID(id).data = $("#" + id).editable("getHTML")[0];
                 updateJSON();
-                console.log(data);
         }});
-        console.log(id);
     }
 
     function createNewTextBox(event, boxID) {
         var addedElement = createTextBox(event, boxID, true);
         $('#'+boxID).css({top: event.pageY, left: event.pageX});
-        console.log(event);
         textBoxVars._id = boxID;
         textBoxVars.title = "";
         textBoxVars.x = event.pageX;
@@ -609,19 +606,45 @@ function bindCanvasClick() {
     });
 }
 
+function initHistoryMenu() {
+    $('#history-results').empty();
+    var paperDiff = paperData.getDiffs();
+
+    for (var i=0;i<paperDiff.length;i++) {
+        var modified = new Date(paperDiff[i].modified).formatDateTime();
+        var message = paperDiff[i].message.split(';');
+        $('#history-results').append(historyResultTemplate);
+        var origins = paperDiff[i].origin;
+        $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')'); // TODO handle multiple origins
+        $('#history-result-title').attr('id','history-result-title-'+i);
+        for (var j=0;j<message.length;j++) {
+            $('#history-result-messages').append(historyResultMessageTemplate);
+            $('#history-result-message').append(message[j]);
+            $('#history-result-message').attr('id','history-result-message-'+i+'-'+j);
+        }
+        $('#history-result-messages').attr('id','history-result-messages-'+i);
+    }
+}
+
 
 var shouldUpdateJSON = false;
 function updateJSON(isImmediate) {
     shouldUpdateJSON = true;
     if(isImmediate) {
         passJSONToServer();
+        refreshViews();
         shouldUpdateJSON = false;
     }
+}
+
+function refreshViews() {
+    initHistoryMenu();
 }
 
 setInterval(function() {
     if(shouldUpdateJSON) {
         passJSONToServer();
+        refreshViews();
         shouldUpdateJSON = false;
     }
 }, 1000);
@@ -634,10 +657,8 @@ function passJSONToServer() {
             type: 'post'
     });
     console.log("Updated");
-    console.log(data);
 }
 function initCanvas() {
-    console.log(data);
     resizeCanvas();
     bindCanvasClick();
     initTags();
@@ -665,26 +686,6 @@ function initTags() {
     });
 }
 
-function initHistoryMenu() {
-    var paperDiff = paperData.getDiffs();
-    paperDiff.reverse();
-    for (var i=0;i<paperDiff.length;i++) {
-        var modified = new Date(paperDiff[i].modified).formatDateTime();
-        var message = paperDiff[i].message.split(';');
-        console.log(message);
-        $('#history-results').append(historyResultTemplate);
-        var origins = paperDiff[i].origin;
-        $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')'); // TODO handle multiple origins
-        $('#history-result-title').attr('id','history-result-title-'+i);
-        for (var j=0;j<message.length;j++) {
-            $('#history-result-messages').append(historyResultMessageTemplate);
-            $('#history-result-message').append(message[j]);
-            $('#history-result-message').attr('id','history-result-message-'+i+'-'+j);
-        }
-        $('#history-result-messages').attr('id','history-result-messages-'+i);
-    }
-}
-
 function ipInfoHref(ip) {
     var link = 'http://www.infobyip.com/ip-' + ip + '.html'
     var html = '<a href="' + link + '">' + ip + '</a>';
@@ -703,7 +704,7 @@ function initBinds() {
         else {
             $('#history-menu').addClass('offscreen');
             $('#history-menu').animate({
-                left: -450
+                left: -400
             }, 'slow');
         }
     });

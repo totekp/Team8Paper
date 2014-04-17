@@ -17,11 +17,11 @@ var dashPaperTemplate = "<div id='paper-template' style='display:inline-block;te
                            "<a href='#' style='width:100%' id='paper-open-btn' class='btn btn-primary' role='button'>Open</a>"+
                         "</div>";
 
-var searchResultTemplate = "<div id='search-result-item' style='text-align:left;width:100%;margin:0;' class='row'>"+
-                                   "<div class='col-md-1'>"+
-                                       "<a id='search-result-icon' style='color:#eef;'><i class='fa fa-file-o fa-3x'></i></a>"+
+var searchResultTemplate = "<div id='search-result-item' style='text-align:left;width:100%;margin:0;display:table;'>"+
+                                   "<div style='display:table-cell;text-align:center;width:17%;'>"+
+                                       "<a id='search-result-icon' style='color:#eef;vertical-align:middle;'><i class='fa fa-file-o fa-3x'></i></a>"+
                                    "</div>"+
-                                   "<div class='col-md-11' style='padding-left:25px;'>"+
+                                   "<div style='display=table-cell;'>"+
                                        "<h3 style='margin:0;'><a id='search-result-title' style='color:#eef;'></a></h3>"+
                                        "<div id='search-result-meta' style='font-size:9px;color:#bbb;'>"+
                                            "<div id='search-result-updated'>"+
@@ -64,6 +64,8 @@ function initState(){ //Hide views based on whether user is signed in
     if(getCookie("PLAY_SESSION")){
         navSignedInState();
         throwPageBroadcast("Welcome!");
+        $('#welcome-page').addClass('hidden');
+        $('#main-page').removeClass('hidden');
     }else{
         navSignedOutState();
         throwPageBroadcast("Signed in as a Guest!");
@@ -78,6 +80,11 @@ function initState(){ //Hide views based on whether user is signed in
 
 function initBinds(){
 
+    $('#nav-home').click( function(){
+        $('#welcome-page').removeClass('hidden');
+        $('#main-page').addClass('hidden');
+    });
+
     $('#nav-search').click( function() {
         if ($('#search-menu').hasClass('offscreen')) {
             $('#search-menu').removeClass('offscreen');
@@ -88,21 +95,104 @@ function initBinds(){
         else {
             $('#search-menu').addClass('offscreen');
             $('#search-menu').animate({
-                left: -450
+                left: -400
             }, 'slow');
         }
     });
 
-    $('#nav-home').click(function(){
-        $('#section-search').addClass('hidden');
-        $('#section-dashboard').addClass('hidden');
-        $('#section-home').removeClass('hidden');
-    });
-
     $('#nav-dashboard').click(function(){
-        $('#section-home').addClass('hidden');
         $('#section-search').addClass('hidden');
         $('#section-dashboard').removeClass('hidden');
+    });
+
+    /*Sign in / up validation and submission in welcome page */
+    $("#welcome-sign-in-submit").click(function(){
+        var username = $('#welcome-sign-in-username').val();
+        var password = $('#welcome-sign-in-password').val();
+        if(!username.length || !password.length){
+            throwWelcomeSignInError('Please enter all of your credentials');
+            return;
+        }
+        if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password)){
+            throwWelcomeSignInError('Please enter alpha-numeric characters');
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/api1/login',
+            data: JSON.stringify({username:username,password:password}),
+            contentType: 'application/json; charset=utf-8'
+        })
+          .done(function(result){
+            if(result.status == "success"){
+                throwWelcomeSignInSuccess("Successfully signed in!");
+                window.setTimeout(function(){
+                    $('#welcome-page').addClass('hidden');
+                    $('#main-page').removeClass('hidden');
+                },1600);
+                reInit();
+                navSignedInState();
+            }else{
+                throwWelcomeSignInError('Oops! Check your credentials!');
+            }
+          });
+    });
+
+    $("#welcome-sign-up-submit").click(function(){
+        var username = $('#welcome-sign-up-username').val();
+        var password = $('#welcome-sign-up-password').val();
+        var passwordConf = $('#welcome-sign-up-password-confirm').val();
+        if(!username.length || !password.length || !passwordConf.length){
+            throwWelcomeSignUpError("Please enter all credentials");
+            return;
+        }
+        if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password) || !alphaNumRegx.test(passwordConf)){
+            throwWelcomeSignUpError("Not a valid username or password!");
+            return;
+        }
+        if(password != passwordConf){
+            throwWelcomeSignUpError("Please check that your passwords match!");
+            return;
+        }
+        if(password.length<=5){
+            throwWelcomeSignUpError("Passwords must be at least 6 characters long!");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/api1/register',
+            data: JSON.stringify({username:username,password:password}),
+            contentType: 'application/json; charset=utf-8'
+        })
+          .done(function(result){
+            if(result.status == "success"){
+                $('#welcome-sign-in-link').click();
+                throwSignInSuccess("Successfully signed up!");
+            }else{
+                throwSignUpError("Aw..Something went wrong. Call Kefu");
+            }
+          });
+    });
+
+    $('#welcome-sign-up-link').click(function(){
+        $('#welcome-sign-in').slideUp();
+        $('#welcome-sign-in-footer').slideUp();
+        //Delay transition to sign up form
+        $('#welcome-sign-up').delay(800).slideDown();
+        $('#welcome-sign-up-footer').delay(800).slideDown();
+    });
+
+    $('#welcome-sign-in-link').click(function(){
+        $('#welcome-sign-up').slideUp();
+        $('#welcome-sign-up-footer').slideUp();
+        //Delay transition to sign in form
+        $('#welcome-sign-in').delay(800).slideDown();
+        $('#welcome-sign-in-footer').delay(800).slideDown();
+    });
+
+    $('#welcome-enter-no-sign-in').click(function(){
+        $('#welcome-page').addClass('hidden');
+        $('#main-page').removeClass('hidden');
     });
 
 
@@ -123,7 +213,7 @@ function initBinds(){
     });
 
 
-    /*Sign in / up validation and submission */
+    /*Sign in / up validation and submission in main page*/
     $("#sign-in-submit").click(function(){
         var username = $('#sign-in-username').val();
         var password = $('#sign-in-password').val();
@@ -201,6 +291,8 @@ function initBinds(){
           .done(function(result){
             if(result.status == "success"){
                 throwPageBroadcast("Successfully signed out!");
+                $('#main-page').addClass('hidden');
+                $('#welcome-page').removeClass('hidden');
                 reInit();
                 navSignedOutState();
             }
@@ -313,7 +405,7 @@ function initBinds(){
     });
 
     $('#search-tag-input').tagsInput({
-        'width':'372px',
+        'width':'330px',
         'height': '40px',
         'defaultText': 'Search papers by tags',
         'minChars' : 3,
@@ -562,25 +654,25 @@ function removePaper(id){
 }
 
 function navSignedInState(){
-    $('#nav-sign-in').slideUp();
-    $('#nav-sign-out').slideDown();
+    $('#nav-sign-in').addClass('hidden');
+    $('#nav-sign-out').removeClass('hidden');
+    $('#nav-home').addClass('hidden');
 }
 
 function navSignedOutState(){
-    $('#nav-sign-in').slideDown();
-    $('#nav-sign-out').slideUp();
+    $('#nav-sign-in').removeClass('hidden');
+    $('#nav-sign-out').addClass('hidden');
+    $('#nav-home').removeClass('hidden');
 }
 
 function papersEmptyState(){
     $('#btn-start').removeClass('hidden');
-    $('#nav-search').fadeOut();
-    $('#nav-dashboard').fadeOut();
+    $('#nav-search').addClass('hidden');
 }
 
 function papersFilledState(){
     $('#btn-start').addClass('hidden');
-    $('#nav-search').fadeIn();
-    $('#nav-dashboard').fadeIn();
+    $('#nav-search').removeClass('hidden');
 }
 
 function throwPageBroadcast(message){
@@ -613,6 +705,24 @@ function throwSignUpError(message){
     $('#sign-up-error').delay(2400).slideUp();
 }
 
+function throwWelcomeSignInError(message){
+    $('#welcome-sign-in-error').empty();
+    $('#welcome-sign-in-error').append(message);
+    $('#welcome-sign-in-error').slideDown();
+    $('#welcome-sign-in-error').delay(2400).slideUp();
+}
+function throwWelcomeSignInSuccess(message){
+    $('#welcome-sign-in-success').empty();
+    $('#welcome-sign-in-success').append(message);
+    $('#welcome-sign-in-success').slideDown();
+    $('#welcome-sign-in-success').delay(2400).slideUp();
+}
+function throwWelcomeSignUpError(message){
+    $('#welcome-sign-up-error').empty();
+    $('#welcome-sign-up-error').append(message);
+    $('#welcome-sign-up-error').slideDown();
+    $('#welcome-sign-up-error').delay(2400).slideUp();
+}
 //extensions
 
 Array.prototype.clear = function() {

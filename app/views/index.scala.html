@@ -10,203 +10,274 @@
 </head>
 
 <body>
-    <div id="wrapper" class="pushobj">
-        <div id="main-nav">
-            <nav id="off-canvas-btn" class="navbar navbar-default" role="navigation">
-                <ul class="nav navbar-nav">
-                    <li><a id="off-canvas-toggle" style="margin-top : 3px; margin-left:3px;" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
-                </ul>
+    <div id="wrapper">
+
+        <div id="welcome-page">
+            <nav id="welcome-nav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"><i class="fa fa-file-o fa-1x"></i>Team8Paper</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/nanop/Team8Paper">Github</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Georgia Tech<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="http://www.gatech.edu">Georgia Tech</a></li>
+                                    <li><a href="http://www.cc.gatech.edu/~simpkins/teaching/gatech/cs4911/syllabus/cs4911-spring2014.html">Design Capstone</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
             </nav>
-            <nav class="navbar navbar-inverse" role="navigation">
-                <ul class="nav navbar-nav">
-                    <li><a id="nav-sign-in" data-toggle="modal" data-target="#sign-in-modal"><i class="fa fa-sign-in fa-lg"></i></a></li>
-                    <li><a id="nav-sign-out"><i class="fa fa-sign-out fa-lg"></i></a></li>
-                </ul>
+            <div id="welcome-cover">
+                <div id="welcome-cover-inner">
 
-            </nav>
-            <nav class="navbar navbar-inverse" role="navigation">
-                <ul class="nav navbar-nav">
-                    <li><a id="nav-search"><i class="fa fa-search fa-lg"></i></a></li>
-                    <li><a id="nav-home" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
-                    <li><a id="nav-dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
-                </ul>
-            </nav>
-        </div>
+                    <div id="welcome-form">
+                        <h1><i class="fa fa-file-o fa-3x"></i></h1>
+                        <h1>Team8Paper</h1>
+                        <div id="welcome-sign-in">
 
-        <div id="main">
-            <div id="page-broadcast" class="alert alert-info alert-dismissable" hidden>
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</i></button>
-                <div id="page-broadcast-content"></div>
-            </div>
-
-            <div id="search-menu" class="offscreen">
-                <div id="search-inner">
-                    <div id="search-input-container">
-                        <h3>Search Papers</h3>
-
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="search-tag-input">
-                            <div class="input-group-btn">
-                                <button id="search-tag-submit" class="btn btn-default"><i class="fa fa-search fa-lg"></i></button>
+                            <div id="welcome-sign-in-error" class="alert alert-danger" hidden>
                             </div>
+                            <div id="welcome-sign-in-success" class="alert alert-success" hidden>
+                            </div>
+                            <input id="welcome-sign-in-username" type="text" class="form-control" placeholder="username">
+                            <input id="welcome-sign-in-password" type="password" class="form-control" placeholder="password">
+                            <input id="welcome-sign-in-submit" class="btn btn-primary form-control" value="Sign in">
+                        </div>
+                        <div id="welcome-sign-up" hidden>
+                            <div id="welcome-sign-up-error" class="alert alert-danger" hidden>
+                            </div>
+                            <input id="welcome-sign-up-username" type="text" class="form-control" placeholder="username">
+                            <input id="welcome-sign-up-password" type="password" class="form-control" placeholder="password">
+                            <input id="welcome-sign-up-password-confirm" type="password" class="form-control" placeholder="confirm password">
+                            <input id="welcome-sign-up-submit" class="btn btn-primary form-control" value="Submit">
+                        </div>
+                        <div id="welcome-footer">
+                            <div id="welcome-sign-in-footer">
+                                <a id="welcome-sign-up-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</a>
+                                <a id="welcome-enter-no-sign-in" class="footer-elements"><i class="fa fa-arrow-circle-o-right fa-1x"></i>Enter without signing in</a>
+                            </div>
+                            <div id="welcome-sign-up-footer" hidden>
+                                <a id="welcome-sign-in-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign in</a>
+                            </div>
+
                         </div>
                     </div>
-
-                    <div id="search-result-container">
-                        <a id="search-slide-up">^</a>
-                        <div id="search-results"></div>
-
-                    </div>
-                    <div id="search-empty-prompt">
-                        <i class="fa fa-search fa-3x"></i>
-                        <p>Search</br> for your Team8Papers with one or more tags</p>
-                    </div>
-
                 </div>
+
+                <div id="learn-more">
+                    <a href="#promotion-cover" class="smoothScroll"><h1><i class="fa fa-arrow-down fa-1x"></i></h1></a>
+                </div>
+
             </div>
-
-            <div id="section-home" class="section">
-                <div id="cover">
-                    <div id="cover-contents">
-                        <div id="cover-left">
-                            <h1><i class="fa fa-file-o fa-4x"></i></h1>
-                            <div id="cover-text">
-                                <h1>Team8Paper</h1>
-                                <p style="font-size:18px;">Team8Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
-                            </div>
-                            <p><a href="/paper" id="btn-start" class="btn btn-lg btn-default hidden">Create New Paper</a></p>
-                            <img id="cover-photo" src="@routes.Assets.at("stylesheets/images/get_started_paper.png")" alt="cover photo">
-                        </div>
-
-                    </div>
-                </div>
-                <div id="promotion-dash">
+            <div id="promotion-cover">
+                <div id="promotion-cover-inner">
                     <div class="promotion-cell">
-                        <h2>Manage</h2>
-                        <p>Manage your papers using the dashboard to duplicate, delete, or make small changes to your papers.</p>
-                    </div>
-                    <div class="promotion-cell">
-                        <img id="dash-screen" src="@routes.Assets.at("stylesheets/images/promotion-dash.png")" alt="dashboard screen">
-                    </div>
-                </div>
-                <div id="promotion-paper">
-                    <div id="promotion-cell">
-                        <img id="paper-screen" src="@routes.Assets.at("stylesheets/images/promotion-paper.png")" alt="paper screen">
+                        <img id="promotion-cover-photo" src="@routes.Assets.at("stylesheets/images/paper-icon.png")" alt="paper icon">
                     </div>
                     <div class="promotion-cell">
-                        <h2>Create</h2>
-                        <p>Create notes without the restrictions of a typical word document. Write text, embed pictures and videos, and have access to them all online.</p>
-                    </div>
-                </div>
-                <div id="promotion-trio" class="row">
-                    <div id="promotion-about" class="col-md-4">
-                        <i class="fa fa-file-o fa-4x"></i>
-                        <h3>About</h3>
-                        <p>Team8Paper is part of a semester long Spring 2014 Georgia Tech CS4911 Senior Design Capstone project.</p>
-                    </div>
-                    <div id="promotion-git" class="col-md-4">
-                        <i class="fa fa-code fa-4x"></i>
-                        <h3>Github</h3>
-                        <p>Our source code is openly available at Github at the link below. Enjoy!</p>
-                        <a href="https://github.com/nanop/Team8Paper" class="btn btn-lg btn-primary">Source</a>
-                    </div>
-                    <div id="promotion-team" class="col-md-4">
-                        <i class="fa fa-users fa-4x"></i>
-                        <h3>Team</h3>
-                        <p>Our Georgia Tech based team consists of three 4th year Computer Science undergraduates: Joon Ki Hong, Westley Schrack, and Kefu Zhou.</p>
-                    </div>
-                </div>
-                <div id="footer">
-                    <p>2014 CS4911 Team8Paper. Georgia Institute of Technology.</p>
-                </div>
-            </div>
-
-            <div id="section-dashboard" class="hidden section">
-                <div id="dashboard-container">
-                    <div id="paper-templates-container">
-                        <div id="paper-templates-header">
-                            <div id="paper-templates-header-left">
-                                <h2>Your Paper Dashboard</h2>
-                                <p>Click each paper for options</p>
-                                <a href="/paper" style="margin-bottom:20px" class="btn btn-primary">Create New Paper</a>
-                            </div>
-                            <div id="paper-templates-header-right">
-                                <span>Papers: </span>
-                                <span id="paper-templates-header-count"></span>
-                            </div>
-                        </div>
-                        <div id="paper-templates"></div>
-                    </div>
-
-                    <div id="paper-settings" class="thumbnail">
-                        <div id="paper-settings-inner" class="thumbnail">
-                            <span id="paper-settings-id" data-id='' hidden></span>
-                            <table id="paper-settings-table">
-                                <tr>
-                                    <th colspan="2">
-                                        <input type="text" id="paper-settings-title-input" class="form-control" placeholder="Title">
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>Modified: </td>
-                                    <td><span id="paper-settings-updated" class="paper-settings-meta">---------------------</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Created: </td>
-                                    <td><span id="paper-settings-created" class="paper-settings-meta">---------------------</span></td>
-                                </tr>
-                            </table>
-                            <p>Tags</p>
-                            <input type="text" id="paper-settings-tag-input" class="form-control" placeholder="add tags separated by spaces">
-                            <a id='paper-settings-submit' class='btn btn-primary btn-paper' role='button'>Submit Changes</a>
-                            <a id='paper-settings-duplicate' class='btn btn-primary btn-paper' role='button'>Duplicate</a>
-                            <a id='paper-settings-delete' class='btn btn-danger btn-paper' role='button'>Delete</a>
-
-                        </div>
+                        <p>Team8Paper is an intuitive note taking web-app that allows you to create notes anywhere on the screen, tag your papers, and embed various forms of media to your notes.</p>
                     </div>
                 </div>
             </div>
-
+            <div id="promotion-dash">
+                <div class="promotion-cell">
+                    <h2>Manage</h2>
+                    <p>Manage your papers using the dashboard to duplicate, delete, or make small changes to your papers.</p>
+                </div>
+                <div class="promotion-cell">
+                    <img id="dash-screen" src="@routes.Assets.at("stylesheets/images/promotion-dash.png")" alt="dashboard screen">
+                </div>
+            </div>
+            <div id="promotion-paper">
+                <div id="promotion-cell">
+                    <img id="paper-screen" src="@routes.Assets.at("stylesheets/images/promotion-paper.png")" alt="paper screen">
+                </div>
+                <div class="promotion-cell">
+                    <h2>Create</h2>
+                    <p>Create notes without the restrictions of a typical word document. Write text, embed pictures and videos, and have access to them all online.</p>
+                </div>
+            </div>
+            <div id="promotion-trio" class="row">
+                <div id="promotion-about" class="col-md-4">
+                    <i class="fa fa-file-o fa-4x"></i>
+                    <h3>About</h3>
+                    <p>Team8Paper is part of a semester long Spring 2014 Georgia Tech CS4911 Senior Design Capstone project.</p>
+                </div>
+                <div id="promotion-git" class="col-md-4">
+                    <i class="fa fa-code fa-4x"></i>
+                    <h3>Github</h3>
+                    <p>Our source code is openly available at Github at the link below. Enjoy!</p>
+                    <a href="https://github.com/nanop/Team8Paper" class="btn btn-lg btn-primary">Source</a>
+                </div>
+                <div id="promotion-team" class="col-md-4">
+                    <i class="fa fa-users fa-4x"></i>
+                    <h3>Team</h3>
+                    <p>Our Georgia Tech based team consists of three 4th year Computer Science undergraduates: Joon Ki Hong, Westley Schrack, and Kefu Zhou.</p>
+                </div>
+            </div>
+            <div id="footer">
+                <p>2014 CS4911 Team8Paper. Georgia Institute of Technology.</p>
+            </div>
         </div>
 
-        <div id="sign-in-modal" class="modal fade">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h1 class="modal-title">Paper</h1>
-                    </div>
-                    <div class="modal-body">
-                        <div id="sign-in">
-                            <div id="sign-in-error" class="alert alert-danger" hidden>
+        <div id="main-page" class="hidden">
+            <div id="main-nav">
+                <nav id="off-canvas-btn" class="navbar navbar-default" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a id="off-canvas-toggle" style="margin-top : 3px; margin-left:3px;" data-toggle="tooltip"><i class="fa fa-file-o fa-lg"></i></a></li>
+                    </ul>
+                </nav>
+                <nav class="navbar navbar-inverse" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a id="nav-sign-in" data-toggle="modal" data-target="#sign-in-modal"><i class="fa fa-sign-in fa-lg"></i></a></li>
+                        <li><a id="nav-sign-out"><i class="fa fa-sign-out fa-lg"></i></a></li>
+                    </ul>
+
+                </nav>
+                <nav class="navbar navbar-inverse" role="navigation">
+                    <ul class="nav navbar-nav">
+                        <li><a id="nav-search"><i class="fa fa-search fa-lg"></i></a></li>
+                        <li><a id="nav-home" data-toggle="tooltip"><i class="fa fa-home fa-lg"></i></a></li>
+                        <li><a id="nav-dashboard"><i class="fa fa-th-large fa-lg"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div id="main">
+                <div id="page-broadcast" class="alert alert-info alert-dismissable" hidden>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</i></button>
+                    <div id="page-broadcast-content"></div>
+                </div>
+
+                <div id="search-menu" class="offscreen">
+                    <div id="search-inner">
+                        <div id="search-input-container">
+                            <h3>Search Papers</h3>
+
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="search-tag-input">
+                                <div class="input-group-btn">
+                                    <button id="search-tag-submit" class="btn btn-default"><i class="fa fa-search fa-lg"></i></button>
+                                </div>
                             </div>
-                            <div id="sign-in-success" class="alert alert-success" hidden>
-                            </div>
-                            <input id="sign-in-username" type="text" class="form-control" placeholder="username">
-                            <input id="sign-in-password" type="password" class="form-control" placeholder="password">
-                            <input id="sign-in-submit" class="btn btn-primary form-control" value="Sign in">
                         </div>
-                        <div id="sign-up" hidden>
-                            <div id="sign-up-error" class="alert alert-danger" hidden>
+
+                        <div id="search-result-container">
+                            <a id="search-slide-up">^</a>
+                            <div id="search-results"></div>
+
+                        </div>
+                        <div id="search-empty-prompt">
+                            <i class="fa fa-search fa-3x"></i>
+                            <p>Search</br> for your Team8Papers with one or more tags</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="section-dashboard" class="section">
+                    <div id="dashboard-container">
+                        <div id="paper-templates-container">
+                            <div id="paper-templates-header">
+                                <div id="paper-templates-header-left">
+                                    <h2>Your Paper Dashboard</h2>
+                                    <p>Click each paper for options</p>
+                                    <a href="/paper" style="margin-bottom:20px" class="btn btn-primary">Create New Paper</a>
+                                </div>
+                                <div id="paper-templates-header-right">
+                                    <span>Papers: </span>
+                                    <span id="paper-templates-header-count"></span>
+                                </div>
                             </div>
-                            <input id="sign-up-username" type="text" class="form-control" placeholder="username">
-                            <input id="sign-up-password" type="password" class="form-control" placeholder="password">
-                            <input id="sign-up-password-confirm" type="password" class="form-control" placeholder="confirm password">
-                            <input id="sign-up-submit" class="btn btn-primary form-control" value="Submit">
+                            <div id="paper-templates"></div>
+                        </div>
+
+                        <div id="paper-settings" class="thumbnail">
+                            <div id="paper-settings-inner" class="thumbnail">
+                                <span id="paper-settings-id" data-id='' hidden></span>
+                                <table id="paper-settings-table">
+                                    <tr>
+                                        <th colspan="2">
+                                            <input type="text" id="paper-settings-title-input" class="form-control" placeholder="Title">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>Modified: </td>
+                                        <td><span id="paper-settings-updated" class="paper-settings-meta">---------------------</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Created: </td>
+                                        <td><span id="paper-settings-created" class="paper-settings-meta">---------------------</span></td>
+                                    </tr>
+                                </table>
+                                <p>Tags</p>
+                                <input type="text" id="paper-settings-tag-input" class="form-control" placeholder="add tags separated by spaces">
+                                <a id='paper-settings-submit' class='btn btn-primary btn-paper' role='button'>Submit Changes</a>
+                                <a id='paper-settings-duplicate' class='btn btn-primary btn-paper' role='button'>Duplicate</a>
+                                <a id='paper-settings-delete' class='btn btn-danger btn-paper' role='button'>Delete</a>
+
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <div id="sign-in-footer">
-                            <a id="forgot-password-footer" class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</a>
-                            <a id="sign-up-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</a>
+                </div>
+
+            </div>
+
+            <div id="sign-in-modal" class="modal fade">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h1 class="modal-title">Team8Paper</h1>
                         </div>
-                        <div id="sign-up-footer" hidden>
-                            <a id="sign-in-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign in</a>
+                        <div class="modal-body">
+                            <div id="sign-in">
+                                <div id="sign-in-error" class="alert alert-danger" hidden>
+                                </div>
+                                <div id="sign-in-success" class="alert alert-success" hidden>
+                                </div>
+                                <input id="sign-in-username" type="text" class="form-control" placeholder="username">
+                                <input id="sign-in-password" type="password" class="form-control" placeholder="password">
+                                <input id="sign-in-submit" class="btn btn-primary form-control" value="Sign in">
+                            </div>
+                            <div id="sign-up" hidden>
+                                <div id="sign-up-error" class="alert alert-danger" hidden>
+                                </div>
+                                <input id="sign-up-username" type="text" class="form-control" placeholder="username">
+                                <input id="sign-up-password" type="password" class="form-control" placeholder="password">
+                                <input id="sign-up-password-confirm" type="password" class="form-control" placeholder="confirm password">
+                                <input id="sign-up-submit" class="btn btn-primary form-control" value="Submit">
+                            </div>
                         </div>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
+                        <div class="modal-footer">
+                            <div id="sign-in-footer">
+                                <a id="forgot-password-footer" class="footer-elements"><i class="fa fa-question-circle fa-1x"></i>Forgot Password</a>
+                                <a id="sign-up-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign up</a>
+                            </div>
+                            <div id="sign-up-footer" hidden>
+                                <a id="sign-in-link" class="footer-elements"><i class="fa fa-pencil-square-o fa-1x"></i>Sign in</a>
+                            </div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div>
         </div>
+
     </div>
 
     <div id="off-canvas-nav"></div>
