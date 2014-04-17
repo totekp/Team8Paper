@@ -11,6 +11,7 @@ import play.api.Logger
 import util.Implicits._
 import scala.collection.mutable
 import common.Common._
+import clientmodels.ClientSession
 
 object Papers extends Controller {
 
@@ -32,7 +33,7 @@ object Papers extends Controller {
         p match {
           case Some(p) =>
             tryOrError {
-              if (UsernameAuth.isOwner(p.username, session)) {
+              if (UsernameAuth.isOwner(p.username, ClientSession.fromReq.map(_.username))) {
                 val paperJson = Paper.model2json(p)
                 Ok(views.html.paper(JsonResult.jsonSuccess(paperJson)))
               } else {
@@ -54,7 +55,7 @@ object Papers extends Controller {
         p match {
           case Some(p) =>
             tryOrError {
-              if (UsernameAuth.isOwner(p.username, session)) {
+              if (UsernameAuth.isOwner(p.username, ClientSession.fromReq.map(_.username))) {
                 val sb = mutable.StringBuilder.newBuilder
 
                 var data = mutable.HashMap[String, String]()
@@ -99,7 +100,7 @@ object Papers extends Controller {
                 Future.successful(
                   JsonResult.error("Input is not a valid json"))
               case Some(json) =>
-                if (UsernameAuth.isOwner(json getAsString Paper.username, session)) {
+                if (UsernameAuth.isOwner(json getAsString Paper.username, ClientSession.fromReq.map(_.username))) {
                   val newPaper = Paper.json2model(json)
                   if (oldpaper._id != newPaper._id) {
 
@@ -138,7 +139,7 @@ object Papers extends Controller {
   def paperNew = Action.async {
     implicit req =>
       val id = Generator.oid()
-      val username = req.session.get("username")
+      val username = ClientSession.fromReq.map(_.username)
       val newPaper = Paper.createBlank(id, username).appendDiff(Vector("Created paper"), req)
       PaperDAO.save(newPaper).map {
         le =>
@@ -148,7 +149,7 @@ object Papers extends Controller {
 
   def recentPaperShorts = Action.async {
     implicit req =>
-      val username = req.session.get("username")
+      val username = ClientSession.fromReq.map(_.username)
       val q = username.map(u =>
         Json.obj(Paper.username -> u))
         .getOrElse(Json.obj(Paper.username -> Json.obj("$exists" -> false)))
@@ -172,7 +173,7 @@ object Papers extends Controller {
             } yield {
               val paperJson = Paper.model2json(
                   p.getOrElse(throw new Exception("Paper not found")))
-              if (UsernameAuth.canView(p.get.username, req.session)) {
+              if (UsernameAuth.canView(p.get.username, ClientSession.fromReq)) {
                 JsonResult.success(paperJson)
               } else {
                 JsonResult.noPermission
@@ -199,7 +200,7 @@ object Papers extends Controller {
                   case Some(paper) =>
                     val newId = Generator.oid()
                     val nowms = System.currentTimeMillis()
-                    if (UsernameAuth.isOwner(paper.username, req.session)) {
+                    if (UsernameAuth.isOwner(paper.username, ClientSession.fromReq.map(_.username))) {
                       val newPaper = paper.copy(
                         _id = newId,
                         created = nowms,
@@ -235,7 +236,7 @@ object Papers extends Controller {
           tryOrError {
             val searchTags = (j \ "tags").as[Vector[String]]
             val tagQ = {
-              req.session.get("username").map {
+              ClientSession.fromReq.map(_.username).map {
                 u =>
                   Json.obj(
                     Paper.username -> u,
@@ -262,7 +263,7 @@ object Papers extends Controller {
         case Some(j) =>
           tryOrError {
             val paperId = j asString "_id"
-            val username = req.session.get("username")
+            val username = ClientSession.fromReq.map(_.username)
             val q = username.map(u =>
               Json.obj(Paper._id -> paperId, Paper.username -> u))
               .getOrElse(Json.obj(Paper._id -> paperId))
@@ -298,7 +299,7 @@ object Papers extends Controller {
 
   def tagCloud = Action.async {
     implicit req =>
-      val fm = Aggregation.tagCloud(req.session.get("username"))
+      val fm = Aggregation.tagCloud(ClientSession.fromReq.map(_.username))
       for {
         m <- fm
       } yield {

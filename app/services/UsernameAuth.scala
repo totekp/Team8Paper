@@ -2,6 +2,7 @@ package services
 
 import models.Paper
 import play.api.mvc.Session
+import clientmodels.ClientSession
 
 object UsernameAuth {
 
@@ -16,18 +17,14 @@ object UsernameAuth {
     }
   }
 
-  def canView(paperUsername: Option[String], session: Session): Boolean = {
+  def canView(paperUsername: Option[String], cs: Option[ClientSession]): Boolean = {
     val r = for {
       au <- paperUsername
-      bu <- session.get("username")
+      bu <- cs.map(_.username)
     } yield {
       au == bu
     }
     r.getOrElse(false)
-  }
-
-  def isOwner(paperUsername: Option[String], s: Session): Boolean = {
-    isOwner(paperUsername, s.get("username"))
   }
 
   def isReadPublic(permissions: Option[String]) = {
