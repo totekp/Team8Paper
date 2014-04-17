@@ -321,7 +321,7 @@ function initBinds(){
           .done(function(result){
             if(result.status == "success"){
                 updateDashboardEntry(paper._id);
-                throwPageBroadcast("Successfully updated your paper!");
+                throwPageBroadcast("Successfully updated!");
             }else{
                 throwPageBroadcast("Sorry! You don't have permission to edit this paper");
             }
