@@ -687,8 +687,8 @@ function initTags() {
 }
 
 function initHistoryMenu() {
+    $('#history-results').empty();
     var paperDiff = paperData.getDiffs();
-    paperDiff.reverse();
     for (var i=0;i<paperDiff.length;i++) {
         var modified = new Date(paperDiff[i].modified).formatDateTime();
         var message = paperDiff[i].message.split(';');
