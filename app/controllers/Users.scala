@@ -9,6 +9,7 @@ import play.api.libs.json.Json
 import services.UserDAO
 import play.api.libs.concurrent.Execution.Implicits._
 import util.PasswordCrypto
+import clientmodels.ClientSession
 
 
 object Users extends Controller {
@@ -21,7 +22,7 @@ object Users extends Controller {
             val username = j asString "username"
 
             JsonResult.success("Login success")
-              .withSession("username" -> username)
+              .withSession(ClientSession(username).toSession)
           } catch {
             case e: Exception =>
               JsonResult.error(e.getMessage)
@@ -48,7 +49,7 @@ object Users extends Controller {
                   if (PasswordCrypto.checkPassword(u.salt, password, u.hash)) {
                     Future.successful(
                       JsonResult.success("Login successful")
-                        .withSession("username" -> username)
+                        .withSession(ClientSession(username).toSession)
                     )
                   } else {
                     Future.successful(

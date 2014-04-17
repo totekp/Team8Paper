@@ -686,10 +686,36 @@ function initTags() {
     });
 }
 
-function ipInfoHref(ip) {
-    var link = 'http://www.infobyip.com/ip-' + ip + '.html'
-    var html = '<a href="' + link + '">' + ip + '</a>';
-    return html;
+function initHistoryMenu() {
+    var paperDiff = paperData.getDiffs();
+    paperDiff.reverse();
+    for (var i=0;i<paperDiff.length;i++) {
+        var modified = new Date(paperDiff[i].modified).formatDateTime();
+        var message = paperDiff[i].message.split(';');
+        console.log(message);
+        $('#history-results').append(historyResultTemplate);
+        var origins = paperDiff[i].origin;
+        $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')');
+        $('#history-result-title').attr('id','history-result-title-'+i);
+        for (var j=0;j<message.length;j++) {
+            $('#history-result-messages').append(historyResultMessageTemplate);
+            $('#history-result-message').append(message[j]);
+            $('#history-result-message').attr('id','history-result-message-'+i+'-'+j);
+        }
+        $('#history-result-messages').attr('id','history-result-messages-'+i);
+    }
+}
+
+function ipInfoHref(origins) {
+    var str = '';
+    for (var i = 0; i < origins.length; i ++) {
+        str += '<a href="' + getLink(origins[i]) + '">' + origins[i] + '</a>';
+    }
+    return str;
+}
+
+function getLink(ip) {
+    return 'http://www.infobyip.com/ip-' + ip + '.html';
 }
 
 function initBinds() {

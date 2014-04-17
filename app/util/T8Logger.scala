@@ -3,6 +3,7 @@ package util
 import play.api.mvc.RequestHeader
 import models.Paper
 import util.Implicits._
+import play.api.Logger
 
 object T8Logger {
 
@@ -13,26 +14,25 @@ object T8Logger {
     )
   }
 
-  // TODO fix random filtering of tags
-  def getUpdateMessage(prev: Paper, curr: Paper): Option[String] = {
-    val sb = StringBuilder.newBuilder
+  def getUpdates(prev: Paper, curr: Paper): Vector[String] = {
+    var buffer = List[String]()
     val addedTags = curr.tags -- prev.tags
     if (addedTags.nonEmpty)
-      sb.append(s"Added tags: ${addedTags.toVector.sorted.mkString(",")}\n")
+      buffer ::= s"Added tags: ${addedTags.toVector.sorted.mkString(",")}"
     val deletedTags = prev.tags -- curr.tags
     if (deletedTags.nonEmpty)
-      sb.append(s"Deleted tags: ${deletedTags.toVector.sorted.mkString(",")}\n")
+      buffer ::= (s"Deleted tags: ${deletedTags.toVector.sorted.mkString(",")}\n")
     
     if (prev.title != curr.title)
-      sb.append(s"Updated title to: ${curr.title}\n")
+      buffer ::= (s"Updated title to: ${curr.title}\n")
 
     if (prev.elements != curr.elements)
-      sb.append(s"Updated elements\n")
+      buffer ::= (s"Updated elements\n")
 
     if (prev.groups != curr.groups)
-      sb.append(s"Updated groups\n")
+      buffer ::= (s"Updated groups\n")
 
-    sb.result().toOpt
+    buffer.toVector
   }
 
 }
