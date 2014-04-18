@@ -106,37 +106,7 @@ function initBinds(){
     });
 
     /*Sign in / up validation and submission in welcome page */
-    $("#welcome-sign-in-submit").click(function(){
-        var username = $('#welcome-sign-in-username').val();
-        var password = $('#welcome-sign-in-password').val();
-        if(!username.length || !password.length){
-            throwWelcomeSignInError('Please enter all of your credentials');
-            return;
-        }
-        if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password)){
-            throwWelcomeSignInError('Please enter alpha-numeric characters');
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/api1/login',
-            data: JSON.stringify({username:username,password:password}),
-            contentType: 'application/json; charset=utf-8'
-        })
-          .done(function(result){
-            if(result.status == "success"){
-                throwWelcomeSignInSuccess("Successfully signed in!");
-                window.setTimeout(function(){
-                    $('#welcome-page').addClass('hidden');
-                    $('#main-page').removeClass('hidden');
-                },1600);
-                reInit();
-                navSignedInState();
-            }else{
-                throwWelcomeSignInError('Oops! Check your credentials!');
-            }
-          });
-    });
+    $("#welcome-sign-in-submit").click(loginSubmit);
 
     $("#welcome-sign-up-submit").click(function(){
         var username = $('#welcome-sign-up-username').val();
@@ -213,44 +183,42 @@ function initBinds(){
     });
 
 
-    /*Sign in / up validation and submission */
-    $("#sign-in-submit").click(loginSubmit);
-
-    $("#sign-in-submit,#sign-in-username,#sign-in-password").keypress(function(e) {
+    $("#welcome-sign-in-submit,#welcome-sign-in-username,#welcome-sign-in-password").keypress(function(e) {
         if(e.which == 13) {
             loginSubmit();
         }
     });
 
     function loginSubmit() {
-        var username = $('#sign-in-username').val();
-        var password = $('#sign-in-password').val();
-        if(!username.length || !password.length){
-            throwSignInError('Please enter all of your credentials');
+        var username = $('#welcome-sign-in-username').val();
+        var password = $('#welcome-sign-in-password').val();
+        if (!username.length || !password.length) {
+            throwWelcomeSignInError('Please enter all of your credentials');
             return;
         }
-        if(!alphaNumRegx.test(username) || !alphaNumRegx.test(password)){
-            throwSignInError('Please enter alpha-numeric characters');
+        if (!alphaNumRegx.test(username) || !alphaNumRegx.test(password)) {
+            throwWelcomeSignInError('Please enter alpha-numeric characters');
             return;
         }
         $.ajax({
             type: 'POST',
             url: '/api1/login',
-            data: JSON.stringify({username:username,password:password}),
+            data: JSON.stringify({username: username, password: password}),
             contentType: 'application/json; charset=utf-8'
         })
-          .done(function(result){
-            if(result.status == "success"){
-                throwSignInSuccess("Successfully signed in!");
-                window.setTimeout(function(){
-                    $('#sign-in-modal').modal('hide');
-                },1600);
-                reInit();
-                navSignedInState();
-            }else{
-                throwSignInError('Oops! Check your credentials!');
-            }
-          });
+            .done(function (result) {
+                if (result.status == "success") {
+                    throwWelcomeSignInSuccess("Successfully signed in!");
+                    window.setTimeout(function () {
+                        $('#welcome-page').addClass('hidden');
+                        $('#main-page').removeClass('hidden');
+                    }, 1600);
+                    reInit();
+                    navSignedInState();
+                } else {
+                    throwWelcomeSignInError('Oops! Check your credentials!');
+                }
+            });
     }
 
     $("#sign-up-submit").click(function(){
