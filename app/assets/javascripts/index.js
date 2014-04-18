@@ -213,8 +213,16 @@ function initBinds(){
     });
 
 
-    /*Sign in / up validation and submission in main page*/
-    $("#sign-in-submit").click(function(){
+    /*Sign in / up validation and submission */
+    $("#sign-in-submit").click(loginSubmit);
+
+    $("#sign-in-submit,#sign-in-username,#sign-in-password").keypress(function(e) {
+        if(e.which == 13) {
+            loginSubmit();
+        }
+    });
+
+    function loginSubmit() {
         var username = $('#sign-in-username').val();
         var password = $('#sign-in-password').val();
         if(!username.length || !password.length){
@@ -243,7 +251,7 @@ function initBinds(){
                 throwSignInError('Oops! Check your credentials!');
             }
           });
-    });
+    }
 
     $("#sign-up-submit").click(function(){
             var username = $('#sign-up-username').val();
