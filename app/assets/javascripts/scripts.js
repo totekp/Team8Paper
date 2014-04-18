@@ -609,14 +609,14 @@ function bindCanvasClick() {
 function initHistoryMenu() {
     $('#history-results').empty();
     var paperDiff = paperData.getDiffs();
-    for (var i=paperDiff-1;i>=0.length;i--) {
+    for (var i=paperDiff.length-1;i>=0;i--) {
         var modified = new Date(paperDiff[i].modified).formatDateTime();
         var message = paperDiff[i].message.split(';');
         $('#history-results').append(historyResultTemplate);
         var origins = paperDiff[i].origin;
         $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')'); // TODO handle multiple origins
         $('#history-result-title').attr('id','history-result-title-'+i);
-        for (var j=message.length-1;j>=0;j-) {
+        for (var j=message.length-1;j>=0;j--) {
             $('#history-result-messages').append(historyResultMessageTemplate);
             $('#history-result-message').append(message[j]);
             $('#history-result-message').attr('id','history-result-message-'+i+'-'+j);
