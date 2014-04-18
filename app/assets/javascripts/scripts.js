@@ -609,7 +609,6 @@ function bindCanvasClick() {
 function initHistoryMenu() {
     $('#history-results').empty();
     var paperDiff = paperData.getDiffs();
-
     for (var i=0;i<paperDiff.length;i++) {
         var modified = new Date(paperDiff[i].modified).formatDateTime();
         var message = paperDiff[i].message.split(';');
@@ -655,8 +654,14 @@ function passJSONToServer() {
             data: JSON.stringify(data.data),
             contentType: 'application/json',
             type: 'post'
+    }).done(function(result){
+        if(result.status == "success"){
+          data = result;
+          console.log("Updated");
+        }else{
+          console.log("passJSONToServer failed");
+        }
     });
-    console.log("Updated");
 }
 function initCanvas() {
     resizeCanvas();
@@ -688,11 +693,12 @@ function initTags() {
 
 function initHistoryMenu() {
     $('#history-results').empty();
-    var paperDiff = paperData.getDiffs();
+    var paperDiff = data.data.diffs;
+    console.log(paperDiff);
+    //paperDiff.reverse();
     for (var i=0;i<paperDiff.length;i++) {
         var modified = new Date(paperDiff[i].modified).formatDateTime();
         var message = paperDiff[i].message.split(';');
-        console.log(message);
         $('#history-results').append(historyResultTemplate);
         var origins = paperDiff[i].origin;
         $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')');
