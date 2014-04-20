@@ -1,10 +1,10 @@
 # Developer Documentation
 
-Team8Paper is a rich web application crafted in Javascript and JQuery on the client side, Scala on the server side, and MongoDB on the persistence side. These technologies were chosen due to familiarity by the 3 members in our team, and they are high performance technologies used to build modern web applications. From a high level, Team8Paper has a client-server architecture with clients sending requests to a stateless server by making HTTP calls. The stateless server uses an MVC architecture with packages controllers, models, and views organizing the source code. Between the client side and server side, JSON, REST, and non-blocking are three attributes emphasized in the design due to their simplicity. Input and outputs are JSON when possible, routes follow REST for easy communication, and server and client handles requests asynchronously so that the application exceeds at scaling. There exists two other packages which are services and util. Services contain functions that are closely tied to application such as a holding a database adapter. Util contains pure functions that help to refactor duplicate parts of code and are usually widely applicable such as generating UUIDs and ObjectIds.
+Team8Paper is a rich internet application crafted in Javascript and jQuery on the client side, Scala on the server side, and MongoDB on the persistence side. These technologies were chosen due to familiarity by the 3 members in our team, and they are high performance technologies used to build modern web applications. From a high level, Team8Paper has a client-server architecture with clients sending requests to a stateless server by making HTTP calls. The stateless server uses an MVC architecture with packages controllers, models, and views organizing the source code. Between the client side and server side, JSON, REST, and non-blocking are three attributes emphasized in the design due to their simplicity. Input and outputs are JSON when possible, routes follow REST for easy communication, and server and client handles requests asynchronously so that the application exceeds at scaling. There exists two other packages which are services and util. Services contain functions that are closely tied to application such as a holding a database adapter. Util contains pure functions that help to refactor duplicate parts of code and are usually widely applicable such as generating UUIDs and ObjectIds.
 
 # Architecture
 
-Our web application is built on top of Play!, a web framework, which manages resources and runs our application. All our code are loaded by Play!. On the client, we use Play!'s scala html templates. Javascript and CSS resources are stored in assets or public folders. The assets folders
+The web application is built on top of Play!, a web framework, which manages resources and runs our application. All our code are loaded by Play!. On the client, we use Play Scala html templates to render views and link static assets. Public assets such as images, javascript and CSS resources are stored in assets or public folders. The assets folder
 provides better management by using Google's closure compiler to optimize the javascript code in the directory. LESS, which is compatible with CSS,
 and offers more features is the default used. LESS files are compiled to .min.css files by Play!. Libraries such as JQuery and Bootstrap which are already optimized, and images are stored in the public directory or linked externally, for static assets.
 
@@ -19,9 +19,6 @@ On the server, we depend on two libraries in addition to Play! which are Reactiv
 On the persistence side, data are stored as BSON, similar more typed and compressed version of JSON, documents in MongoDB, a NoSQL database. Using a NoSQL database is simple and fits our design. We have two collections. The user collection stores user information. Then the paper collection stores individual papers, which is the central feature of our application. 
 
 # User Interface
-
-Many modern systems are interactive. That is, the user interacts with the system using some form of display screen using which data can be entered and results presented. Well-designed UIs are essential to successful systems because they are the most visible part of the system. As such, it is important to get early and frequent feedback from users about their reactions. This can take the form of a prototype, but if this is unfeasible, then mocked up screen shots can be substituted. Your design documentation should include a description of your user interface design. You should explain what the viewer is looking at for each screen. Even command line apps have a UI and you should describe the command line options. If you are making a library rather than an application, then explain your API. Developer documentation should include a sory board, page-flow graph, or some other sort of high-level overview of all the visual "screens" in the application and how they fit together (e.g., which pages link to a page and how).
-
 We used the following libraries to quickly and efficiently build a seamless UI:
 jQuery UI
 Twitter Bootstrap
@@ -29,6 +26,7 @@ jQuery Tags Input
 Bootstrap Font Awesome Icons
 jQueury Multi Level Push Menu
 jQuery Context Menu
+Froala input editor
 
 Our web application consists of two pages: The main page (index.html) and the paper page (/paper/:id)
 
