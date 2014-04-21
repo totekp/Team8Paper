@@ -8,15 +8,30 @@ The web application is built on top of Play!, a web framework, which manages res
 provides better management by using Google's closure compiler to optimize the javascript code in the directory. LESS, which is compatible with CSS,
 and offers more features is the default used. LESS files are compiled to .min.css files by Play!. Libraries such as JQuery and Bootstrap which are already optimized, and images are stored in the public directory or linked externally, for static assets.
 
+![Architecture](Architecture.jpg)
+
 # Detailed Design
 
 On the server, we depend on two libraries in addition to Play! which are Reactive Mongo and filters. Filters is a dependency used to create application wide conditionals to handle requests. Our application has 3 filters found in Global.scala and they run in order mentioned. The HttpsFilter ensures client is connected to application vs HTTPS on production. Next, the Api1Filter handles url paths beginning with /api1 with a json output to be consistent with valid /api1 calls instead of html responses such as 404 Not Found or Forbidden when accessing other parts of application. Lastly, the GzipFilter saves network bandwidth by compressing responses. ReactiveMongo is the sole database driver used for persisting users, papers, and all models used. We use a play-plugin which is a wrapper over ReactiveMongo for easier interoperability with Play's JSON models rather than dealing with converting between ReactiveMongo's BSON objects, case classes, and Play's JSON objects. With the play plugin, the data flows between case classes and JSON, and between JSON and BSON. An important feature of Reactive Mongo is that it is an asynchronous database driver. It is non-blocking, meaning calls with ReactiveMongo do no block other processes allowing maximum processor efficiency.
 
-// TODO page navigation and descriptions
+- Client-Server contract
+
+![Routes](Routes.png)
+
+- Models
+
+![Models](Models.jpg)
+
+- Model Code
+
+![Model Code](ModelCode.png)
 
 # Data Storage
 
 On the persistence side, data are stored as BSON, similar more typed and compressed version of JSON, documents in MongoDB, a NoSQL database. Using a NoSQL database is simple and fits our design. We have two collections. The user collection stores user information. Then the paper collection stores individual papers, which is the central feature of our application. 
+
+Document storage with MongoDB
+![Mongo](Mongo.png)
 
 # User Interface
 We used the following libraries to quickly and efficiently build a seamless UI:
