@@ -3,34 +3,34 @@
 # ~~~~
 
 # Home page
-GET         /                            controllers.Papers.index
+GET         /                              controllers.Papers.index
 
-GET         /paper/:id                   controllers.Papers.paperView(id)
-GET         /paper/:id/info              controllers.Papers.paperInfo(id)
-POST        /paper/:id                   controllers.Papers.paperSubmit(id)
+GET         /paper/:id                     controllers.Papers.paperView(id)
+GET         /paper/:id/info                controllers.Papers.paperInfo(id)
+POST        /paper/:id                     controllers.Papers.paperSubmit(id)
 
 # default screen
-GET         /paper                       controllers.Papers.paperNew
+GET         /paper                         controllers.Papers.paperNew
 
 # user auth ajax
 #POST        /api1/loginNoPassword        controllers.Users.loginNoPassword
-POST        /api1/register               controllers.Users.register
-POST        /api1/login                  controllers.Users.login
-POST        /api1/logout                 controllers.Users.logout
+POST        /api1/register                 controllers.Users.register
+POST        /api1/login                    controllers.Users.login
+POST        /api1/logout                   controllers.Users.logout
 
 # api1 calls
-GET         /api1/recentPaperShorts      controllers.Papers.recentPaperShorts
-POST        /api1/getPaper               controllers.Papers.getPaper
-POST        /api1/duplicatePaper         controllers.Papers.duplicatePaper
-POST        /api1/searchTags             controllers.Papers.searchTags
-POST        /api1/deletePaper            controllers.Papers.deletePaper
-GET        /api1/tagCloud            controllers.Papers.tagCloud
+GET         /api1/recentPaperShorts        controllers.Papers.recentPaperShorts
+POST        /api1/getPaper                 controllers.Papers.getPaper
+POST        /api1/duplicatePaper           controllers.Papers.duplicatePaper
+POST        /api1/searchTags               controllers.Papers.searchTags
+POST        /api1/deletePaper              controllers.Papers.deletePaper
+GET         /api1/tagCloud                 controllers.Papers.tagCloud
 
 # debug
-GET         /debug/clear                 controllers.DebugController.clear
-GET         /debug/users                 controllers.DebugController.users
-GET         /debug/tagCloud              controllers.DebugController.tagCloud
+GET         /debug/clear                   controllers.DebugController.clear
+GET         /debug/users                   controllers.DebugController.users
+GET         /debug/tagCloud                controllers.DebugController.tagCloud
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                controllers.Assets.at(path="/public", file)
+GET         /assets/*file                  controllers.Assets.at(path="/public", file)
