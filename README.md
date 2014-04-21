@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/nanop/Team8Paper.png?branch=master)](https://travis-ci.org/nanop/Team8Paper)
 
-live server -> https://team8paper.herokuapp.com
+ - Testing server -> https://team8paper.herokuapp.com
+ - Developer docs -> https://github.com/nanop/Team8Paper/blob/master/developerdocs/README.md
+ - Short presentation -> https://docs.google.com/presentation/d/1b7EtTw6ElwE0I25AnH60zUwaFurH_GQiKrFOmd9QkiE
 
 # Installation and Running from source
 
