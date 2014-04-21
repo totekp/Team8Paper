@@ -18,6 +18,15 @@ On the server, we depend on two libraries in addition to Play! which are Reactiv
 
 ![Routes](Routes.png)
 
+- Standard Server response
+```Javascript
+// Server response
+{
+  status: 'success' // or 'error',
+  data: 'any data type'
+}
+```
+
 - Models
 
 ![Models](Models.jpg)
