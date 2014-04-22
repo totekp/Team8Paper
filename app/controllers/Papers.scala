@@ -12,6 +12,7 @@ import util.Implicits._
 import scala.collection.mutable
 import common.Common._
 import clientmodels.ClientSession
+import scala.concurrent.duration._
 
 object Papers extends Controller {
 
@@ -110,6 +111,16 @@ object Papers extends Controller {
 
                     Future.successful(
                       JsonResult.error("Paper not changed"))
+                  } else if (math.abs(oldpaper.modified - newPaper.modified) < 500.millis.toMillis) {
+
+                    Future.successful(
+                      JsonResult.error("Paper cannot be saved withing 500ms of each other")
+                    )
+                  } else if (math.abs(newPaper.modified - System.currentTimeMillis()) < 1.hour.toMillis) {
+
+                    Future.successful(
+                      JsonResult.error("Modified time must be within 1hr of server time")
+                    )
                   } else {
 
                     val newPaperUpdatedTime = newPaper
