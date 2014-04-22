@@ -72,8 +72,8 @@ var paperData = (function() {
     }
 
     function getGroups() {
-            return data.data.groups;
-        }
+        return data.data.groups;
+    }
 
     function getGroup(i) {
         return data.data.groups[i];
@@ -133,7 +133,19 @@ var paperData = (function() {
     }
 
     function getUniqueElementId() {
-        return "elementID_" +  getElementsLength();
+        var elements = getElements();
+        var i = 0;
+        var max = 0;
+        for(i = 0; i < getElementsLength(); i++) {
+            var str = elements[i]._id;
+            str = str.replace("elementID_", "");
+            if(parseInt(str) > parseInt(max)) {
+                max = str;
+            }
+        }
+        max++;
+        var uniqueID;
+        return "elementID_" + max;
     }
 
     function getElementsLength() {
@@ -187,11 +199,22 @@ var paperData = (function() {
 
     function getNextID() {
         if(getGroupsLength() > 0) {
-            var nextID = getGroup(getGroupsLength()-1)._id.replace("groupID_", "");
-            nextID++;
-            return nextID;
+            var groups = getGroups();
+            var i = 0;
+            var uniqueID = 0;
+            for(i = 0; i < getGroupsLength(); i++) {
+                var str = groups[i]._id;
+                str = str.replace("groupID_", "");
+                if(parseInt(str) > parseInt(uniqueID)) {
+                    uniqueID = str;
+                }
+            }
+            uniqueID++;
+            return uniqueID;
         }
-        return 0;
+        else {
+            return 0;
+        }
 
     }
 
@@ -214,13 +237,12 @@ var paper = (function() {
     var groupID = "groupID_";
     var selectedGroup = "";
     var canCreateNewGroups = true;
-
     function addNote(event) {
         if(canCreateNewGroups) {
             var textBoxCreated = textBox.createNewTextBox(event, groupID + boxID);
             //An easy way to do a clone of an object.
             paperData.addGroup(textBoxCreated);
-            boxID++;
+            boxID = paperData.getNextID();
             updateJSON();
         }
     }
@@ -610,9 +632,9 @@ var shouldUpdateJSON = false;
 function updateJSON(isImmediate) {
     shouldUpdateJSON = true;
     if(isImmediate) {
+        shouldUpdateJSON = false;
         passJSONToServer();
         refreshViews();
-        shouldUpdateJSON = false;
     }
 }
 
@@ -622,25 +644,26 @@ function refreshViews() {
 
 setInterval(function() {
     if(shouldUpdateJSON) {
+        shouldUpdateJSON = false;
         passJSONToServer();
         refreshViews();
-        shouldUpdateJSON = false;
     }
 }, 1000);
 
+var tempData;
 function passJSONToServer() {
     $.ajax({
             url: window.location.toString(),
             data: JSON.stringify(data.data),
             contentType: 'application/json',
-            type: 'post'
-    }).done(function(result){
-        if(result.status == "success"){
-          data = result;
-          console.log("Updated");
-        }else{
-          console.log("passJSONToServer failed");
-        }
+            type: 'post',
+            success: function(result) {
+                if(result.status == "success"){
+                    //data = result;
+                } else {
+                   console.log("passJSONToServer failed");
+                }
+            }
     });
 }
 function initCanvas() {
