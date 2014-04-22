@@ -102,7 +102,7 @@ object Papers extends Controller {
                   JsonResult.error("Input is not a valid json"))
               case Some(json) =>
                 if (UsernameAuth.isOwner(json getAsString Paper.username, ClientSession.fromReq.map(_.username))) {
-                  val newPaper = Paper.json2model(json)
+                  val newPaper = Paper.json2model(json).updatedTime()
                   if (oldpaper._id != newPaper._id) {
 
                     Future.successful(
@@ -124,7 +124,6 @@ object Papers extends Controller {
                   } else {
 
                     val newPaperUpdatedTime = newPaper
-                      .updatedTime()
                       .appendDiff(T8Logger.getUpdates(oldpaper, newPaper), req) // TODO specify
 
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
