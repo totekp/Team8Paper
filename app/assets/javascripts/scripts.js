@@ -628,6 +628,18 @@ function bindCanvasClick() {
     });
 }
 
+function throwPageBroadcast(message){
+    $('#page-broadcast-content').empty();
+    $('#page-broadcast-content').append(message);
+    if(!$('#page-broadcast').is(":visible")){
+        $('#page-broadcast').show().animate({ top:"-=15px",opacity:1.0 }, "slow");
+        $('#page-broadcast').delay(2400).animate({ top:"+=15px",opacity:0 }, "slow",function(){
+            $('#page-broadcast').hide();
+        });
+    }
+
+}
+
 var shouldUpdateJSON = false;
 function updateJSON(isImmediate) {
     shouldUpdateJSON = true;
@@ -660,6 +672,7 @@ function passJSONToServer() {
             success: function(result) {
                 if(result.status == "success"){
                     //data = result;
+                    throwPageBroadcast("Changes Successfully Saved");
                 } else {
                    console.log("passJSONToServer failed");
                 }
