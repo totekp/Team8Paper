@@ -718,6 +718,7 @@ function initHistoryMenu() {
         var origins = paperDiff[i].origin;
         $('#history-result-title').append(modified + ' (' + ipInfoHref(origins) + ')');
         $('#history-result-title').attr('id','history-result-title-'+i);
+        message.reverse();
         for (var j=0;j<message.length;j++) {
             $('#history-result-messages').append(historyResultMessageTemplate);
             $('#history-result-message').append(message[j]);

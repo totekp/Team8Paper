@@ -102,7 +102,7 @@ object Papers extends Controller {
                   JsonResult.error("Input is not a valid json"))
               case Some(json) =>
                 if (UsernameAuth.isOwner(json getAsString Paper.username, ClientSession.fromReq.map(_.username))) {
-                  val newPaper = Paper.json2model(json).updatedTime()
+                  val newPaper = Paper.json2model(json)
                   if (oldpaper._id != newPaper._id) {
 
                     Future.successful(
@@ -111,22 +111,23 @@ object Papers extends Controller {
 
                     Future.successful(
                       JsonResult.error("Paper not changed"))
-                  } else if (math.abs(oldpaper.modified - newPaper.modified) < 500.millis.toMillis) {
+                  } else if (math.abs(oldpaper.modified - System.currentTimeMillis()) < 500.millis.toMillis) {
 
                     Future.successful(
                       JsonResult.error("Paper cannot be saved within 500ms of each other")
                     )
-                  } else if (math.abs(newPaper.modified - System.currentTimeMillis()) > 1.hour.toMillis) {
-
-                    Future.successful(
-                      JsonResult.error("Modified time must be within 1hr of server time")
-                    )
+//                  } else if (math.abs(newPaper.modified - System.currentTimeMillis()) > 1.hour.toMillis) {
+//
+//                    Future.successful(
+//                      JsonResult.error("Modified time must be within 1hr of server time")
+//                    )
                   } else {
 
                     val newPaperUpdatedTime =
                       newPaper
-                      .copy(diffs = oldpaper.diffs)
-                      .appendDiff(T8Logger.getUpdates(oldpaper, newPaper), req) // TODO specify
+                        .updatedTime()
+                        .copy(diffs = oldpaper.diffs)
+                        .appendDiff(T8Logger.getUpdates(oldpaper, newPaper), req) // TODO specify
 
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
                       le =>
