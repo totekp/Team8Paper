@@ -24,7 +24,13 @@ object SimpleDiff {
     else if (curr.message.trim.isEmpty)
       prev
     else
-      SimpleDiff(curr.modified, Vector(curr.message.split(';'), prev.message.split(';')).flatten.distinct.mkString(";"), (prev.origin ++ curr.origin).distinct)
+      SimpleDiff(
+        prev.modified,
+        Vector(
+          curr.message.split(';'),
+          prev.message.split(';')
+        ).flatten.distinct.mkString(";"),
+        (prev.origin ++ curr.origin).distinct)
   }
 
   def combine(interval: Duration, diffs: Vector[SimpleDiff]): Vector[SimpleDiff] = {
@@ -33,7 +39,7 @@ object SimpleDiff {
     descDiffs.foldLeft(Vector[SimpleDiff]()){
       case (Vector(), a) => Vector(a)
       case (vs, a) =>
-        if (math.abs(a.modified - vs.head.modified) > interval.toMillis) {
+        if (math.abs(a.modified - vs.last.modified) > interval.toMillis) {
           vs :+ a
         } else {
           reduce(vs.head, a) +: vs.tail

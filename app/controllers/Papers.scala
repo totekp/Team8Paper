@@ -123,7 +123,9 @@ object Papers extends Controller {
                     )
                   } else {
 
-                    val newPaperUpdatedTime = newPaper
+                    val newPaperUpdatedTime =
+                      newPaper
+                      .copy(diffs = oldpaper.diffs)
                       .appendDiff(T8Logger.getUpdates(oldpaper, newPaper), req) // TODO specify
 
                     PaperDAO.save(newPaperUpdatedTime, ow = true).map {
