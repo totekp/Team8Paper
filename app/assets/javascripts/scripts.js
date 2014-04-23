@@ -672,7 +672,8 @@ function passJSONToServer() {
             success: function(result) {
                 if(result.status == "success"){
                     //data = result;
-                    throwPageBroadcast("Changes Successfully Saved");
+                    var modified = new Date().formatDateTime();
+                    throwPageBroadcast('<b>'+modified+'</b>' + "\nChanges saved successfully!");
                 } else {
                    console.log("passJSONToServer failed");
                 }

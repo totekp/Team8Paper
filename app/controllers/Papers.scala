@@ -114,7 +114,7 @@ object Papers extends Controller {
                   } else if (math.abs(oldpaper.modified - newPaper.modified) < 500.millis.toMillis) {
 
                     Future.successful(
-                      JsonResult.error("Paper cannot be saved withing 500ms of each other")
+                      JsonResult.error("Paper cannot be saved within 500ms of each other")
                     )
                   } else if (math.abs(newPaper.modified - System.currentTimeMillis()) > 1.hour.toMillis) {
 

@@ -27,10 +27,11 @@ object SimpleDiff {
       SimpleDiff(
         prev.modified,
         Vector(
-          curr.message.split(';'),
-          prev.message.split(';')
+            prev.message.split(';'),
+            curr.message.split(';')
         ).flatten.distinct.mkString(";"),
-        (prev.origin ++ curr.origin).distinct)
+        (prev.origin ++ curr.origin).distinct
+      )
   }
 
   def combine(interval: Duration, diffs: Vector[SimpleDiff]): Vector[SimpleDiff] = {
