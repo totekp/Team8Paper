@@ -1,3 +1,5 @@
+*4/23: Development on this repo has been suspended due to completion of course. Stay tuned for future announcements.*
+
 [![Build Status](https://travis-ci.org/nanop/Team8Paper.png?branch=master)](https://travis-ci.org/nanop/Team8Paper)
 
  - Testing server -> https://team8paper.herokuapp.com
